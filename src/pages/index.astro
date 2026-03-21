@@ -1,0 +1,163 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import {
+    Phone,
+    MapPin,
+    Truck,
+    Wine,
+    Beer,
+    UtensilsCrossed,
+    ChevronRight,
+    FlaskConical
+} from "lucide-astro";
+
+const categories = [
+    {
+        name: "Aguardiente",
+        image: "https://placehold.co/600x800/0A0F1E/white?text=Aguardiente",
+        icon: Wine,
+        color: "neon-blue",
+    },
+    {
+        name: "Whisky",
+        image: "https://placehold.co/600x800/0A0F1E/white?text=Whisky",
+        icon: Wine,
+        color: "neon-purple",
+    },
+    {
+        name: "Cervezas",
+        image: "https://placehold.co/600x800/0A0F1E/white?text=Cerveza",
+        icon: Beer,
+        color: "neon-pink",
+    },
+    {
+        name: "Snacks",
+        image: "https://placehold.co/600x800/0A0F1E/white?text=Snacks",
+        icon: UtensilsCrossed,
+        color: "white",
+    },
+];
+
+const featuredProducts = [
+    {
+        name: "Aguardiente Antioqueño Sin Azúcar",
+        price: "$45.000",
+        image: "https://placehold.co/600x600/0A0F1E/white?text=Antioqueño",
+    },
+    {
+        name: "Johnnie Walker Black Label",
+        price: "$120.000",
+        image: "https://placehold.co/600x600/0A0F1E/white?text=Black+Label",
+    },
+    {
+        name: "Club Colombia Dorada 6-pack",
+        price: "$22.000",
+        image: "https://placehold.co/600x600/0A0F1E/white?text=Club+Col",
+    },
+    {
+        name: "Papas Margarita Familiar",
+        price: "$8.500",
+        image: "https://placehold.co/600x600/0A0F1E/white?text=Margarita",
+    },
+];
+---
+
+<MainLayout
+    title="Diverpremier - Licores Premium en Álamos"
+    description="La mejor licorera en Álamos con domicilios rápidos. Entrega inmediata de aguardiente, whisky y cervezas en Bogotá."
+    containerClass="max-w-7xl"
+    isProse={false}
+>
+    <section
+        class="relative min-h-[85vh] flex items-center justify-center overflow-hidden rounded-[4rem] mb-32 border border-white/5 bg-white/[0.02] backdrop-blur-sm"
+    >
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-neon-blue/10 blur-[150px] rounded-full animate-pulse"></div>
+            <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-neon-pink/5 blur-[150px] rounded-full"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-6 max-w-5xl">
+            <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-neon-blue mb-10">
+                <Truck size={14} class="animate-bounce" /> Domicilios Flash en Álamos
+            </div>
+
+            <h1 class="text-6xl md:text-[7.5rem] font-black mb-8 leading-[0.85] tracking-tighter uppercase italic text-white">
+                Diverpremier <br />
+            </h1>
+
+            <p class="text-xl md:text-2xl mb-12 text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
+                El pulso de la rumba en <span class="text-white font-bold border-b-2 border-neon-blue">Álamos Norte</span>. Licores originales directo a tu puerta.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                <a href="https://wa.me/yournumber" class="group relative inline-flex items-center gap-4 bg-neon-blue text-dark-bg px-10 py-5 rounded-2xl text-xl font-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(0,209,255,0.3)]">
+                    <Phone size={24} />
+                    <span>Pedir por WhatsApp</span>
+                </a>
+                <a href="/productos" class="text-slate-400 hover:text-white font-bold tracking-widest uppercase text-xs flex items-center gap-2 transition-colors">
+                    Explorar Cava <ChevronRight size={18} />
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-40">
+        <div class="flex items-end gap-4 mb-16">
+            <h2 class="text-5xl font-black tracking-tighter uppercase italic text-white">Categorías</h2>
+            <div class="h-[1px] flex-grow bg-gradient-to-r from-neon-blue/40 to-transparent mb-3"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {categories.map((cat) => (
+                <a href={`/productos?cat=${cat.name}`} class="group relative aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-white/5 hover:border-neon-blue/30 transition-all duration-500 bg-white/[0.02]">
+                    <img src={cat.image} alt={cat.name} class="absolute inset-0 h-full w-full object-cover opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-40 transition-all duration-700 scale-110 group-hover:scale-100" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
+                    <div class="absolute bottom-8 left-8 right-8">
+                        <div class:list={["w-12 h-12 rounded-xl flex items-center justify-center mb-4 backdrop-blur-md border border-white/10", 
+                            cat.color === "neon-blue" ? "bg-neon-blue/20 text-neon-blue" : "bg-neon-purple/20 text-neon-purple"]}>
+                            <cat.icon size={24} />
+                        </div>
+                        <h3 class="text-3xl font-black text-white uppercase italic tracking-tighter">{cat.name}</h3>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </section>
+
+    <section class="glass-neon p-12 md:p-20 rounded-[4rem] grid md:grid-cols-3 gap-16 mb-40 border-white/5">
+        <div class="flex flex-col items-center text-center space-y-6">
+            <div class="w-20 h-20 bg-neon-blue/5 rounded-3xl flex items-center justify-center border border-neon-blue/20">
+                <Truck class="text-neon-blue" size={36} />
+            </div>
+            <h3 class="text-xl font-black uppercase text-white">Envío Álamos</h3>
+            <p class="text-slate-400 text-sm">Entrega prioritaria en <span class="text-white">Álamos Norte y Sur</span> en tiempo récord.</p>
+        </div>
+        </section>
+
+    <section class="pb-32">
+        <h2 class="text-5xl font-black tracking-tighter uppercase italic text-white mb-16">
+            Top <span class="text-neon-blue">Diverpremier</span>
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {featuredProducts.map((prod) => (
+                <div class="group glass-neon rounded-[2.5rem] p-6 border border-white/5 hover:border-neon-blue/20 transition-all flex flex-col">
+                    <div class="aspect-square rounded-2xl overflow-hidden mb-8 bg-white/[0.03] border border-white/5 relative">
+                        <img src={prod.image} alt={prod.name} class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" />
+                    </div>
+                    <h3 class="text-lg font-bold mb-4 text-slate-100">{prod.name}</h3>
+                    <div class="flex items-center justify-between mt-auto">
+                        <span class="text-2xl font-black text-white italic">{prod.price}</span>
+                        <a href="https://wa.me/yournumber" class="p-4 rounded-2xl bg-white/5 text-neon-blue hover:bg-neon-blue hover:text-dark-bg transition-all">
+                            <Phone size={20} />
+                        </a>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </section>
+</MainLayout>
+
+<script>
+    // Limpiamos el script del carrito ya que Diverpremier usa WhatsApp/Mapa para la gestión
+    console.log("🚀 Diverpremier Go: Landing Operativa");
+</script>

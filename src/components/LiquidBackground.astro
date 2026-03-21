@@ -1,0 +1,109 @@
+---
+/* src/components/LiquidBackground.astro */
+---
+
+<div id="liquid-wrap" class="fixed inset-0 overflow-hidden pointer-events-none bg-[#020617]" style="z-index: -1;">
+  <canvas id="liquid-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+</div>
+
+<script>
+  let animationId: number | null = null;
+  let cleanupResize: (() => void) | null = null;
+  let cleanupMouse: (() => void) | null = null;
+
+  function initLiquidBg() {
+    console.log('🌊 Diverpremier Liquid Core: Iniciando Interactividad...');
+
+    if (animationId !== null) cancelAnimationFrame(animationId);
+    if (cleanupResize) cleanupResize();
+    if (cleanupMouse) cleanupMouse();
+
+    const canvas = document.getElementById('liquid-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Colores de marca Diverpremier
+    const NEON_BLUE   = '#38BDF8';
+    const NEON_PURPLE = '#D052FF';
+    const NEON_PINK   = '#F472B6';
+
+    let width = 0, height = 0, offset = 0;
+    
+    // Coordenadas del mouse con suavizado (Lerp)
+    const mouse = { x: -1000, y: -1000 };
+    const lerpMouse = { x: -1000, y: -1000 };
+
+    function resize() {
+      width  = canvas.width  = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    // Escuchador de movimiento con limpieza
+    const onMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    cleanupMouse = () => window.removeEventListener('mousemove', onMouseMove);
+
+    function drawWave(color: string, alpha: number, yBase: number, freq: number, amp: number, shift: number) {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth   = 3;
+      ctx.shadowBlur  = 25;
+      ctx.shadowColor = color;
+
+      for (let x = 0; x <= width; x += 8) {
+        // --- LÓGICA DE INTERACCIÓN ---
+        const dx = x - lerpMouse.x;
+        const dy = yBase - lerpMouse.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Radio de influencia de 200px
+        const force = Math.max(0, (200 - distance) / 200);
+        const distortion = force * 50; // Cuánto se deforma la onda al pasar el mouse
+
+        const y = Math.sin(x * freq + shift) * (amp + distortion) + yBase;
+
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      offset += 0.005;
+
+      // Suavizamos el movimiento del mouse (Factor 0.05 para inercia líquida)
+      lerpMouse.x += (mouse.x - lerpMouse.x) * 0.05;
+      lerpMouse.y += (mouse.y - lerpMouse.y) * 0.05;
+
+      // Dibujamos las 3 capas icónicas de Diverpremier
+      drawWave(NEON_BLUE,   0.4, height * 0.65, 0.002, 40, offset);
+      drawWave(NEON_PURPLE, 0.3, height * 0.75, 0.0015, 30, offset * 0.8);
+      drawWave(NEON_PINK,   0.15, height * 0.4, 0.001, 20, offset * 0.5);
+
+      animationId = requestAnimationFrame(draw);
+    }
+
+    const onResize = () => resize();
+    window.addEventListener('resize', onResize);
+    cleanupResize = () => window.removeEventListener('resize', onResize);
+
+    resize();
+    draw();
+  }
+
+  // Integración total con Astro View Transitions
+  document.addEventListener('astro:page-load', initLiquidBg);
+  if (document.readyState !== 'loading') initLiquidBg();
+</script>
+
+<style>
+  #liquid-canvas {
+    filter: blur(8px);
+    mix-blend-mode: screen; /* Brillo neón aditivo */
+  }
+</style>

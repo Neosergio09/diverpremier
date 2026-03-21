@@ -1,0 +1,236 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { Package, MapPin, Navigation, Info, Bell, Shield, Zap, FlaskConical } from "lucide-astro";
+
+const activeOrders = [
+  { id: "ORD-ÁLAMOS-942", status: "En Camino", client: "Álamos Norte Sector Prime", time: "3 min" },
+  { id: "ORD-ÁLAMOS-881", status: "Preparando", client: "Álamos Sur Residencia", time: "10 min" },
+  { id: "ORD-ÁLAMOS-753", status: "Verificando", client: "Hacienda Álamos Centro", time: "1 min" },
+];
+
+const deliveryZones = [
+  { name: "Sector Álamos Norte", load: "Crítico", color: "text-neon-pink" },
+  { name: "Sector Álamos Sur", load: "Estable", color: "text-neon-blue" },
+  { name: "Sector Hacienda Álamos", load: "Bajo", color: "text-neon-purple" },
+];
+---
+
+<MainLayout 
+  title="Diverpremier Command Center - Álamos" 
+  containerClass="max-w-none px-0 py-0 h-screen overflow-hidden bg-dark-bg" 
+  isProse={false}
+>
+  <div class="relative w-full h-full flex antialiased">
+    <aside 
+      class="fixed left-8 top-8 bottom-8 w-86 glass-neon rounded-3xl p-8 z-50 flex flex-col gap-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-white/5 backdrop-blur-2xl"
+      transition:animate="slide"
+    >
+      <div class="flex items-center gap-4 border-b border-white/10 pb-6">
+        <div class="p-2 bg-neon-blue/10 rounded-lg animate-pulse">
+            <FlaskConical class="w-8 h-8 text-neon-blue" />
+        </div>
+        <div>
+            <h2 class="text-xl font-black text-white tracking-tighter italic">DIVERPREMIER <span class="text-neon-blue">GO</span></h2>
+            <p class="text-[10px] text-slate-400 tracking-[0.2em] font-bold">COMMAND CENTER v4.0</p>
+        </div>
+      </div>
+
+      <section class="flex-1 overflow-y-auto no-scrollbar">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xs font-bold text-slate-100 uppercase tracking-[0.3em]">Envíos Álamos Norte</h3>
+          <div class="flex items-center gap-2">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-blue opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"></span>
+            </span>
+            <span class="text-[10px] text-neon-blue font-bold">LIVE FEED</span>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          {activeOrders.map(order => (
+            <div class="glass-neon p-5 rounded-2xl border-white/5 antigravity-card group cursor-pointer relative overflow-hidden">
+              <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                 <Shield class="w-4 h-4 text-neon-blue" />
+              </div>
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-neon-blue font-mono text-sm font-bold tracking-widest">{order.id}</span>
+                <div class="flex items-center gap-1">
+                    <Zap class="w-3 h-3 text-neon-pink" />
+                     <span class="text-[10px] text-slate-300 font-mono">{order.time}</span>
+                </div>
+              </div>
+              <h4 class="text-white text-base font-bold mb-2 group-hover:text-neon-blue transition-colors">{order.client}</h4>
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-neon-blue to-neon-purple w-2/3 animate-[pulse_2s_infinite]"></div>
+                </div>
+                 <span class="text-[10px] text-slate-300 font-medium uppercase tracking-wider italic">{order.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+         <h3 class="text-xs font-bold text-slate-100 uppercase tracking-[0.3em] mb-6">Estado de Sectores</h3>
+        <div class="grid grid-cols-1 gap-3">
+          {deliveryZones.map(zone => (
+            <div class="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer group border border-transparent hover:border-white/10">
+              <div class="flex items-center gap-4">
+                <div class={`w-1.5 h-10 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] bg-current ${zone.color}`}></div>
+                <div>
+                  <p class="text-white text-sm font-bold tracking-wide">{zone.name}</p>
+                   <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Tráfico: <span class={zone.color}>{zone.load}</span></p>
+                </div>
+              </div>
+              <Info class="w-4 h-4 text-slate-400 group-hover:text-neon-blue transition-colors drop-shadow-[0_0_8px_var(--color-neon-blue)]" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div class="pt-6 border-t border-white/10">
+          <button class="group relative w-full py-4 rounded-2xl bg-gradient-to-br from-neon-purple to-neon-blue p-[1px] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(188,19,254,0.4)]">
+            <div class="absolute inset-0 bg-dark-bg/80 group-hover:bg-transparent transition-colors"></div>
+            <span class="relative text-white font-black text-xs tracking-[0.3em] uppercase italic bg-clip-text">Optimizar Logística</span>
+          </button>
+      </div>
+    </aside>
+
+    <main id="map-container" class="flex-1 relative pl-40 border-r border-white/5">
+        <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_60%_40%,rgba(188,19,254,0.1)_0%,transparent_50%)]"></div>
+
+        <div class="absolute bottom-10 right-10 flex flex-col gap-4 text-white/20 font-mono text-[10px] tracking-widest uppercase z-10">
+          <div class="flex items-center gap-2">
+             <span class="w-10 h-[1px] bg-white/10"></span>
+             <span>Álamos Norte: 4.698° N, -74.112° W</span>
+          </div>
+          <div class="flex items-center gap-2">
+             <span class="w-10 h-[1px] bg-white/10"></span>
+             <span>Sede Central: 4.685° N, -74.120° W</span>
+          </div>
+          <div class="flex items-center gap-2">
+             <span class="w-10 h-[1px] bg-white/10"></span>
+             <span>LOGISTICS_FEED: STABLE</span>
+          </div>
+      </div>
+    </main>
+  </div>
+
+  <style>
+    /* Ocultar barra de scroll pero mantener funcionalidad */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Astro View Transition "Fall" Effect para toda la página */
+    ::view-transition-old(root) {
+      animation: 0.4s cubic-bezier(0.4, 0, 1, 1) both fade-out;
+    }
+
+    ::view-transition-new(root) {
+      animation: 0.8s cubic-bezier(0, 0, 0.2, 1) both fall-in;
+    }
+
+    @keyframes fall-in {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.02);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fade-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  </style>
+</MainLayout>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet" />
+
+<script client:load>
+    mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN'; // <--- SOCIO, AQUÍ VA TU TOKEN GRATUITO DE MAPBOX
+
+    const map = new mapboxgl.Map({
+        container: 'map-container',
+        style: 'mapbox://styles/mapbox/dark-v11', // Un estilo oscuro perfecto para el neón
+        center: [-74.116, 4.692], // Coordenadas aproximadas de Álamos Norte
+        zoom: 14.5,
+        pitch: 50, // Ángulo de perspectiva para la estética Antigravity
+        bearing: -30,
+        antialias: true
+    });
+
+    // SOCIO, ESTO ES PARA SIMULAR LOS DRONES FLOTANDO
+    // EN PRODUCCIÓN, ESTO SE HARÁ CON DATOS REALES DE SUPABASE
+
+    // Drone #1 (Álamos Norte)
+    const drone1El = document.createElement('div');
+    drone1El.className = 'marker animate-float';
+    drone1El.innerHTML = `
+        <div class="relative flex flex-col items-center">
+            <div class="absolute w-24 h-24 bg-neon-blue/10 rounded-full blur-xl animate-pulse"></div>
+            <div class="relative w-10 h-10 glass-neon rounded-full border border-neon-blue/40 flex items-center justify-center animate-pulse-glow">
+                <MapPin class="w-5 h-5 text-neon-blue" />
+            </div>
+            <div class="mt-4 glass-neon px-3 py-1.5 rounded-lg border border-white/10 opacity-80 backdrop-blur-md">
+                <div class="flex items-center gap-2">
+                   <div class="w-1.5 h-1.5 rounded-full bg-neon-blue"></div>
+                   <span class="text-[9px] text-white font-mono font-bold tracking-tighter">DRONE-X1 ALPHA</span>
+                </div>
+            </div>
+        </div>
+    `;
+    new mapboxgl.Marker(drone1El)
+        .setLngLat([-74.112, 4.698])
+        .addTo(map);
+
+    // Drone #2 (Álamos Sur)
+    const drone2El = document.createElement('div');
+    drone2El.className = 'marker animate-float';
+    drone2El.style.animationDelay = '-2s';
+    drone2El.innerHTML = `
+        <div class="relative flex flex-col items-center">
+            <div class="absolute w-20 h-20 bg-neon-pink/10 rounded-full blur-xl animate-pulse"></div>
+            <div class="relative w-10 h-10 glass-neon rounded-full border border-neon-pink/40 flex items-center justify-center animate-pulse-glow" style="animation-delay: -1s;">
+                <MapPin class="w-5 h-5 text-neon-pink" />
+            </div>
+            <div class="mt-4 glass-neon px-3 py-1.5 rounded-lg border border-white/10 opacity-80 backdrop-blur-md">
+                <div class="flex items-center gap-2">
+                   <div class="w-1.5 h-1.5 rounded-full bg-neon-pink"></div>
+                   <span class="text-[9px] text-white font-mono font-bold tracking-tighter">DRONE-X2 BETA</span>
+                </div>
+            </div>
+        </div>
+    `;
+    new mapboxgl.Marker(drone2El)
+        .setLngLat([-74.120, 4.685])
+        .addTo(map);
+
+    // HUB CENTRAL (Diverpremier HQ)
+    const hubEl = document.createElement('div');
+    hubEl.className = 'marker scale-[1.5] group cursor-pointer';
+    hubEl.innerHTML = `
+        <div class="relative flex items-center justify-center">
+            <div class="absolute inset-0 w-32 h-32 bg-neon-purple/20 rounded-full blur-3xl animate-pulse group-hover:bg-neon-purple/40 transition-colors"></div>
+            <div class="relative w-16 h-16 glass-neon rounded-[1.5rem] border border-neon-purple/60 flex items-center justify-center shadow-[0_0_40px_rgba(188,19,254,0.3)] group-hover:scale-110 transition-transform duration-500">
+                <Package class="w-8 h-8 text-neon-purple animate-bounce" />
+            </div>
+            <div class="absolute w-24 h-24 border border-neon-purple/20 rounded-full animate-[ping_3s_infinite]"></div>
+            <div class="absolute w-28 h-28 border border-white/5 rounded-full animate-[ping_4s_infinite]"></div>
+        </div>
+    `;
+    new mapboxgl.Marker(hubEl)
+        .setLngLat([-74.116, 4.692])
+        .addTo(map);
+</script>

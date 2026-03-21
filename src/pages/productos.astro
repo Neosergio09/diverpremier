@@ -1,0 +1,254 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+
+const categories = [
+  "Todos",
+  "Aguardiente",
+  "Whisky",
+  "Cerveza",
+  "Snacks",
+  "Combos",
+];
+
+const products = [
+  {
+    name: "Aguardiente Antioqueño",
+    price: "$45.000",
+    category: "Aguardiente",
+    stock_status: "Disponible",
+    featured: true,
+    image_url: "https://placehold.co/600x800/0A0F1E/white?text=Aguardiente",
+  },
+  {
+    name: "Whisky Old Parr 12 Años",
+    price: "$180.000",
+    category: "Whisky",
+    stock_status: "Disponible",
+    featured: false,
+    image_url: "https://placehold.co/600x800/0A0F1E/white?text=Whisky",
+  },
+  {
+    name: "Cerveza Club Colombia",
+    price: "$5.500",
+    category: "Cerveza",
+    stock_status: "Pocas Unidades",
+    featured: false,
+    image_url: "https://placehold.co/600x800/0A0F1E/white?text=Cerveza",
+  },
+  {
+    name: "Aguardiente Néctar",
+    price: "$42.000",
+    category: "Aguardiente",
+    stock_status: "Disponible",
+    featured: false,
+    image_url: "https://placehold.co/600x800/0A0F1E/white?text=Nectar",
+  },
+  {
+    name: "Combo Rumbero (Aguar + Hielo)",
+    price: "$55.000",
+    category: "Combos",
+    stock_status: "Oferta Flash",
+    featured: true,
+    image_url: "https://placehold.co/600x800/0A0F1E/white?text=Combo",
+  },
+];
+---
+
+<MainLayout title="Productos" containerClass="max-w-7xl" isProse={false}>
+  <div class="space-y-16 pb-20">
+    <header class="text-center space-y-6 pt-10">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-blue/10 border border-neon-blue/30 text-neon-blue text-[10px] font-black uppercase tracking-[0.3em] animate-pulse"
+      >
+        <span class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-blue opacity-75"
+          ></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"
+          ></span>
+        </span>
+        Abierto 24/7 en Engativá
+      </div>
+      <h1
+        class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase leading-none text-white"
+      >
+        <span class="neon-glow-blue">Licores</span>
+        <br />
+        <span
+          class="text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple"
+          >Premium</span
+        >
+      </h1>
+      <p class="text-slate-300 text-lg md:text-xl max-w-xl mx-auto font-medium">
+        Tus marcas favoritas con entrega en <span
+          class="text-white border-b border-neon-blue/50">menos de 30 min</span
+        >.
+      </p>
+    </header>
+
+    <nav
+      class="flex overflow-x-auto py-2 gap-4 no-scrollbar sticky top-24 z-30 bg-dark-bg/80 backdrop-blur-md -mx-6 px-6"
+    >
+      {
+        categories.map((cat, index) => (
+          <button
+            class:list={[
+              "px-8 py-3 rounded-2xl glass-neon border transition-all duration-300 font-bold uppercase text-xs tracking-widest whitespace-nowrap",
+              index === 0
+                ? "border-neon-blue text-neon-blue bg-neon-blue/10 shadow-[0_0_15px_rgba(0,209,255,0.2)]"
+                : "border-white/10 text-slate-400 hover:border-white/30 hover:text-white",
+            ]}
+          >
+            {cat}
+          </button>
+        ))
+      }
+    </nav>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12"
+    >
+      {
+        products.map((product) => (
+          <article class="group relative flex flex-col h-full">
+            <div class="absolute -inset-1 bg-gradient-to-r from-neon-blue to-neon-purple rounded-[2.5rem] blur opacity-0 group-hover:opacity-20 transition duration-500" />
+
+            <div class="relative flex flex-col h-full glass-neon rounded-[2rem] border border-white/5 overflow-hidden transition-transform duration-500 group-hover:-translate-y-2">
+              <div class="relative aspect-[4/5] overflow-hidden bg-[#0A0F1E]">
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  class="w-full h-full object-contain p-8 transition-transform duration-700 group-hover:scale-110"
+                />
+
+                <div class="absolute top-4 left-4 flex flex-col gap-2">
+                  {product.featured && (
+                    <span class="px-3 py-1 rounded-lg bg-neon-blue text-dark-bg text-[9px] font-black uppercase tracking-tighter shadow-lg shadow-neon-blue/40">
+                      Top Ventas
+                    </span>
+                  )}
+                  {product.stock_status !== "Disponible" && (
+                    <span class="px-3 py-1 rounded-lg bg-black/60 border border-neon-pink/50 text-neon-pink text-[9px] font-black uppercase tracking-tighter backdrop-blur-md">
+                      {product.stock_status}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div class="p-6 flex flex-col flex-grow">
+                <div class="mb-4">
+                  <p class="text-[10px] font-black uppercase tracking-[0.3em] text-neon-purple mb-1">
+                    {product.category}
+                  </p>
+                  <h3 class="text-xl font-bold text-white group-hover:text-neon-blue transition-colors line-clamp-2 min-h-[3.5rem]">
+                    {product.name}
+                  </h3>
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-300 uppercase font-bold">
+                      Precio
+                    </span>
+                    <span class="text-2xl font-black text-white tracking-tighter">
+                      {product.price}
+                    </span>
+                  </div>
+
+                  <button 
+                    class="add-to-cart-btn flex items-center justify-center w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_20px_rgba(255,0,229,0.6)] transition-all duration-300 active:scale-90 group/btn"
+                    data-name={product.name}
+                    data-price={product.price}
+                    data-image={product.image_url}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="group-hover/btn:scale-110 transition-transform"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- SEO Footer -->
+    ...
+  </div>
+</MainLayout>
+
+<script>
+  import { addItem, isCartOpen } from "../store/cartStore";
+
+  const buttons = document.querySelectorAll(".add-to-cart-btn") as NodeListOf<HTMLButtonElement>;
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const { name, price, image } = btn.dataset;
+      if (name && price && image) {
+        addItem({ name, price, image_url: image });
+        isCartOpen.set(true);
+      }
+    });
+  });
+</script>
+
+<style>
+  @reference "../styles/global.css";
+
+  /* Hide scrollbar logic */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Smooth Entry */
+  article {
+    animation: reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    opacity: 0;
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger delays */
+  article:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  article:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  article:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  article:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  article:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+</style>

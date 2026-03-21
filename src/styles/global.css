@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  /* 🎨 Paleta Diverpremier: Calibrada para Contraste AA y pantallas OLED */
+  --color-neon-purple: #D052FF;
+  --color-neon-blue: #38BDF8;
+  --color-neon-pink: #F472B6;
+  --color-dark-bg: #020617;
+  /* Slate-950 profundo */
+
+  /* 🚀 Animaciones de Micro-interacción */
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+      transform: translateY(-12px) rotate(1deg);
+    }
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+      opacity: 0.8;
+    }
+
+    50% {
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.7));
+      opacity: 1;
+    }
+  }
+}
+
+/* 🖋️ Selección de Texto: El toque de marca al resaltar contenido */
+::selection {
+  background-color: var(--color-neon-pink);
+  color: #fff;
+}
+
+/* ✨ Utilidades de Diseño Antigravity */
+
+@utility neon-glow-blue {
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.6), 0 0 20px rgba(56, 189, 248, 0.3);
+  color: var(--color-neon-blue);
+}
+
+@utility neon-border-purple {
+  border: 1px solid rgba(208, 82, 255, 0.3);
+  box-shadow: 0 0 15px rgba(208, 82, 255, 0.15);
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: var(--color-neon-purple);
+    box-shadow: 0 0 20px rgba(208, 82, 255, 0.4);
+  }
+}
+
+@utility glass-neon {
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+@utility antigravity-card {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s ease,
+    border-color 0.5s ease;
+  will-change: transform;
+
+  &:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+}
+
+@utility map-layer {
+  transition: transform 1s cubic-bezier(0.2, 0, 0, 1);
+  transform: rotateX(15deg) rotateZ(-3deg);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Estilización del Scrollbar para que no rompa la estética dark */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-blue);
+}
