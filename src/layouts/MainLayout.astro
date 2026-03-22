@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Navbar from "../components/Navbar.astro";
 import LiquidBackground from "../components/LiquidBackground.astro";
+import MagicNavbar from "../components/MagicNavbar.astro"; // 👈 Importamos la pieza clave
 
 interface Props {
     title: string;
@@ -14,13 +15,16 @@ interface Props {
 const {
     title,
     description = "Diverpremier Go - Central de Inteligencia y Logística de Licores en Álamos, Bogotá.",
-    // Si es Prose (texto), usamos un ancho de lectura. Si no, usamos el ancho de Dashboard.
-    containerClass = "", 
+    containerClass = "",
     isProse = false,
 } = Astro.props;
 
 // Lógica para determinar el ancho del contenedor
-const widthClass = containerClass ? containerClass : (isProse ? "max-w-3xl" : "max-w-7xl");
+const widthClass = containerClass
+    ? containerClass
+    : isProse
+    ? "max-w-3xl"
+    : "max-w-7xl";
 ---
 
 <!DOCTYPE html>
@@ -30,27 +34,30 @@ const widthClass = containerClass ? containerClass : (isProse ? "max-w-3xl" : "m
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
-        
+
         <title>{title} | Diverpremier Go</title>
         <meta name="description" content={description} />
-        
+
         <ClientRouter />
     </head>
-    <body class="selection:bg-neon-pink selection:text-white antialiased text-slate-300 min-h-screen bg-transparent overflow-x-hidden">
-        
+    <body
+        class="selection:bg-neon-pink selection:text-white antialiased text-slate-300 min-h-screen bg-transparent overflow-x-hidden relative"
+    >
         <LiquidBackground />
 
         <Navbar />
 
         <main
             class:list={[
-                "mx-auto pt-32 pb-20 px-6 relative z-10",
+                "mx-auto pt-32 pb-48 px-6 relative z-10", // Aumentamos pb-32 a pb-48 para que la MagicNavbar no tape el contenido
                 widthClass,
                 { "prose prose-invert lg:prose-xl prose-neon": isProse },
             ]}
         >
             <slot />
         </main>
+
+        <MagicNavbar />
 
         <style is:global>
             @reference "../styles/global.css";
@@ -77,10 +84,10 @@ const widthClass = containerClass ? containerClass : (isProse ? "max-w-3xl" : "m
 
             /* Estilos de Tipografía para modo oscuro */
             .prose-neon {
-                --tw-prose-body: theme('colors.slate.300');
-                --tw-prose-headings: theme('colors.white');
+                --tw-prose-body: theme("colors.slate.300");
+                --tw-prose-headings: theme("colors.white");
                 --tw-prose-links: var(--color-neon-blue);
-                --tw-prose-bold: theme('colors.white');
+                --tw-prose-bold: theme("colors.white");
             }
 
             /* Utilidad para esconder scrollbars sin perder la función */
