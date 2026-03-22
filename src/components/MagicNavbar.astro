@@ -3,16 +3,14 @@ import { Home, Package, Map, History, MessageSquare } from "lucide-astro";
 
 const pathname = Astro.url.pathname;
 
-// 1. Los 5 pilares de Diverpremier
 const navItems = [
     { href: "/productos", icon: Package, label: "Tienda" },
     { href: "/mapa", icon: Map, label: "Mapa" },
-    { href: "/", icon: Home, label: "Inicio" }, // CENTRO
+    { href: "/", icon: Home, label: "Inicio" },
     { href: "/pedidos", icon: History, label: "Pedidos" },
     { href: "/soporte", icon: MessageSquare, label: "Chat" },
 ];
 
-// 2. Lógica para calcular dónde debe estar la burbuja
 const activeIndex = navItems.findIndex((item) => {
     const p = pathname.replace(/\/$/, "") || "/";
     const h = item.href.replace(/\/$/, "") || "/";
@@ -23,24 +21,20 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
 ---
 
 <div
-    class="fixed bottom-0 left-0 w-full flex justify-center z-[100] md:hidden pb-8 px-4 pointer-events-none"
+    class="fixed bottom-0 left-0 w-full flex justify-center z-[100] md:hidden pb-10 px-4 pointer-events-none"
 >
     <nav
-        class="navigation pointer-events-auto relative w-full max-w-[360px] h-[70px] bg-[#020617]/90 backdrop-blur-xl rounded-2xl flex justify-center items-center px-2 shadow-2xl border border-white/10"
+        class="navigation pointer-events-auto relative w-full max-w-[340px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
     >
         <div
             class="relative w-[300px]"
             style={`--active-index: ${currentIndex};`}
         >
             <div
-                class="indicator absolute -top-[55%] left-0 w-[60px] h-[60px] bg-neon-blue rounded-full border-[6px] border-[#020617] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_0_20px_rgba(56,189,248,0.5)]"
+                class="indicator absolute -top-[50%] left-0 w-[60px] h-[60px] bg-neon-blue/20 backdrop-blur-xl rounded-full border border-white/30 transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)] z-0 shadow-[0_10px_30px_rgba(56,189,248,0.4)]"
             >
                 <div
-                    class="absolute top-[50%] -left-[22px] w-[20px] h-[20px] bg-transparent rounded-tr-[20px] shadow-[2px_-10px_0_0_#020617]"
-                >
-                </div>
-                <div
-                    class="absolute top-[50%] -right-[22px] w-[20px] h-[20px] bg-transparent rounded-tl-[20px] shadow-[-2px_-10px_0_0_#020617]"
+                    class="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent"
                 >
                 </div>
             </div>
@@ -51,7 +45,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                 {
                     navItems.map((item, index) => (
                         <li
-                            class={`relative w-[60px] h-[70px] z-10 flex-shrink-0 group ${
+                            class={`relative w-[60px] h-[65px] z-10 flex-shrink-0 group ${
                                 index === currentIndex ? "active" : ""
                             }`}
                         >
@@ -59,10 +53,16 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                                 href={item.href}
                                 class="relative flex justify-center items-center flex-col w-full h-full"
                             >
-                                <span class="icon relative block text-white/40 transition-all duration-500 h-[70px] flex items-center justify-center z-20 group-[.active]:-translate-y-9 group-[.active]:text-[#020617]">
-                                    <item.icon size={24} strokeWidth={2.5} />
+                                <span class="icon relative block text-white/30 transition-all duration-500 group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-8">
+                                    <item.icon
+                                        size={22}
+                                        strokeWidth={
+                                            index === currentIndex ? 2.5 : 2
+                                        }
+                                    />
                                 </span>
-                                <span class="text absolute text-neon-blue font-black text-[9px] tracking-widest opacity-0 transition-all duration-500 translate-y-5 group-[.active]:opacity-100 group-[.active]:translate-y-5 uppercase">
+
+                                <span class="text absolute bottom-[-22px] text-neon-blue font-black text-[10px] tracking-[0.2em] opacity-0 transition-all duration-500 group-[.active]:opacity-100 uppercase">
                                     {item.label}
                                 </span>
                             </a>
@@ -77,5 +77,20 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
 <style>
     .indicator {
         transform: translateX(calc(var(--active-index) * 60px));
+    }
+
+    /* Efecto de pulso sutil cuando la burbuja está quieta */
+    .indicator {
+        animation: bubble-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes bubble-glow {
+        0%,
+        100% {
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.4);
+        }
+        50% {
+            box-shadow: 0 10px 45px rgba(56, 189, 248, 0.6);
+        }
     }
 </style>
