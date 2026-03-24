@@ -1,132 +1,186 @@
-        ---
-        /* src/components/LiquidBackground.astro */
-        ---
+---
+/* src/components/LiquidBackground.astro */
+---
 
-        <div id="liquid-wrap" class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: -1;">
-        <canvas id="liquid-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-        </div>
+<div
+    id="liquid-wrap"
+    class="fixed inset-0 overflow-hidden pointer-events-none bg-[#020617]"
+    style="z-index: 0;"
+    transition:persist
+>
+    <canvas
+        id="liquid-canvas"
+        style="width: 100%; height: 100%; display: block;"></canvas>
+</div>
 
-        <script>
-        // Guard to prevent multiple animation loops (critical with Astro View Transitions)
-        let animationId: number | null = null;
-        let cleanupResize: (() => void) | null = null;
+<script>
+    class LiquidEngine {
+        private static instance: LiquidEngine | null = null;
+        private canvas: HTMLCanvasElement;
+        private ctx: CanvasRenderingContext2D;
+        private animationId: number | null = null;
+        private width: number = 0;
+        private height: number = 0;
+        private dpr: number = 1;
+        private offset: number = 0;
+        private ripples: any[] = [];
+        private mouse = { x: -1000, y: -1000, active: false };
+        private initialized: boolean = false;
 
-        function initLiquidBg() {
-            console.log('🌊 LiquidBackground: Iniciando...');
+        private readonly COLORS = [
+            { h: 199, s: 89, l: 48, alpha: 0.6 }, // Neon Blue
+            { h: 282, s: 100, l: 66, alpha: 0.4 }, // Purple Neon
+            { h: 330, s: 98, l: 65, alpha: 0.3 }, // Pink Neon
+        ];
 
-            // Cancel any previous animation loop before starting a new one
-            if (animationId !== null) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
+        constructor(canvas: HTMLCanvasElement) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext("2d", { alpha: true })!;
+            this.init();
+        }
+
+        public static getInstance(canvas: HTMLCanvasElement): LiquidEngine {
+            if (!LiquidEngine.instance) {
+                LiquidEngine.instance = new LiquidEngine(canvas);
+            } else if (LiquidEngine.instance.canvas !== canvas) {
+                LiquidEngine.instance.stop();
+                LiquidEngine.instance = new LiquidEngine(canvas);
             }
-            if (cleanupResize) {
-            cleanupResize();
-            cleanupResize = null;
+            return LiquidEngine.instance;
+        }
+
+        private init() {
+            if (this.initialized) return;
+            
+            window.addEventListener("resize", () => this.resize());
+            window.addEventListener("mousemove", (e) => this.handleMouseMove(e));
+            
+            this.resize();
+            this.start();
+            this.initialized = true;
+        }
+
+        private resize() {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.dpr = window.devicePixelRatio || 1;
+
+            this.canvas.width = this.width * this.dpr;
+            this.canvas.height = this.height * this.dpr;
+            this.ctx.scale(this.dpr, this.dpr);
+        }
+
+        private handleMouseMove(e: MouseEvent) {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+            this.mouse.active = true;
+
+            if (Math.random() > 0.85 && this.ripples.length < 20) {
+                const color = this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
+                this.ripples.push({
+                    x: this.mouse.x,
+                    y: this.mouse.y,
+                    r: 5,
+                    alpha: 0.8,
+                    color: `hsla(${color.h}, ${color.s}%, ${color.l}%,`,
+                });
             }
+        }
 
-            const canvas = document.getElementById('liquid-canvas') as HTMLCanvasElement | null;
-            if (!canvas) {
-            console.warn('🌊 LiquidBackground: canvas no encontrado.');
-            return;
-            }
-
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-            console.warn('🌊 LiquidBackground: 2D context no disponible.');
-            return;
-            }
-
-            // --- Colors: hardcoded HEX so we don't depend on CSS custom property resolution ---
-            const NEON_BLUE   = '#38BDF8'; // --color-neon-blue
-            const NEON_PURPLE = '#D052FF'; // --color-neon-purple
-            const NEON_PINK   = '#F472B6'; // --color-neon-pink
-
-            let width = 0;
-            let height = 0;
-            let offset = 0;
-            let running = true;
-
-            function resize() {
-            // Set the canvas BITMAP dimensions (not just CSS size)
-            width  = canvas.width  = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            console.log(`🌊 Canvas resize: ${width}×${height}`);
-            }
-
-            function drawWave(
-            color: string,
-            alpha: number,
+        private drawWave(
+            color: any,
             yBase: number,
             freqA: number,
             freqB: number,
             ampA: number,
             ampB: number,
             shift: number
-            ) {
+        ) {
+            const { ctx, width } = this;
             ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.globalAlpha = alpha;
-            ctx.lineWidth   = 3;
-            ctx.shadowBlur  = 30;
-            ctx.shadowColor = color;
+            ctx.strokeStyle = `hsla(${color.h}, ${color.s}%, ${color.l}%, ${color.alpha})`;
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
 
-            for (let x = 0; x <= width; x += 4) {
+            const step = width < 768 ? 15 : 8;
+
+            for (let x = 0; x <= width + step; x += step) {
+                const dx = x - this.mouse.x;
+                const dy = yBase - this.mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const mouseInertia = dist < 250 ? (1 - dist / 250) * 50 : 0;
+
                 const y =
-                Math.sin(x * freqA + shift)          * ampA +
-                Math.sin(x * freqB + shift * 1.3)    * ampB +
-                yBase;
+                    Math.sin(x * freqA + shift) * (ampA + mouseInertia) +
+                    Math.sin(x * freqB + shift * 1.3) * ampB +
+                    yBase;
 
                 if (x === 0) ctx.moveTo(x, y);
-                else         ctx.lineTo(x, y);
+                else ctx.lineTo(x, y);
             }
             ctx.stroke();
-            ctx.shadowBlur  = 0;
-            ctx.globalAlpha = 1;
+        }
+
+        private updateRipples() {
+            const { ctx } = this;
+            for (let i = this.ripples.length - 1; i >= 0; i--) {
+                const r = this.ripples[i];
+                r.r += 2.5;
+                r.alpha -= 0.01;
+
+                if (r.alpha <= 0) {
+                    this.ripples.splice(i, 1);
+                    continue;
+                }
+
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+                ctx.strokeStyle = `${r.color}${r.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
             }
+        }
 
-            function draw() {
-            if (!running) return;
+        private draw = () => {
+            const { ctx, width, height } = this;
+            ctx.fillStyle = "rgba(2, 6, 23, 0.2)";
+            ctx.fillRect(0, 0, width, height);
 
-            ctx.clearRect(0, 0, width, height);
-            offset += 0.006;
+            this.offset += 0.007;
+            this.updateRipples();
 
-            // Wave 1 — Neon Blue (dominant, near center-bottom)
-            drawWave(NEON_BLUE,   0.55, height * 0.65, 0.0018, 0.005, 60, 20, offset);
+            this.drawWave(this.COLORS[0], height * 0.65, 0.002, 0.005, 50, 20, this.offset);
+            this.drawWave(this.COLORS[1], height * 0.75, 0.0025, 0.004, 40, 25, this.offset * 0.8);
+            this.drawWave(this.COLORS[2], height * 0.35, 0.0015, 0.006, 30, 15, this.offset * 0.5 + 2);
 
-            // Wave 2 — Purple (deeper, slower)
-            drawWave(NEON_PURPLE, 0.40, height * 0.78, 0.0022, 0.004, 50, 25, offset * 0.75);
+            this.animationId = requestAnimationFrame(this.draw);
+        };
 
-            // Wave 3 — Pink (subtle accent, near top)
-            drawWave(NEON_PINK,   0.25, height * 0.35, 0.0015, 0.006, 40, 15, offset * 0.5 + 1.5);
+        public start() {
+            if (!this.animationId) this.draw();
+        }
 
-            animationId = requestAnimationFrame(draw);
+        public stop() {
+            if (this.animationId) {
+                cancelAnimationFrame(this.animationId);
+                this.animationId = null;
             }
-
-            const onResize = () => resize();
-            window.addEventListener('resize', onResize);
-            cleanupResize = () => window.removeEventListener('resize', onResize);
-
-            resize();
-            draw();
         }
+    }
 
-        // Astro View Transitions: fires on every page navigation
-        document.addEventListener('astro:page-load', () => {
-            initLiquidBg();
-        });
+    function init() {
+        const canvas = document.getElementById("liquid-canvas") as HTMLCanvasElement;
+        if (canvas) LiquidEngine.getInstance(canvas);
+    }
 
-        // Fallback for hard refresh or no View Transitions
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initLiquidBg);
-        } else {
-            initLiquidBg();
-        }
-        </script>
+    document.addEventListener("astro:page-load", init);
+    if (document.readyState !== "loading") init();
+</script>
 
-        <style>
-        #liquid-canvas {
-            /* Subtle blur for the 'Antigravity' glow diffusion effect.
-            Previously 20px — too high, was erasing thin strokes entirely. */
-            filter: blur(6px);
-        }
-        </style>
+<style>
+    #liquid-canvas {
+        /* REDUCIDO: De 40px a 12px para que las ondas se vean nítidas pero etéreas */
+        filter: blur(12px);
+        mix-blend-mode: screen;
+    }
+</style>
