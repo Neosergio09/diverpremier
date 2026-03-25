@@ -4,7 +4,7 @@
 
 <div
     id="liquid-wrap"
-    class="fixed inset-0 overflow-hidden pointer-events-none bg-[#020617]"
+    class="fixed inset-0 overflow-hidden pointer-events-none bg-[#020617] hidden md:block"
     style="z-index: 0;"
     transition:persist
 >
@@ -54,6 +54,9 @@
             if (this.initialized) return;
             
             this.resize();
+            // Early return if mobile, engine won't run at all
+            if (this.isMobile) return;
+
             this.addEventListeners();
             this.start();
             this.initialized = true;
@@ -78,6 +81,16 @@
             this.height = window.innerHeight;
             this.dpr = window.devicePixelRatio || 1;
             this.isMobile = this.width < 768;
+
+            // If we resized into mobile, stop everything
+            if (this.isMobile) {
+                this.stop();
+                return;
+            } else if (this.initialized && !this.animationId) {
+                // If weresized out of mobile, restart if was initialized
+                this.addEventListeners();
+                this.start();
+            }
 
             this.canvas.width = this.width * this.dpr;
             this.canvas.height = this.height * this.dpr;
