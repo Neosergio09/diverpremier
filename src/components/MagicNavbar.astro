@@ -1,14 +1,13 @@
 ---
-import { Home, Package, Map, History, MessageSquare } from "lucide-astro";
+import { Home, Package, Map, Wine } from "lucide-astro";
 
 const pathname = Astro.url.pathname;
 
 const navItems = [
+    { href: "/", icon: Home, label: "Inicio" },
     { href: "/productos", icon: Package, label: "Tienda" },
     { href: "/mapa", icon: Map, label: "Mapa" },
-    { href: "/", icon: Home, label: "Inicio" },
-    { href: "/pedidos", icon: History, label: "Pedidos" },
-    { href: "/soporte", icon: MessageSquare, label: "Chat" },
+    { href: "/cocteleria", icon: Wine, label: "Coctelería" },
 ];
 
 const activeIndex = navItems.findIndex((item) => {
@@ -24,10 +23,10 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
     class="fixed bottom-0 left-0 w-full flex justify-center z-[100] md:hidden pb-10 px-4 pointer-events-none"
 >
     <nav
-        class="navigation pointer-events-auto relative w-full max-w-[340px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
+        class="navigation pointer-events-auto relative w-full max-w-[280px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
     >
         <div
-            class="relative w-[300px]"
+            class="relative w-[240px]"
             style={`--active-index: ${currentIndex};`}
         >
             <div
