@@ -26,6 +26,7 @@
         private ripples: any[] = [];
         private mouse = { x: -1000, y: -1000, active: false };
         private initialized: boolean = false;
+        private isMobile: boolean = false;
 
         private readonly COLORS = [
             { h: 199, s: 89, l: 48, alpha: 0.6 }, // Neon Blue
@@ -43,7 +44,7 @@
             if (!LiquidEngine.instance) {
                 LiquidEngine.instance = new LiquidEngine(canvas);
             } else if (LiquidEngine.instance.canvas !== canvas) {
-                LiquidEngine.instance.stop();
+                LiquidEngine.instance.cleanup();
                 LiquidEngine.instance = new LiquidEngine(canvas);
             }
             return LiquidEngine.instance;
@@ -52,30 +53,58 @@
         private init() {
             if (this.initialized) return;
             
-            window.addEventListener("resize", () => this.resize());
-            window.addEventListener("mousemove", (e) => this.handleMouseMove(e));
-            
             this.resize();
+            this.addEventListeners();
             this.start();
             this.initialized = true;
         }
+
+        private addEventListeners() {
+            window.addEventListener("resize", this.handleResize);
+            window.addEventListener("mousemove", this.handleMouseMove);
+            window.addEventListener("touchstart", this.handleTouch, { passive: true });
+            window.addEventListener("touchmove", this.handleTouch, { passive: true });
+            document.addEventListener("astro:before-preparation", this.handleCleanup);
+        }
+
+        private handleCleanup = () => {
+            this.cleanup();
+        };
+
+        private handleResize = () => {
+            this.resize();
+        };
 
         private resize() {
             this.width = window.innerWidth;
             this.height = window.innerHeight;
             this.dpr = window.devicePixelRatio || 1;
+            this.isMobile = this.width < 768;
 
             this.canvas.width = this.width * this.dpr;
             this.canvas.height = this.height * this.dpr;
             this.ctx.scale(this.dpr, this.dpr);
         }
 
-        private handleMouseMove(e: MouseEvent) {
-            this.mouse.x = e.clientX;
-            this.mouse.y = e.clientY;
+        private handleMouseMove = (e: MouseEvent) => {
+            this.updateInteraction(e.clientX, e.clientY);
+        };
+
+        private handleTouch = (e: TouchEvent) => {
+            if (e.touches.length > 0) {
+                this.updateInteraction(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        };
+
+        private updateInteraction(x: number, y: number) {
+            this.mouse.x = x;
+            this.mouse.y = y;
             this.mouse.active = true;
 
-            if (Math.random() > 0.85 && this.ripples.length < 20) {
+            const maxRipples = this.isMobile ? 8 : 20;
+            const threshold = this.isMobile ? 0.92 : 0.85;
+
+            if (Math.random() > threshold && this.ripples.length < maxRipples) {
                 const color = this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
                 this.ripples.push({
                     x: this.mouse.x,
@@ -102,7 +131,8 @@
             ctx.lineWidth = 4;
             ctx.lineCap = "round";
 
-            const step = width < 768 ? 15 : 8;
+            // Performance Tuning: Mayor step en móviles para reducir iteraciones
+            const step = this.isMobile ? 25 : 8;
 
             for (let x = 0; x <= width + step; x += step) {
                 const dx = x - this.mouse.x;
@@ -166,7 +196,18 @@
                 this.animationId = null;
             }
         }
+
+        public cleanup() {
+            this.stop();
+            window.removeEventListener("resize", this.handleResize);
+            window.removeEventListener("mousemove", this.handleMouseMove);
+            window.removeEventListener("touchstart", this.handleTouch);
+            window.removeEventListener("touchmove", this.handleTouch);
+            document.removeEventListener("astro:before-preparation", this.handleCleanup);
+            this.initialized = false;
+        }
     }
+
 
     function init() {
         const canvas = document.getElementById("liquid-canvas") as HTMLCanvasElement;
