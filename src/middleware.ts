@@ -1,24 +1,27 @@
 import { defineMiddleware } from "astro:middleware";
-
-// Note: This is a conceptual implementation of RBAC middleware.
-// In a full implementation, you would check for a session/token 
-// and verify the user's role before allowing access to /admin.
+import { supabase } from "./lib/supabase";
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const { url, locals } = context;
+  const { url, cookies, redirect } = context;
 
   // Protect all /admin routes
   if (url.pathname.startsWith("/admin")) {
-    console.log(`[RBAC] Access request to ${url.pathname}`);
-    
-    // Placeholder for authentication & authorization logic
-    // const session = await getSession(context.request);
-    // if (!session || session.user.role !== 'admin') {
-    //   return context.redirect("/login?next=" + url.pathname);
-    // }
+    const accessToken = cookies.get("sb-access-token")?.value;
+    const refreshToken = cookies.get("sb-refresh-token")?.value;
 
-    // For now, we allow access but log it.
-    console.log("[RBAC] Access granted (Development Mode)");
+    if (!accessToken && !refreshToken) {
+      return redirect("/login");
+    }
+
+    // Verify token with Supabase
+    const { data, error } = await supabase.auth.getUser(accessToken);
+
+    if (error || !data.user) {
+      // Clear invalid cookies
+      cookies.delete("sb-access-token", { path: "/" });
+      cookies.delete("sb-refresh-token", { path: "/" });
+      return redirect("/login");
+    }
   }
 
   return next();

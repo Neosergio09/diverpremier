@@ -109,20 +109,23 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
         >
           DIVERPREMIER <span class="text-neon-blue neon-glow-text">GO</span>
         </h1>
-        <form class="space-y-8" onsubmit="return false;">
+        <form id="login-form" class="space-y-8">
           <input
             type="email"
             id="email-field"
             placeholder="agente@diverpremier.go"
             class="input-bunker"
+            required
           />
           <input
             type="password"
             id="pass-field"
             placeholder="••••••••"
             class="input-bunker"
+            required
           />
-          <button type="submit" class="btn-bunker">Entrar al Búnker</button>
+          <p id="auth-error-msg" class="text-red-500 text-xs text-center font-bold tracking-widest uppercase hidden opacity-0 transition-opacity duration-300">Authentication Failed</p>
+          <button type="submit" id="submit-btn" class="btn-bunker">Entrar al Búnker</button>
         </form>
       </div>
     </div>
@@ -130,10 +133,15 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 </MainLayout>
 
 <script>
+  import { supabase } from "../lib/supabase";
+
   const faces = document.querySelectorAll(".character-face");
   const pupils = document.querySelectorAll(".eye-pupil");
-  const emailInput = document.getElementById("email-field");
-  const passInput = document.getElementById("pass-field");
+  const emailInput = document.getElementById("email-field") as HTMLInputElement;
+  const passInput = document.getElementById("pass-field") as HTMLInputElement;
+  const loginForm = document.getElementById("login-form") as HTMLFormElement;
+  const errorMsg = document.getElementById("auth-error-msg");
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
 
   let isAnimating = false;
 
@@ -222,6 +230,86 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     isAnimating = false;
     faces.forEach((f) => ((f as any).style.transform = "scaleX(1)"));
     setMode("mouse");
+  });
+  // 🔐 Form Submission & Supabase Auth
+  loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (isAnimating) return;
+    
+    // Disable form
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Verificando...";
+    submitBtn.classList.add("opacity-50");
+    if (errorMsg) {
+      errorMsg.classList.add("hidden");
+      errorMsg.classList.remove("opacity-100");
+    }
+
+    const email = emailInput.value;
+    const password = passInput.value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      // ❌ Error State (Shake head)
+      isAnimating = true;
+      setMode("anim");
+      
+      if (errorMsg) {
+        errorMsg.classList.remove("hidden");
+        errorMsg.innerText = "ACCESO DENEGADO";
+        // Pequeño delay para la opacidad
+        setTimeout(() => errorMsg.classList.add("opacity-100"), 50);
+      }
+
+      faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(-10deg)"));
+      pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 5px)"));
+
+      setTimeout(() => {
+        faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(10deg)"));
+      }, 300);
+
+      setTimeout(() => {
+        faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(-10deg)"));
+      }, 600);
+
+      setTimeout(() => {
+        isAnimating = false;
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Entrar al Búnker";
+        submitBtn.classList.remove("opacity-50");
+        faces.forEach((f) => ((f as any).style.transform = "rotate(0deg) translate(0px, 0px)"));
+        pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 0px)"));
+        setMode("mouse");
+      }, 1200);
+
+    } else {
+      // ✅ Success State (Jump/Scale and stare at user)
+      isAnimating = true;
+      setMode("anim");
+
+      // Save tokens in cookies for SSR admin area
+      document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax; secure`;
+      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; secure`;
+
+      submitBtn.innerText = "ACCESO CONCEDIDO";
+      submitBtn.classList.remove("bg-neon-blue/5", "text-neon-blue", "border-neon-blue/20");
+      submitBtn.classList.add("bg-green-500/20", "text-green-400", "border-green-500/50");
+
+      faces.forEach((f) => ((f as any).style.transform = "translate(0px, -20px) scale(1.1)"));
+      pupils.forEach((p) => ((p as any).style.transform = "translate(0px, -5px) scale(1.1)"));
+
+      setTimeout(() => {
+        faces.forEach((f) => ((f as any).style.transform = "translate(0px, -10px) scale(1.05)"));
+      }, 500);
+
+      setTimeout(() => {
+        window.location.href = "/admin";
+      }, 1500);
+    }
   });
 </script>
 
