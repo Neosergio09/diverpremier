@@ -1,0 +1,107 @@
+---
+import AdminLayout from "@layouts/AdminLayout.astro";
+import { supabase } from "@lib/supabase";
+import type { Database } from "../../types/database";
+
+// Fetch KPI Data
+const { data: catalog } = await supabase
+  .from('view_product_catalog')
+  .select('*');
+
+const { data: recentOrders } = await supabase
+  .from('orders')
+  .select('*')
+  .order('created_at', { ascending: false })
+  .limit(5);
+
+// Calculate Stats (Simulated or partial from DB)
+const stockCritico = (catalog || []).filter(item => item.stock_status === 'OUT OF STOCK' || item.stock_status === 'LOW STOCK').length;
+const totalSales = 1245.50; // In a real app, this would be a SUM query on verified orders
+const pendingOrders = 8; // In a real app, COUNT where status = 'pending'
+
+const stats = [
+  { name: 'Ventas del Día', value: `$${totalSales.toFixed(2)}`, trend: '+12%', color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
+  { name: 'Pedidos Pendientes', value: pendingOrders.toString(), trend: '3 nuevos', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  { name: 'Stock Crítico', value: stockCritico.toString(), trend: 'Atención', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
+];
+---
+
+<AdminLayout title="Panel de Control - Diverpremier Go">
+  <div class="max-w-6xl mx-auto space-y-12">
+    <!-- Header -->
+    <header>
+      <div class="flex items-center gap-3 mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+        <span class="text-xs font-bold text-teal-500/70 uppercase tracking-[0.2em]">Vista General</span>
+      </div>
+      <h1 class="text-4xl font-black text-white tracking-tight">Bienvenido, Sergio.</h1>
+      <p class="text-neutral-500 mt-2 font-medium">Aquí tienes el estado actual del búnker y las operaciones de hoy.</p>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {stats.map(stat => (
+        <div class={`relative overflow-hidden rounded-3xl p-8 border ${stat.border} ${stat.bg} backdrop-blur-sm group hover:scale-[1.02] transition-transform duration-500`}>
+          <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={stat.color}><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4">{stat.name}</p>
+          <div class="flex items-end justify-between">
+            <h2 class={`text-4xl font-black ${stat.color} tracking-tight`}>{stat.value}</h2>
+            <span class="text-[10px] font-bold text-white/50 bg-white/5 px-2 py-1 rounded-full border border-white/10 uppercase tracking-wider">{stat.trend}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Tables Grid -->
+    <div class="grid grid-cols-1 gap-8">
+      <section class="rounded-3xl bg-neutral-900/40 border border-white/5 p-8 backdrop-blur-md">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-xl font-bold text-white">Pedidos Recientes</h3>
+            <p class="text-sm text-neutral-500 mt-1">Últimas transacciones registradas</p>
+          </div>
+          <a href="/admin/pedidos" class="text-xs font-bold text-teal-500 hover:text-teal-400 transition-colors uppercase tracking-widest">Ver todo</a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-white/5">
+                <th class="py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest pb-6">ID Pedido</th>
+                <th class="py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest pb-6">Fecha</th>
+                <th class="py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest pb-6">Estado</th>
+                <th class="py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest pb-6 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              {recentOrders?.map(order => (
+                <tr class="group hover:bg-white/[0.02] transition-colors">
+                  <td class="py-5 font-mono text-xs text-neutral-400">{order.id.split('-')[0]}...</td>
+                  <td class="py-5 text-sm text-neutral-300 font-medium">{new Date(order.created_at).toLocaleDateString('es-ES')}</td>
+                  <td class="py-5">
+                    <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${
+                      order.status === 'verified' ? 'bg-teal-500/10 text-teal-500 border-teal-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                    }`}>
+                      <span class={`w-1 h-1 rounded-full ${order.status === 'verified' ? 'bg-teal-500' : 'bg-amber-500'}`}></span>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td class="py-5 text-right">
+                    <button class="text-[10px] font-bold text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-teal-500 hover:text-neutral-950 hover:border-teal-500 transition-all">Detalles</button>
+                  </td>
+                </tr>
+              ))}
+              {(!recentOrders || recentOrders.length === 0) && (
+                <tr>
+                  <td colspan="4" class="py-12 text-center text-neutral-600 font-medium italic">No hay pedidos recientes</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</AdminLayout>

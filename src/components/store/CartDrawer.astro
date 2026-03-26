@@ -77,7 +77,7 @@ import { X, Minus, Plus, MessageCircle, ShoppingBasket } from "lucide-astro";
 </aside>
 
 <script>
-  import { cartItems, isCartOpen, removeItem, addItem, clearCart, cartTotal } from "../store/cartStore";
+  import { cartItems, isCartOpen, removeItem, addItem, clearCart, cartTotal } from "@components/store/cartStore";
 
   const drawer = document.getElementById("cart-drawer");
   const overlay = document.getElementById("cart-overlay");
@@ -183,7 +183,7 @@ import { X, Minus, Plus, MessageCircle, ShoppingBasket } from "lucide-astro";
 </script>
 
 <style>
-  @reference "../styles/global.css";
+  @reference "@styles/global.css";
 
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

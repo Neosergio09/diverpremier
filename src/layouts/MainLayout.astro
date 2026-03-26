@@ -1,9 +1,9 @@
 ---
-import "../styles/global.css";
+import "@styles/global.css";
 import { ClientRouter } from "astro:transitions";
-import Navbar from "../components/Navbar.astro";
-import LiquidBackground from "../components/LiquidBackground.astro";
-import MagicNavbar from "../components/MagicNavbar.astro"; // 👈 Importamos la pieza clave
+import Navbar from "@components/ui/Navbar.astro";
+import LiquidBackground from "@components/ui/LiquidBackground.astro";
+import MagicNavbar from "@components/ui/MagicNavbar.astro"; // 👈 Importamos la pieza clave
 
 interface Props {
     title: string;
@@ -39,6 +39,7 @@ const widthClass = containerClass
         <meta name="description" content={description} />
 
         <ClientRouter />
+        <slot name="head" />
     </head>
     <body
         class="selection:bg-neon-pink selection:text-white antialiased text-slate-300 min-h-screen bg-transparent overflow-x-hidden relative"
@@ -60,7 +61,7 @@ const widthClass = containerClass
         <MagicNavbar />
 
         <style is:global>
-            @reference "../styles/global.css";
+            @reference "@styles/global.css";
 
             html {
                 scroll-behavior: smooth;
