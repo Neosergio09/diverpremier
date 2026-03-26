@@ -19,5 +19,8 @@
     "lucide-astro": "^0.556.0",
     "nanostores": "^1.2.0",
     "tailwindcss": "^4.2.1"
+  },
+  "overrides": {
+    "vite": "^7.0.0"
   }
 }
