@@ -33,18 +33,12 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
             stroke="#38BDF8"
             stroke-width="0.5"></rect>
           <g id="char-black" class="character-face" data-speed="0.08">
-            <circle cx="265" cy="250" r="8" fill="white"></circle><circle
-              cx="265"
-              cy="250"
-              r="4"
-              fill="black"
-              class="eye-pupil"></circle>
-            <circle cx="285" cy="250" r="8" fill="white"></circle><circle
-              cx="285"
-              cy="250"
-              r="4"
-              fill="black"
-              class="eye-pupil"></circle>
+            <circle cx="265" cy="250" r="8" fill="white"></circle>
+            <circle cx="265" cy="250" r="4" fill="black" class="eye-pupil"
+            ></circle>
+            <circle cx="285" cy="250" r="8" fill="white"></circle>
+            <circle cx="285" cy="250" r="4" fill="black" class="eye-pupil"
+            ></circle>
             <line
               x1="265"
               y1="285"
@@ -59,20 +53,12 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
           <rect x="130" y="100" width="110" height="300" rx="20" fill="#D052FF"
           ></rect>
           <g id="char-purple" class="character-face" data-speed="0.12">
-            <ellipse cx="165" cy="150" rx="12" ry="15" fill="white"
-            ></ellipse><circle
-              cx="165"
-              cy="150"
-              r="6"
-              fill="black"
-              class="eye-pupil"></circle>
-            <ellipse cx="205" cy="150" rx="12" ry="15" fill="white"
-            ></ellipse><circle
-              cx="205"
-              cy="150"
-              r="6"
-              fill="black"
-              class="eye-pupil"></circle>
+            <ellipse cx="165" cy="150" rx="12" ry="15" fill="white"></ellipse>
+            <circle cx="165" cy="150" r="6" fill="black" class="eye-pupil"
+            ></circle>
+            <ellipse cx="205" cy="150" rx="12" ry="15" fill="white"></ellipse>
+            <circle cx="205" cy="150" r="6" fill="black" class="eye-pupil"
+            ></circle>
             <path
               d="M170,210 Q185,230 200,210"
               fill="none"
@@ -86,12 +72,9 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
             d="M260,400 L260,320 C260,280 300,280 340,280 C380,280 380,320 380,400 Z"
             fill="#BEF264"></path>
           <g id="char-lime" class="character-face" data-speed="0.1">
-            <circle cx="320" cy="315" r="10" fill="white"></circle><circle
-              cx="320"
-              cy="315"
-              r="5"
-              fill="black"
-              class="eye-pupil"></circle>
+            <circle cx="320" cy="315" r="10" fill="white"></circle>
+            <circle cx="320" cy="315" r="5" fill="black" class="eye-pupil"
+            ></circle>
             <circle cx="320" cy="345" r="4" fill="black"></circle>
           </g>
         </g>
@@ -99,12 +82,9 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
           <path d="M40,400 A100,100 0 0,1 240,400 Z" fill="#FB923C"></path>
           <g id="char-orange" class="character-face" data-speed="0.15">
             <circle cx="160" cy="330" r="7" fill="black" class="eye-pupil"
-            ></circle><circle
-              cx="190"
-              cy="330"
-              r="7"
-              fill="black"
-              class="eye-pupil"></circle>
+            ></circle>
+            <circle cx="190" cy="330" r="7" fill="black" class="eye-pupil"
+            ></circle>
             <path
               d="M165,360 Q175,370 185,360"
               fill="none"
@@ -120,7 +100,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
       class="w-full max-w-md backdrop-blur-3xl bg-white/[0.03] ring-1 ring-white/20 border border-white/10 rounded-[3rem] p-12 shadow-2xl relative overflow-hidden group z-10"
     >
       <div
-        class="absolute -top-32 -right-32 w-64 h-64 bg-neon-blue/15 blur-[100px] rounded-full group-hover:bg-neon-blue/25 transition-colors duration-1000"
+        class="absolute -top-32 -right-32 w-64 h-64 bg-neon-blue/15 blur-[100px] rounded-full"
       >
       </div>
       <div class="relative z-10 text-center">
@@ -157,8 +137,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 
   let isAnimating = false;
 
-  // 🕒 Manejo de Estados de Tiempo y Curva
-  const setMode = (mode) => {
+  const setMode = (mode: string) => {
     const config =
       mode === "anim"
         ? "transform 1s cubic-bezier(0.4, 0, 0.2, 1)"
@@ -167,7 +146,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     pupils.forEach((p) => ((p as any).style.transition = config));
   };
 
-  // 🖱️ Mouse Seguimiento (Con límites naturales)
+  // 🖱️ Seguimiento Independiente
   window.addEventListener("mousemove", (e) => {
     if (isAnimating) return;
     const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
@@ -175,17 +154,18 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 
     faces.forEach((f) => {
       const s = parseFloat(f.getAttribute("data-speed") || "0.1");
-      // Limitamos el movimiento del mouse para que no se "desarmen"
-      const moveX = x * (s * 60);
-      const moveY = y * (s * 40);
-      (f as any).style.transform = `translate(${moveX}px, ${moveY}px)`;
+      (f as any).style.transform = `translate(${x * (s * 40)}px, ${
+        y * (s * 30)
+      }px)`;
     });
+
     pupils.forEach((p) => {
-      (p as any).style.transform = `translate(${x * 5}px, ${y * 5}px)`;
+      // Las pupilas se mueven un poco más que la cara para dar profundidad
+      (p as any).style.transform = `translate(${x * 6}px, ${y * 4}px)`;
     });
   });
 
-  // 🕵️ Evento: Email (Chisme calibrado)
+  // 🕵️ Email Sequence
   emailInput?.addEventListener("focus", () => {
     if (isAnimating) return;
     isAnimating = true;
@@ -198,19 +178,25 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
       orange: document.getElementById("char-orange"),
     };
 
-    // Mirada al naranja (Ajustada para que no se pierdan ojos)
-    if (c.black) c.black.style.transform = "translate(-18px, 12px)";
-    if (c.purple) c.purple.style.transform = "translate(10px, 20px)";
-    if (c.lime) c.lime.style.transform = "translate(-25px, 8px)";
+    // Mirada coordinada
+    if (c.black) c.black.style.transform = "translate(-15px, 10px)";
+    if (c.purple) c.purple.style.transform = "translate(10px, 15px)";
+    if (c.lime) c.lime.style.transform = "translate(-20px, 5px)";
     if (c.orange) c.orange.style.transform = "translate(5px, -5px)";
+
+    pupils.forEach(
+      (p) => ((p as any).style.transform = "translate(-3px, 2px)")
+    );
 
     setTimeout(() => c.orange?.classList.add("nodding"), 1200);
 
     setTimeout(() => {
       c.orange?.classList.remove("nodding");
-      // Mirada al formulario (Ajustada)
       faces.forEach(
-        (f) => ((f as any).style.transform = `translate(30px, 5px) scaleX(1)`)
+        (f) => ((f as any).style.transform = "translate(25px, 5px)")
+      );
+      pupils.forEach(
+        (p) => ((p as any).style.transform = "translate(4px, 0px)")
       );
     }, 2500);
 
@@ -220,22 +206,20 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     }, 5000);
   });
 
-  // 🔒 Evento: Password (Privacidad con Margen y Escala)
+  // 🔒 Password (Privacidad)
   passInput?.addEventListener("focus", () => {
     isAnimating = true;
     setMode("anim");
-    faces.forEach((f) => {
-      // Usamos -25px para mantener la cara dentro del cuerpo + scaleX para el efecto de giro
-      (f as any).style.transform = "translate(-25px, -10px) scaleX(0.9)";
-    });
-    pupils.forEach((p) => {
-      (p as any).style.transform = "translate(-6px, -2px)";
-    });
+    faces.forEach(
+      (f) => ((f as any).style.transform = "translate(-20px, -5px) scaleX(0.9)")
+    );
+    pupils.forEach(
+      (p) => ((p as any).style.transform = "translate(-5px, -1px)")
+    );
   });
 
   passInput?.addEventListener("blur", () => {
     isAnimating = false;
-    // Volvemos a escala normal
     faces.forEach((f) => ((f as any).style.transform = "scaleX(1)"));
     setMode("mouse");
   });
@@ -247,7 +231,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
   .character-face,
   .eye-pupil {
     transition: transform 0.15s ease-out;
-    transform-origin: center; /* Crucial para el efecto de escala */
+    transform-origin: center;
   }
 
   @keyframes nod {
@@ -256,7 +240,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
       transform: translate(5px, -5px);
     }
     50% {
-      transform: translate(5px, 10px);
+      transform: translate(5px, 8px);
     }
   }
   .nodding {
