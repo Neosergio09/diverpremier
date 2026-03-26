@@ -13,14 +13,14 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
   <LiquidBackground />
 
   <div
-    class="fixed inset-0 flex items-center justify-center md:justify-end md:pr-40 px-6 z-10 overflow-hidden"
+    class="fixed inset-0 flex items-center justify-center md:justify-end md:pr-80 px-6 z-10 overflow-hidden"
   >
     <div
-      class="hidden md:flex absolute left-10 lg:left-20 bottom-0 w-1/2 h-4/5 items-end justify-start pointer-events-none select-none"
+      class="hidden md:flex absolute left-10 lg:left-40 bottom-0 w-1/2 h-4/5 items-end justify-start pointer-events-none select-none"
     >
       <svg
         viewBox="0 0 500 500"
-        class="w-full h-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+        class="w-full h-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-visible"
       >
         <g>
           <rect
@@ -32,14 +32,19 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
             fill="#11021b"
             stroke="#38BDF8"
             stroke-width="0.5"></rect>
-
-          <g class="character-face" data-speed="0.08">
-            <circle cx="265" cy="250" r="8" fill="white"></circle>
-            <circle cx="265" cy="250" r="4" fill="black" class="eye-pupil"
-            ></circle>
-            <circle cx="285" cy="250" r="8" fill="white"></circle>
-            <circle cx="285" cy="250" r="4" fill="black" class="eye-pupil"
-            ></circle>
+          <g id="char-black" class="character-face" data-speed="0.08">
+            <circle cx="265" cy="250" r="8" fill="white"></circle><circle
+              cx="265"
+              cy="250"
+              r="4"
+              fill="black"
+              class="eye-pupil"></circle>
+            <circle cx="285" cy="250" r="8" fill="white"></circle><circle
+              cx="285"
+              cy="250"
+              r="4"
+              fill="black"
+              class="eye-pupil"></circle>
             <line
               x1="265"
               y1="285"
@@ -50,18 +55,24 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
               stroke-linecap="round"></line>
           </g>
         </g>
-
         <g>
           <rect x="130" y="100" width="110" height="300" rx="20" fill="#D052FF"
           ></rect>
-
-          <g class="character-face" data-speed="0.12">
-            <ellipse cx="165" cy="150" rx="12" ry="15" fill="white"></ellipse>
-            <circle cx="165" cy="150" r="6" fill="black" class="eye-pupil"
-            ></circle>
-            <ellipse cx="205" cy="150" rx="12" ry="15" fill="white"></ellipse>
-            <circle cx="205" cy="150" r="6" fill="black" class="eye-pupil"
-            ></circle>
+          <g id="char-purple" class="character-face" data-speed="0.12">
+            <ellipse cx="165" cy="150" rx="12" ry="15" fill="white"
+            ></ellipse><circle
+              cx="165"
+              cy="150"
+              r="6"
+              fill="black"
+              class="eye-pupil"></circle>
+            <ellipse cx="205" cy="150" rx="12" ry="15" fill="white"
+            ></ellipse><circle
+              cx="205"
+              cy="150"
+              r="6"
+              fill="black"
+              class="eye-pupil"></circle>
             <path
               d="M170,210 Q185,230 200,210"
               fill="none"
@@ -70,28 +81,30 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
               stroke-linecap="round"></path>
           </g>
         </g>
-
         <g>
           <path
             d="M260,400 L260,320 C260,280 300,280 340,280 C380,280 380,320 380,400 Z"
             fill="#BEF264"></path>
-
-          <g class="character-face" data-speed="0.1">
-            <circle cx="320" cy="315" r="10" fill="white"></circle>
-            <circle cx="320" cy="315" r="5" fill="black" class="eye-pupil"
-            ></circle>
+          <g id="char-lime" class="character-face" data-speed="0.1">
+            <circle cx="320" cy="315" r="10" fill="white"></circle><circle
+              cx="320"
+              cy="315"
+              r="5"
+              fill="black"
+              class="eye-pupil"></circle>
             <circle cx="320" cy="345" r="4" fill="black"></circle>
           </g>
         </g>
-
         <g>
           <path d="M40,400 A100,100 0 0,1 240,400 Z" fill="#FB923C"></path>
-
-          <g class="character-face" data-speed="0.15">
+          <g id="char-orange" class="character-face" data-speed="0.15">
             <circle cx="160" cy="330" r="7" fill="black" class="eye-pupil"
-            ></circle>
-            <circle cx="190" cy="330" r="7" fill="black" class="eye-pupil"
-            ></circle>
+            ></circle><circle
+              cx="190"
+              cy="330"
+              r="7"
+              fill="black"
+              class="eye-pupil"></circle>
             <path
               d="M165,360 Q175,370 185,360"
               fill="none"
@@ -110,62 +123,20 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
         class="absolute -top-32 -right-32 w-64 h-64 bg-neon-blue/15 blur-[100px] rounded-full group-hover:bg-neon-blue/25 transition-colors duration-1000"
       >
       </div>
-
-      <div class="relative z-10">
-        <div class="text-center mb-12">
-          <div
-            class="inline-flex p-4 rounded-3xl bg-neon-blue/5 border border-neon-blue/10 mb-6 group-hover:border-neon-blue/30 transition-colors duration-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="text-neon-blue"
-              ><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-            </svg>
-          </div>
-          <h1
-            class="text-5xl font-['Bebas_Neue'] text-white tracking-widest uppercase italic"
-          >
-            DIVERPREMIER <span class="text-neon-blue neon-glow-text">GO</span>
-          </h1>
-          <p
-            class="text-neutral-500 text-[9px] font-black uppercase tracking-[0.4em] mt-4 opacity-70"
-          >
-            Acceso Nivel 5 — Solo Personal Autorizado
-          </p>
-        </div>
-
+      <div class="relative z-10 text-center">
+        <h1
+          class="text-5xl font-['Bebas_Neue'] text-white tracking-widest uppercase italic mb-12"
+        >
+          DIVERPREMIER <span class="text-neon-blue neon-glow-text">GO</span>
+        </h1>
         <form class="space-y-8" onsubmit="return false;">
-          <div class="space-y-3">
-            <label
-              class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.25em] pl-1 italic"
-              >Credential ID / Email</label
-            >
-            <input
-              type="email"
-              placeholder="agente@diverpremier.go"
-              class="input-bunker"
-            />
-          </div>
-          <div class="space-y-3">
-            <label
-              class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.25em] pl-1 italic"
-              >Security Cipher / Password</label
-            >
-            <input
-              type="password"
-              placeholder="••••••••"
-              class="input-bunker"
-            />
-          </div>
-          <button type="submit" class="btn-bunker"> Entrar al Búnker</button>
+          <input
+            type="email"
+            placeholder="agente@diverpremier.go"
+            class="input-bunker"
+          />
+          <input type="password" placeholder="••••••••" class="input-bunker" />
+          <button type="submit" class="btn-bunker">Entrar al Búnker</button>
         </form>
       </div>
     </div>
@@ -175,28 +146,74 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 <script>
   const faces = document.querySelectorAll(".character-face");
   const pupils = document.querySelectorAll(".eye-pupil");
+  const inputs = document.querySelectorAll(".input-bunker");
+
+  let isAnimating = false;
+
+  // 🕒 CONSTANTES DE TIEMPO (Aquí es donde se separa la magia)
+  const TIME_MOUSE = "transform 0.15s ease-out";
+  const TIME_ANIMATION = "transform 1s cubic-bezier(0.4, 0, 0.2, 1)";
+
+  const setTimeMode = (mode) => {
+    const style = mode === "anim" ? TIME_ANIMATION : TIME_MOUSE;
+    faces.forEach((f) => ((f as any).style.transition = style));
+    pupils.forEach((p) => ((p as any).style.transition = style));
+  };
+
+  inputs.forEach((input) => {
+    input.addEventListener("focus", () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      setTimeMode("anim"); // Activamos reloj lento para la peli
+
+      const c = {
+        black: document.getElementById("char-black"),
+        purple: document.getElementById("char-purple"),
+        lime: document.getElementById("char-lime"),
+        orange: document.getElementById("char-orange"),
+      };
+
+      // 1. Mirar al naranja
+      if (c.black) c.black.style.transform = "translate(-20px, 10px)";
+      if (c.purple) c.purple.style.transform = "translate(10px, 20px)";
+      if (c.lime) c.lime.style.transform = "translate(-30px, 5px)";
+      if (c.orange) c.orange.style.transform = "translate(5px, -5px)";
+
+      // 2. Asentimiento
+      setTimeout(() => c.orange?.classList.add("nodding"), 1200);
+
+      // 3. Mirar al búnker (input)
+      setTimeout(() => {
+        c.orange?.classList.remove("nodding");
+        faces.forEach(
+          (f) => ((f as any).style.transform = `translate(40px, 10px)`)
+        );
+        pupils.forEach(
+          (p) => ((p as any).style.transform = `translate(6px, 0px)`)
+        );
+      }, 2500);
+
+      // 4. Reset: Devolver el control al reloj rápido del mouse
+      setTimeout(() => {
+        setTimeMode("mouse");
+        isAnimating = false;
+      }, 5000);
+    });
+  });
 
   window.addEventListener("mousemove", (e) => {
-    const { clientX, clientY } = e;
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    if (isAnimating) return;
+    const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+    const y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
 
-    const moveX = (clientX - centerX) / centerX;
-    const moveY = (clientY - centerY) / centerY;
-
-    // 1. Mover Caras (Efecto de "cabeza" independiente)
-    faces.forEach((face) => {
-      const speed = parseFloat(face.getAttribute("data-speed") || "0.1");
-      const x = moveX * (speed * 80);
-      const y = moveY * (speed * 80);
-      face.style.transform = `translate(${x}px, ${y}px)`;
+    faces.forEach((f) => {
+      const s = parseFloat(f.getAttribute("data-speed") || "0.1");
+      (f as any).style.transform = `translate(${x * (s * 80)}px, ${
+        y * (s * 80)
+      }px)`;
     });
-
-    // 2. Mover Pupilas (Efecto extra dentro de la cara)
-    pupils.forEach((pupil) => {
-      const x = moveX * 5;
-      const y = moveY * 5;
-      pupil.style.transform = `translate(${x}px, ${y}px)`;
+    pupils.forEach((p) => {
+      (p as any).style.transform = `translate(${x * 6}px, ${y * 6}px)`;
     });
   });
 </script>
@@ -204,30 +221,32 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 <style>
   @reference "@styles/global.css";
 
-  /* Transición suave para que las caras no se sientan rígidas */
-  .character-face {
+  /* Velocidad Snappy para el Mouse por defecto */
+  .character-face,
+  .eye-pupil {
     transition: transform 0.15s ease-out;
   }
 
-  .eye-pupil {
-    transition: transform 0.1s ease-out;
+  @keyframes nod {
+    0%,
+    100% {
+      transform: translate(5px, -5px);
+    }
+    50% {
+      transform: translate(5px, 12px);
+    }
+  }
+  .nodding {
+    animation: nod 0.8s ease-in-out;
   }
 
   .neon-glow-text {
     text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
   }
-
   .input-bunker {
     @apply w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white placeholder:text-neutral-700 focus:outline-none focus:border-neon-blue/40 focus:bg-white/[0.05] transition-all duration-300;
   }
-
   .btn-bunker {
     @apply w-full py-5 rounded-[2rem] bg-neon-blue/5 border border-neon-blue/20 text-2xl font-['Bebas_Neue'] text-neon-blue uppercase tracking-[0.2em] hover:bg-neon-blue hover:text-black hover:shadow-[0_0_50px_rgba(56,189,248,0.6)] transition-all duration-700 mt-6 outline-none;
-  }
-
-  input:-webkit-autofill {
-    -webkit-text-fill-color: white;
-    -webkit-box-shadow: 0 0 0px 1000px #0f172a inset;
-    transition: background-color 5000s ease-in-out 0s;
   }
 </style>
