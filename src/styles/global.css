@@ -93,7 +93,24 @@
   @apply p-2 rounded-xl bg-white/5 border border-white/10 text-neutral-400 hover:text-white transition-all hover:bg-white/10;
 }
 
-/* 🖱️ Interacciones de Scrollbar */
+@utility input-bunker {
+  @apply w-full bg-white/[0.02] border border-white/5 rounded-2xl px-6 py-5 text-sm text-white placeholder:text-neutral-700 focus:outline-none focus:border-neon-blue/40 focus:bg-white/[0.05] transition-all duration-300;
+}
+
+/* 🏷️ SISTEMA DE FILTRADO (CHIPS) */
+@utility filter-chip {
+  @apply px-5 py-2 rounded-full border border-white/5 bg-white/5 text-[10px] font-bold text-neutral-500 uppercase tracking-widest transition-all cursor-pointer hover:bg-white/10 hover:text-white select-none whitespace-nowrap;
+
+  &.active {
+    @apply border-teal-500/50 bg-teal-500/10 text-teal-400 shadow-lg shadow-teal-500/5;
+  }
+}
+
+/* 🖱️ Interacciones de Scrollbar & Helpers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

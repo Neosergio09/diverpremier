@@ -1,6 +1,6 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { Package, MapPin, Navigation, Info, Bell, Shield, Zap, FlaskConical } from "lucide-astro";
+import { Info, Shield, Zap, FlaskConical } from "lucide-astro";
 
 const activeOrders = [
   { id: "ORD-ÁLAMOS-942", status: "En Camino", client: "Álamos Norte Sector Prime", time: "3 min" },
@@ -158,7 +158,7 @@ const deliveryZones = [
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet" />
 
-<script client:load>
+<script is:inline>
     mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN'; // <--- SOCIO, AQUÍ VA TU TOKEN GRATUITO DE MAPBOX
 
     const map = new mapboxgl.Map({

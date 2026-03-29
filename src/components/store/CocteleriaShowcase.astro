@@ -1,6 +1,5 @@
 ---
 /* src/components/CocktailFan.astro */
-import { Zap, Star, Timer, Flame } from "lucide-astro";
 
 const cocktails = [
     {
@@ -109,7 +108,7 @@ const cocktails = [
         const title = document.getElementById("dynamic-title");
         let activeIndex = 1; // Empezamos con el del medio
 
-        function updateFan(newIndex) {
+        function updateFan(newIndex: number) {
             activeIndex = newIndex;
 
             cards.forEach((card, i) => {
@@ -138,9 +137,11 @@ const cocktails = [
                     const primary = card.getAttribute("data-primary");
                     const bg = card.getAttribute("data-bg");
 
-                    container.style.backgroundColor = bg;
-                    title.style.color = primary;
-                    title.style.textShadow = `0 0 30px ${primary}66`;
+                    if (container && bg) container.style.backgroundColor = bg;
+                    if (title && primary) {
+                        title.style.color = primary;
+                        title.style.textShadow = `0 0 30px ${primary}66`;
+                    }
                 } else {
                     card.classList.remove("active");
                 }

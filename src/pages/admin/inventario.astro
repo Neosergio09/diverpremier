@@ -2,13 +2,28 @@
 export const prerender = false;
 import AdminLayout from "@layouts/AdminLayout.astro";
 import { supabase } from "@lib/supabase";
-import type { Database } from "../../types/database";
 
-// 1. Traemos el catálogo completo
-const { data: catalog, error } = await supabase
-  .from("view_product_catalog")
-  .select("*")
-  .returns<Database["public"]["Views"]["view_product_catalog"]["Row"][]>();
+// 1. Traemos el catálogo directo de la tabla products para stock real-time
+const { data: productsRaw, error } = await supabase
+  .from("products")
+  .select(`
+    *,
+    categories (
+      name
+    )
+  `)
+  .order("name", { ascending: true });
+
+// 2. Mapeamos al formato que ya usa el template (Compatibilidad)
+const catalog = productsRaw?.map(p => ({
+  uuid: p.id,
+  product_name: p.name,
+  price: p.price,
+  stock_quantity: p.stock_quantity,
+  category_name: (p.categories as any)?.name || "Sin Categoría",
+  category_id: p.category_id,
+  stock_status: p.stock_quantity > 10 ? "IN STOCK" : p.stock_quantity > 0 ? "LOW STOCK" : "OUT OF STOCK"
+}));
 
 // 2. Traemos las categorías para el mapeo
 const { data: categories } = await supabase
@@ -16,12 +31,12 @@ const { data: categories } = await supabase
   .select("id, name");
 
 // 🧠 LÓGICA DE AGRUPAMIENTO
-const groupedCatalog = catalog?.reduce((acc, item) => {
+const groupedCatalog = catalog?.reduce((acc: any, item: any) => {
   const category = item.category_name || "Sin Categoría";
   if (!acc[category]) acc[category] = [];
   acc[category].push(item);
   return acc;
-}, {} as Record<string, typeof catalog>);
+}, {} as Record<string, any[]>);
 
 const pageTitle = "Gestión de Inventario";
 ---
@@ -74,7 +89,30 @@ const pageTitle = "Gestión de Inventario";
       </div>
     </header>
 
-    <div class="space-y-16">
+    <nav class="flex items-center gap-3 mb-12 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
+      <button class="filter-chip active" data-filter="all">Todos</button>
+      {
+        categories?.map((cat) => (
+          <button class="filter-chip" data-filter={cat.name}>
+            {cat.name}
+          </button>
+        ))
+      }
+      <button class="filter-chip" data-filter="Sin Categoría">Otros</button>
+    </nav>
+
+    <div id="product-sections" class="relative min-h-[400px]">
+      <div id="empty-state" class="hidden absolute inset-0 flex items-center justify-center">
+        <div class="glass-neon p-12 rounded-3xl text-center border-white/5 max-w-md animate-in fade-in zoom-in-95 duration-500">
+          <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6 text-neutral-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"></path></svg>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2 uppercase tracking-widest">Sin Coincidencias</h3>
+          <p class="text-neutral-500 text-sm font-medium">No se encontraron productos en este sector del búnker.</p>
+        </div>
+      </div>
+
+      <div class="space-y-16">
       {
         error && (
           <div class="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-400 text-center">
@@ -85,8 +123,11 @@ const pageTitle = "Gestión de Inventario";
 
       {
         groupedCatalog &&
-          Object.entries(groupedCatalog).map(([categoryName, products]) => (
-            <section class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          (Object.entries(groupedCatalog) as [string, any[]][]).map(([categoryName, products]) => (
+            <section 
+              class="category-section animate-in fade-in slide-in-from-bottom-4 duration-700"
+              data-category={categoryName}
+            >
               <div class="flex items-center gap-4 mb-6">
                 <h2 class="text-xl font-bold text-white uppercase tracking-[0.15em]">
                   {categoryName}
@@ -102,6 +143,7 @@ const pageTitle = "Gestión de Inventario";
                   <thead>
                     <tr>
                       <th class="table-head pl-6">Producto</th>
+                      <th class="table-head">Categoría</th>
                       <th class="table-head">Precio</th>
                       <th class="table-head">Stock</th>
                       <th class="table-head">Estado</th>
@@ -121,11 +163,14 @@ const pageTitle = "Gestión de Inventario";
                             </span>
                           </div>
                         </td>
+                        <td class="py-5 text-[10px] font-mono text-neutral-500 uppercase whitespace-nowrap">
+                          {item.category_name}
+                        </td>
                         <td class="py-5 text-sm font-medium text-neutral-300">
                           ${item.price.toLocaleString("es-CO")}
                         </td>
                         <td class="py-5 text-sm font-mono text-neutral-400">
-                          {item.stock_quantity ?? 0}
+                          {(item as any).stock_quantity ?? 0}
                         </td>
                         <td class="py-5">
                           <span
@@ -141,7 +186,18 @@ const pageTitle = "Gestión de Inventario";
                           </span>
                         </td>
                         <td class="py-5 pr-6 text-right">
-                          <button class="action-btn">Editar</button>
+                          <button 
+                            class="action-btn edit-product-btn" 
+                            data-product={JSON.stringify({
+                              id: item.uuid, // Usamos uuid como id para la API
+                              name: item.product_name,
+                              price: item.price,
+                              stock: (item as any).stock_quantity ?? 0,
+                              category_id: item.category_id || (categories?.find(c => c.name === item.category_name)?.id)
+                            })}
+                          >
+                            Editar
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -151,11 +207,124 @@ const pageTitle = "Gestión de Inventario";
             </section>
           ))
       }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 🖥️ MODAL DE EDICIÓN (BUNKER STYLE) -->
+  <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+    <div class="glass-neon w-full max-w-lg rounded-[2.5rem] p-8 md:p-10 border-white/10 relative transform scale-95 transition-all duration-300" id="modal-content">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h3 class="text-2xl font-black text-white tracking-tight">Editar Producto</h3>
+          <p class="text-xs text-teal-400 font-mono mt-1 uppercase tracking-widest">Actualización de Parámetros</p>
+        </div>
+        <button id="close-modal" class="p-2 rounded-xl hover:bg-white/5 text-neutral-500 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="edit-form" class="space-y-6">
+        <input type="hidden" id="edit-id" name="id" />
+        
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Nombre del Producto</label>
+          <input type="text" id="edit-name" name="name" class="input-bunker" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Precio (COP)</label>
+            <input type="text" id="edit-price" name="price" class="input-bunker font-mono" placeholder="$ 0" required />
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Stock Actual</label>
+            <input type="number" id="edit-stock" name="stock_quantity" class="input-bunker font-mono" required />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Categoría de Búnker</label>
+          <select id="edit-category" name="category_id" class="input-bunker appearance-none cursor-pointer">
+            {categories?.map(cat => (
+              <option value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button type="button" id="cancel-edit" class="btn-secondary flex-1">Cancelar</button>
+          <button type="submit" class="btn-primary flex-1">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🔔 NOTIFICACIÓN DE ÉXITO (BUNKER STYLE) -->
+  <div id="toast" class="fixed bottom-10 right-10 z-[100] translate-x-[150%] transition-transform duration-500">
+    <div class="glass-neon px-6 py-4 rounded-2xl border-teal-500/30 flex items-center gap-4">
+      <div class="w-8 h-8 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div>
+        <p class="text-sm font-bold text-white">Inventario Actualizado</p>
+        <p class="text-[10px] text-teal-500/70 font-mono uppercase tracking-wider">Sync Completa con el Búnker</p>
+      </div>
     </div>
   </div>
 </AdminLayout>
 
-<script define:vars={{ categories }}>
+<script is:inline define:vars={{ categories }}>
+  // --- HELPERS GLOBALES ---
+  const extractNumber = (val) => parseInt(val?.toString().replace(/\D/g, "")) || 0;
+  const formatCOP = (val) => {
+    const num = extractNumber(val);
+    return num === 0 && !val ? "" : "$ " + num.toLocaleString("es-CO");
+  };
+
+  // --- LÓGICA DE FILTRADO (NITRO STYLE) ---
+  const chips = document.querySelectorAll(".filter-chip");
+  const sections = document.querySelectorAll(".category-section");
+  const emptyState = document.getElementById("empty-state");
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      const filter = chip.getAttribute("data-filter");
+      
+      // 1. Update UI (Chips State)
+      chips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+
+      // 2. Filter Sections
+      let visibleCount = 0;
+      const lowerFilter = filter?.toLowerCase() || "";
+      sections.forEach(section => {
+        const category = section.getAttribute("data-category");
+        const lowerCategory = category?.toLowerCase() || "";
+        const isVisible = lowerFilter === "all" || lowerCategory === lowerFilter;
+        
+        if (isVisible) {
+          section.classList.remove("hidden");
+          // Reset animations to trigger them again
+          section.classList.remove("animate-in", "fade-in", "slide-in-from-bottom-4");
+          void section.offsetWidth; // Force reflow
+          section.classList.add("animate-in", "fade-in", "zoom-in-95", "duration-500");
+          visibleCount++;
+        } else {
+          section.classList.add("hidden");
+        }
+      });
+
+      // 3. Handle Empty State
+      if (visibleCount === 0) {
+        emptyState?.classList.remove("hidden");
+      } else {
+        emptyState?.classList.add("hidden");
+      }
+    });
+  });
+
   const fileInput = document.getElementById("csv-upload");
   const uploadBtn = document.getElementById("btn-bulk-upload");
 
@@ -168,62 +337,200 @@ const pageTitle = "Gestión de Inventario";
     const reader = new FileReader();
     reader.onload = async (event) => {
       const text = event.target.result;
-      // 1. Manejo robusto de filas (limpia espacios en blanco al final)
       const rows = text.split(/\r?\n/).filter((line) => line.trim() !== "");
-
-      // 2. Detectar separador (Coma o Punto y Coma)
       const separator = rows[0].includes(";") ? ";" : ",";
       const dataRows = rows.slice(1);
 
+      const missingCategories = new Set();
+      
       const productsToInsert = dataRows
         .map((line) => {
           const row = line.split(separator);
           if (row.length < 5) return null;
 
-          // Limpieza de datos por columna
           const csvCategory = row[0]?.trim() || "";
           const csvName = row[1]?.trim() || "";
           const csvPresentation = row[2]?.trim() || "";
           const csvPrice = row[3]?.trim() || "0";
           const csvStock = row[4]?.trim() || "0";
 
-          // 3. Match de Categoría (Flexible: quita espacios y mayúsculas)
-          const category = categories.find(
-            (c) => c.name.trim().toLowerCase() === csvCategory.toLowerCase()
-          );
-
-          // 4. Limpieza de Precio (Quita $, puntos de miles y deja solo números)
-          const cleanPrice =
-            parseFloat(csvPrice.replace(/[^0-9,.]/g, "").replace(",", ".")) ||
-            0;
-
           return {
-            // Unimos Marca + Presentación para que el nombre sea útil en la DB
             name: `${csvName} ${csvPresentation}`.trim(),
             description: `Formato: ${csvPresentation}`,
-            price: cleanPrice,
-            stock_quantity: parseInt(csvStock.replace(/\D/g, "")) || 0,
-            category_id: category ? category.id : null,
+            price: extractNumber(csvPrice),
+            stock_quantity: extractNumber(csvStock),
+            category_name: csvCategory, // Enviamos el nombre para que el búnker lo gestione
             is_active: true,
           };
         })
         .filter((p) => p !== null);
 
       if (productsToInsert.length > 0) {
-        console.log("📤 Cargando al búnker:", productsToInsert);
-        const response = await fetch("/api/bulk-products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productsToInsert),
-        });
+        uploadBtn.disabled = true;
+        uploadBtn.innerText = "Sincronizando...";
+        
+        try {
+          const response = await fetch("/api/bulk-products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(productsToInsert),
+          });
 
-        if (response.ok) {
-          window.location.reload();
-        } else {
-          alert("Error en el búnker de datos. Revisa la consola.");
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert("Error en el búnker de datos. Revisa la consola.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error de conexión al cargar el CSV.");
+        } finally {
+          uploadBtn.disabled = false;
+          uploadBtn.innerText = "Carga Masiva (CSV)";
         }
       }
     };
     reader.readAsText(file);
+  });
+
+  // --- LÓGICA DEL MODAL DE EDICIÓN ---
+  const modal = document.getElementById("edit-modal");
+  const modalContent = document.getElementById("modal-content");
+  const editForm = document.getElementById("edit-form");
+  const closeBtn = document.getElementById("close-modal");
+  const cancelBtn = document.getElementById("cancel-edit");
+  const toast = document.getElementById("toast");
+
+  const priceInput = document.getElementById("edit-price");
+  priceInput?.addEventListener("input", (e) => {
+    e.target.value = formatCOP(e.target.value);
+  });
+
+  const openModal = (product) => {
+    document.getElementById("edit-id").value = product.id;
+    document.getElementById("edit-name").value = product.name;
+    document.getElementById("edit-price").value = formatCOP(product.price);
+    document.getElementById("edit-stock").value = product.stock;
+    document.getElementById("edit-category").value = product.category_id;
+
+    modal.classList.remove("opacity-0", "pointer-events-none");
+    modalContent.classList.remove("scale-95");
+  };
+
+  const closeModal = () => {
+    modal.classList.add("opacity-0", "pointer-events-none");
+    modalContent.classList.add("scale-95");
+  };
+
+  const showToast = () => {
+    toast.classList.remove("translate-x-[150%]");
+    setTimeout(() => toast.classList.add("translate-x-[150%]"), 3000);
+  };
+
+  // Event Listeners para botones de edición
+  document.querySelectorAll(".edit-product-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const product = JSON.parse(btn.getAttribute("data-product"));
+      openModal(product);
+    });
+  });
+
+  closeBtn?.addEventListener("click", closeModal);
+  cancelBtn?.addEventListener("click", closeModal);
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+
+  // Manejo del Formulario (Optimistic UI)
+  editForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(editForm);
+    const updates = Object.fromEntries(formData.entries());
+    
+    // Limpieza de datos antes de enviar
+    updates.price = extractNumber(updates.price);
+    updates.stock_quantity = extractNumber(updates.stock_quantity);
+    
+    const submitBtn = editForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Sincronizando...";
+
+    try {
+      const response = await fetch("/api/update-product", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const updatedProduct = result.data;
+
+        // 🚀 ACTUALIZACIÓN OPTIMISTA DEL DOM
+        const rows = document.querySelectorAll("tr.group");
+        rows.forEach(row => {
+          const idSpan = row.querySelector(".font-mono");
+          if (idSpan && idSpan.innerText.includes(updates.id.split("-")[0])) {
+            // Actualizar Nombre
+            const nameSpan = row.querySelector(".text-sm.font-bold");
+            if (nameSpan) nameSpan.innerText = updates.name;
+
+            // Actualizar Precio
+            const priceTd = row.querySelectorAll("td")[2];
+            if (priceTd) priceTd.innerText = `$${updates.price.toLocaleString("es-CO")}`;
+
+            // Actualizar Stock
+            const stockTd = row.querySelectorAll("td")[3];
+            if (stockTd) stockTd.innerText = updates.stock_quantity;
+
+            // Actualizar Categoría
+            const categoryTd = row.querySelectorAll("td")[1];
+            const categorySelect = document.getElementById("edit-category");
+            const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
+            
+            if (categoryTd) {
+              categoryTd.innerText = categoryText;
+            }
+
+            // Actualizar Estado (Badge)
+            const badge = row.querySelector(".status-badge");
+            if (badge) {
+              const stock = updates.stock_quantity;
+              badge.className = "status-badge " + (stock > 10 ? "status-green" : stock > 0 ? "status-yellow" : "status-red");
+              badge.innerText = stock > 10 ? "IN STOCK" : stock > 0 ? "LOW STOCK" : "OUT OF STOCK";
+            }
+
+            // Actualizar data-product del botón para futuras ediciones
+            const editBtn = row.querySelector(".edit-product-btn");
+            if (editBtn) {
+              const currentData = JSON.parse(editBtn.getAttribute("data-product"));
+              editBtn.setAttribute("data-product", JSON.stringify({
+                ...currentData,
+                name: updates.name,
+                price: updates.price,
+                stock: updates.stock_quantity,
+                category_id: updates.category_id,
+                category_name: categoryText
+              }));
+            }
+          }
+        });
+
+        closeModal();
+        showToast();
+      } else {
+        alert("Error al actualizar el búnker. Revisa la consola.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Guardar Cambios";
+    }
   });
 </script>
