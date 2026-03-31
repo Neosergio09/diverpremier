@@ -1,161 +1,203 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import { formatCOP } from "@lib/formatters";
 import {
     Phone,
     Truck,
     Wine,
     Beer,
     UtensilsCrossed,
-    ChevronRight
+    ChevronRight,
+    ShieldCheck,
+    Clock
 } from "lucide-astro";
 
 const categories = [
     {
         name: "Aguardiente",
-        image: "https://placehold.co/600x800/0A0F1E/38BDF8?text=Aguardiente",
+        tagline: "El alma de la rumba",
+        image: "https://images.unsplash.com/photo-1516997121675-4c2d04fe116e?q=80&w=800&auto=format&fit=crop",
         icon: Wine,
-        color: "neon-blue",
+        color: "teal", // Coherente con tu Admin
     },
     {
         name: "Whisky",
-        image: "https://placehold.co/600x800/0A0F1E/D052FF?text=Whisky",
+        tagline: "Carácter & Legado",
+        image: "https://images.unsplash.com/photo-1527281405159-35d5b9a1650c?q=80&w=800&auto=format&fit=crop",
         icon: Wine,
-        color: "neon-purple",
+        color: "purple",
     },
     {
         name: "Cervezas",
-        image: "https://placehold.co/600x800/0A0F1E/F472B6?text=Cerveza",
+        tagline: "Frías como el búnker",
+        image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=800&auto=format&fit=crop",
         icon: Beer,
-        color: "neon-pink",
+        color: "pink",
     },
     {
         name: "Snacks",
-        image: "https://placehold.co/600x800/0A0F1E/FFFFFF?text=Snacks",
+        tagline: "El complemento ideal",
+        image: "https://images.unsplash.com/photo-1599490659213-e2b9527bb087?q=80&w=800&auto=format&fit=crop",
         icon: UtensilsCrossed,
-        color: "white",
+        color: "blue",
     },
 ];
 
 const featuredProducts = [
     {
         name: "Aguardiente Antioqueño Sin Azúcar",
-        price: "$45.000",
+        presentation: "750ml • 29% Vol",
+        price: 45000,
         image: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Botella_de_Aguardiente_Antioque%C3%B1o.jpg",
+        isHot: true
     },
     {
         name: "Johnnie Walker Black Label",
-        price: "$120.000",
+        presentation: "750ml • 12 Años",
+        price: 125000,
         image: "https://upload.wikimedia.org/wikipedia/commons/2/21/Johnnie_Walker_Black_Label.jpg",
+        isHot: false
     },
     {
-        name: "Club Colombia Dorada 6-pack",
-        price: "$22.000",
+        name: "Club Colombia Dorada 6-Pack",
+        presentation: "Lata 330ml • Edición Especial",
+        price: 24000,
         image: "https://upload.wikimedia.org/wikipedia/commons/b/b7/Club_Colombia_Roja_%287143313185%29.jpg",
+        isHot: false
     },
     {
         name: "Papas Margarita Familiar",
-        price: "$8.500",
+        presentation: "110g • Sabor Natural",
+        price: 8500,
         image: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Lays_Classic_Potato_Chips_Bag.jpg",
+        isHot: false
     },
 ];
 ---
 
 <MainLayout
-    title="Diverpremier - Licores Premium en Álamos"
-    description="La mejor licorera en Álamos con domicilios rápidos. Entrega inmediata de aguardiente, whisky y cervezas en Bogotá."
-    containerClass="max-w-7xl"
+    title="Diverpremier - Licores Premium & Domicilios en Álamos"
+    description="Exclusividad en licores originales. Domicilios ultra-rápidos en Álamos Norte y Bogotá."
+    containerClass="max-w-full"
     isProse={false}
 >
-    <section
-        class="relative min-h-[85vh] flex items-center justify-center overflow-hidden rounded-[4rem] mb-32 border border-white/5 bg-white/[0.02] backdrop-blur-sm"
-    >
-        <div class="absolute inset-0 z-0">
-            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-neon-blue/10 blur-[150px] rounded-full animate-pulse"></div>
-            <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-neon-pink/5 blur-[150px] rounded-full"></div>
+    <section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden px-4 mb-24 mt-4">
+        <div class="absolute inset-0 z-0 bg-dark-bg rounded-[3rem] md:rounded-[5rem] border border-white/5 mx-2 md:mx-6 overflow-hidden">
+             <div class="absolute -top-24 -right-24 w-[600px] h-[600px] bg-teal-500/10 blur-[180px] rounded-full animate-pulse"></div>
+            <div class="absolute -bottom-24 -left-24 w-[600px] h-[600px] bg-purple-500/10 blur-[180px] rounded-full"></div>
+            <div class="absolute inset-0 bg-[url('/noise.svg')] opacity-20 pointer-events-none"></div>
         </div>
 
-        <div class="relative z-10 text-center px-6 max-w-5xl">
-            <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-neon-blue mb-10">
-                <Truck size={14} class="animate-bounce" /> Domicilios Flash en Álamos
+        <div class="relative z-10 text-center max-w-6xl mx-auto pt-10">
+            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] text-teal-400 mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+                </span>
+                Búnker Operativo • Álamos Norte
             </div>
 
-            <h1 class="text-6xl md:text-[7.5rem] font-black mb-8 leading-[0.85] tracking-tighter uppercase italic text-white">
-                Diverpremier <br />
+            <h1 class="text-7xl md:text-[11rem] font-black mb-10 leading-[0.8] tracking-tighter uppercase italic text-white mix-blend-difference">
+                Diver<span class="text-teal-500">premier</span>
             </h1>
 
-            <p class="text-xl md:text-2xl mb-12 text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
-                El pulso de la rumba en <span class="text-white font-bold border-b-2 border-neon-blue">Álamos Norte</span>. Licores originales directo a tu puerta.
+            <p class="text-lg md:text-2xl mb-14 text-neutral-400 max-w-2xl mx-auto font-medium leading-relaxed balance">
+                Elevamos el estándar de la rumba en <span class="text-white font-bold">Álamos</span>. Licores de colección y domicilios de élite.
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <a href="https://wa.me/yournumber" class="group relative inline-flex items-center gap-4 bg-neon-blue text-dark-bg px-10 py-5 rounded-2xl text-xl font-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(0,209,255,0.3)]">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-8">
+                <a href="https://wa.me/yournumber" class="btn-primary px-12 py-6 text-xl shadow-[0_0_50px_rgba(20,184,166,0.2)]">
                     <Phone size={24} />
-                    <span>Pedir por WhatsApp</span>
+                    <span>Solicitar Domicilio</span>
                 </a>
-                <a href="/productos" class="text-slate-400 hover:text-white font-bold tracking-widest uppercase text-xs flex items-center gap-2 transition-colors">
-                    Explorar Cava <ChevronRight size={18} />
+                <a href="/productos" class="group text-neutral-500 hover:text-white font-black tracking-widest uppercase text-xs flex items-center gap-3 transition-all">
+                    Ver Catálogo Completo <ChevronRight size={20} class="group-hover:translate-x-2 transition-transform" />
                 </a>
             </div>
         </div>
     </section>
 
-    <section class="mb-40">
-        <div class="flex items-end gap-4 mb-16">
-            <h2 class="text-5xl font-black tracking-tighter uppercase italic text-white">Categorías</h2>
-            <div class="h-[1px] flex-grow bg-gradient-to-r from-neon-blue/40 to-transparent mb-3"></div>
-        </div>
+    <div class="max-w-7xl mx-auto px-6">
+        <section class="mb-48">
+            <div class="flex items-center justify-between mb-20">
+                <div>
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-white">La <span class="text-teal-500">Cava</span></h2>
+                    <p class="text-neutral-500 font-mono text-[10px] uppercase tracking-widest mt-2">Selección curada por expertos</p>
+                </div>
+                <div class="h-px w-24 md:w-64 bg-gradient-to-r from-teal-500/50 to-transparent hidden sm:block"></div>
+            </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.map((cat) => (
-                <a href={`/productos?cat=${cat.name}`} class="group relative aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-white/5 hover:border-neon-blue/30 transition-all duration-500 bg-white/[0.02]">
-                    <img src={cat.image} alt={cat.name} class="absolute inset-0 h-full w-full object-cover opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-40 transition-all duration-700 scale-110 group-hover:scale-100" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
-                    <div class="absolute bottom-8 left-8 right-8">
-                        <div class:list={["w-12 h-12 rounded-xl flex items-center justify-center mb-4 backdrop-blur-md border border-white/10", 
-                            cat.color === "neon-blue" ? "bg-neon-blue/20 text-neon-blue" : "bg-neon-purple/20 text-neon-purple"]}>
-                            <cat.icon size={24} />
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {categories.map((cat) => (
+                    <a href={`/productos?cat=${cat.name}`} class="group relative aspect-[4/5] overflow-hidden rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900">
+                        <img src={cat.image} alt={cat.name} class="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-1000 scale-105 group-hover:scale-110" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
+                        
+                        <div class="absolute inset-0 p-10 flex flex-col justify-end">
+                            <h3 class="text-4xl font-black text-white uppercase italic tracking-tighter mb-1 transform group-hover:-translate-y-2 transition-transform">{cat.name}</h3>
+                            <p class="text-[10px] font-bold text-teal-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">{cat.tagline}</p>
                         </div>
-                        <h3 class="text-3xl font-black text-white uppercase italic tracking-tighter">{cat.name}</h3>
-                    </div>
-                </a>
-            ))}
-        </div>
-    </section>
-
-    <section class="glass-neon p-12 md:p-20 rounded-[4rem] grid md:grid-cols-3 gap-16 mb-40 border-white/5">
-        <div class="flex flex-col items-center text-center space-y-6">
-            <div class="w-20 h-20 bg-neon-blue/5 rounded-3xl flex items-center justify-center border border-neon-blue/20">
-                <Truck class="text-neon-blue" size={36} />
+                    </a>
+                ))}
             </div>
-            <h3 class="text-xl font-black uppercase text-white">Envío Álamos</h3>
-            <p class="text-slate-400 text-sm">Entrega prioritaria en <span class="text-white">Álamos Norte y Sur</span> en tiempo récord.</p>
-        </div>
         </section>
 
-    <section class="pb-32">
-        <h2 class="text-5xl font-black tracking-tighter uppercase italic text-white mb-16">
-            Top <span class="text-neon-blue">Diverpremier</span>
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((prod) => (
-                <div class="group glass-neon rounded-[2.5rem] p-6 border border-white/5 hover:border-neon-blue/20 transition-all flex flex-col">
-                    <div class="aspect-square rounded-2xl overflow-hidden mb-8 bg-white/[0.03] border border-white/5 relative">
-                        <img src={prod.image} alt={prod.name} class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" />
-                    </div>
-                    <h3 class="text-lg font-bold mb-4 text-slate-100">{prod.name}</h3>
-                    <div class="flex items-center justify-between mt-auto">
-                        <span class="text-2xl font-black text-white italic">{prod.price}</span>
-                        <a href="https://wa.me/yournumber" class="p-4 rounded-2xl bg-white/5 text-neon-blue hover:bg-neon-blue hover:text-dark-bg transition-all">
-                            <Phone size={20} />
-                        </a>
-                    </div>
+        <section class="grid md:grid-cols-3 gap-10 mb-48 border-y border-white/5 py-24">
+            <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-6 group">
+                <div class="w-16 h-16 bg-white/[0.03] rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors">
+                    <Truck class="text-teal-500" size={32} />
                 </div>
-            ))}
-        </div>
-    </section>
-</MainLayout>
+                <h3 class="text-lg font-black uppercase text-white tracking-widest">Entrega Flash</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Tu pedido en la puerta de tu casa en tiempo récord. Álamos es nuestro territorio.</p>
+            </div>
+            
+            <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-6 group">
+                <div class="w-16 h-16 bg-white/[0.03] rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors">
+                    <ShieldCheck class="text-teal-500" size={32} />
+                </div>
+                <h3 class="text-lg font-black uppercase text-white tracking-widest">100% Original</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Sello de garantía en cada botella. Solo trabajamos con distribuidores autorizados.</p>
+            </div>
 
-<script>
-    // Limpiamos el script del carrito ya que Diverpremier usa WhatsApp/Mapa para la gestión
-    console.log("🚀 Diverpremier Go: Landing Operativa");
-</script>
+            <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-6 group">
+                <div class="w-16 h-16 bg-white/[0.03] rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors">
+                    <Clock class="text-teal-500" size={32} />
+                </div>
+                <h3 class="text-lg font-black uppercase text-white tracking-widest">Soporte 24/7</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">¿Dudas? Nuestro equipo VIP está listo por WhatsApp para asesorar tu compra.</p>
+            </div>
+        </section>
+
+        <section class="pb-48">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
+                <h2 class="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white">
+                    Los <span class="text-teal-500">Favoritos</span>
+                </h2>
+                <p class="text-neutral-500 font-medium max-w-xs md:text-right">Lo que más se mueve en las noches de Álamos.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                {featuredProducts.map((prod) => (
+                    <div class="group relative">
+                        <div class="glass-neon rounded-[3rem] p-8 border-white/5 hover:border-teal-500/20 transition-all duration-500 flex flex-col h-full">
+                            <div class="aspect-square rounded-[2rem] overflow-hidden mb-10 bg-white/[0.03] border border-white/5 relative">
+                                {prod.isHot && <span class="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-teal-500 text-dark-bg text-[9px] font-black uppercase tracking-widest">Más Pedido</span>}
+                                <img src={prod.image} alt={prod.name} class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" />
+                            </div>
+                            
+                            <h3 class="text-xl font-bold mb-2 text-white leading-tight">{prod.name}</h3>
+                            <p class="text-[10px] font-mono text-neutral-600 uppercase tracking-widest mb-8">{prod.presentation}</p>
+                            
+                            <div class="flex items-center justify-between mt-auto">
+                                <span class="text-2xl font-black text-white italic tracking-tighter">{formatCOP(prod.price)}</span>
+                                <a href="https://wa.me/yournumber" class="action-btn p-5 !rounded-2xl bg-teal-500/10 text-teal-500 hover:bg-teal-500 hover:text-dark-bg transition-all">
+                                    <Phone size={24} />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    </div>
+</MainLayout>

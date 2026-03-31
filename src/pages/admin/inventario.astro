@@ -275,13 +275,13 @@ const pageTitle = "Gestión de Inventario";
   </div>
 </AdminLayout>
 
-<script is:inline define:vars={{ categories }}>
-  // --- HELPERS GLOBALES ---
-  const extractNumber = (val) => parseInt(val?.toString().replace(/\D/g, "")) || 0;
-  const formatCOP = (val) => {
-    const num = extractNumber(val);
-    return num === 0 && !val ? "" : "$ " + num.toLocaleString("es-CO");
-  };
+<div id="admin-data-store" class="hidden" data-categories={JSON.stringify(categories)}></div>
+
+<script>
+  import { formatCOP, extractNumber } from "@lib/formatters";
+
+  const dataStore = document.getElementById("admin-data-store");
+  const categories = dataStore && dataStore.dataset.categories ? JSON.parse(dataStore.dataset.categories) : [];
 
   // --- LÓGICA DE FILTRADO (NITRO STYLE) ---
   const chips = document.querySelectorAll(".filter-chip");

@@ -118,41 +118,7 @@ const deliveryZones = [
     </main>
   </div>
 
-  <style>
-    /* Ocultar barra de scroll pero mantener funcionalidad */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
 
-    /* Astro View Transition "Fall" Effect para toda la página */
-    ::view-transition-old(root) {
-      animation: 0.4s cubic-bezier(0.4, 0, 1, 1) both fade-out;
-    }
-
-    ::view-transition-new(root) {
-      animation: 0.8s cubic-bezier(0, 0, 0.2, 1) both fall-in;
-    }
-
-    @keyframes fall-in {
-      from {
-        opacity: 0;
-        transform: translateY(-50px) scale(1.02);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    @keyframes fade-out {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-  </style>
 </MainLayout>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
