@@ -65,12 +65,8 @@
         private addEventListeners() {
             window.addEventListener("resize", this.handleResize);
             window.addEventListener("pointermove", this.handlePointerMove);
-            document.addEventListener("astro:before-preparation", this.handleCleanup);
         }
 
-        private handleCleanup = () => {
-            this.cleanup();
-        };
 
         private handleResize = () => {
             this.resize();
@@ -206,7 +202,6 @@
             this.stop();
             window.removeEventListener("resize", this.handleResize);
             window.removeEventListener("pointermove", this.handlePointerMove);
-            document.removeEventListener("astro:before-preparation", this.handleCleanup);
             this.initialized = false;
         }
     }
@@ -214,7 +209,10 @@
 
     function init() {
         const canvas = document.getElementById("liquid-canvas") as HTMLCanvasElement;
-        if (canvas) LiquidEngine.getInstance(canvas);
+        if (canvas) {
+            const engine = LiquidEngine.getInstance(canvas);
+            engine.start();
+        }
     }
 
     document.addEventListener("astro:page-load", init);

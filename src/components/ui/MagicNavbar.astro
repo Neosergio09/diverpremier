@@ -23,6 +23,8 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
     class="fixed bottom-0 left-0 w-full flex justify-center z-[100] md:hidden pb-10 px-4 pointer-events-none"
 >
     <nav
+        id="magic-navbar"
+        transition:persist="magic-navbar"
         class="navigation pointer-events-auto relative w-full max-w-[280px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
     >
         <div
@@ -93,3 +95,38 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
         }
     }
 </style>
+
+<script>
+    document.addEventListener("astro:page-load", () => {
+        const navbar = document.getElementById("magic-navbar");
+        if (!navbar) return;
+
+        const path = window.location.pathname;
+        const links = navbar.querySelectorAll("a");
+        let activeIdx = 2; // Default (Map)
+
+        links.forEach((a, idx) => {
+            const href = a.getAttribute("href");
+            if (!href) return;
+            const p = path.replace(/\/$/, "") || "/";
+            const h = href.replace(/\/$/, "") || "/";
+            if (p === h || (h !== "/" && p.startsWith(h))) {
+                activeIdx = idx;
+            }
+        });
+
+        const container = navbar.querySelector(".relative.w-\\[240px\\]");
+        if (container) {
+            (container as HTMLElement).style.setProperty("--active-index", activeIdx.toString());
+        }
+
+        const items = navbar.querySelectorAll("li");
+        items.forEach((li, idx) => {
+            if (idx === activeIdx) {
+                li.classList.add("active");
+            } else {
+                li.classList.remove("active");
+            }
+        });
+    });
+</script>
