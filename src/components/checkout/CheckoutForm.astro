@@ -1,0 +1,206 @@
+---
+---
+<div id="checkout-form" class="hidden flex-col gap-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+  <!-- Domicilio vs Recoger -->
+  <div class="glass-neon p-6 rounded-[2rem] border-white/5 bg-[#020617]/80 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+    <h3 class="text-white font-black uppercase tracking-widest text-xs mb-4">Método de Entrega</h3>
+    <div class="flex bg-white/5 p-1.5 rounded-2xl mb-4 relative drop-shadow-md">
+      <div id="delivery-indicator" class="absolute w-1/2 h-[calc(100%-12px)] top-[6px] left-[6px] bg-neon-blue/20 border border-neon-blue/40 rounded-xl transition-transform duration-300"></div>
+      <button id="btn-delivery" class="flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-white z-10 transition-colors">Domicilio</button>
+      <button id="btn-pickup" class="flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 z-10 transition-colors">Recoger</button>
+    </div>
+
+    <!-- Fields -->
+    <div id="address-field" class="space-y-3 animate-in fade-in duration-300">
+      <label class="text-[9px] uppercase text-neon-blue font-black tracking-[0.2em] ml-2">Dirección de Entrega</label>
+      <input type="text" id="delivery-address" placeholder="Ej: Calle 123 #45-67, Apto 101" class="w-full bg-[#0A0F1E] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-neon-blue/50 focus:bg-neon-blue/5 transition-all shadow-inner" />
+    </div>
+
+    <div id="pickup-info" class="hidden mt-2 p-5 bg-teal-400/10 border border-teal-400/30 rounded-2xl animate-in fade-in duration-300">
+      <p class="text-teal-400 text-[9px] uppercase font-black tracking-[0.2em] mb-1">Punto de Entrega</p>
+      <p class="text-white font-bold text-sm tracking-wide">Búnker Central: Álamos Norte</p>
+      <p class="text-slate-400 text-xs mt-1">Tu pedido estará listo en 15 minutos.</p>
+    </div>
+  </div>
+
+  <!-- Gateway Selector -->
+  <div class="glass-neon p-6 rounded-[2rem] border-white/5 bg-[#020617]/80 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+    <h3 class="text-white font-black uppercase tracking-widest text-xs mb-4">Método de Pago</h3>
+    <div class="grid grid-cols-1 gap-3">
+      <button class="payment-btn group flex items-center justify-between p-4 rounded-2xl border border-white/5 hover:border-[#FF0066]/50 hover:bg-[#FF0066]/5 transition-all" data-method="Nequi">
+        <span class="text-slate-300 font-black tracking-widest uppercase text-xs group-hover:text-[#FF0066] group-[.selected]:text-[#FF0066] transition-colors">Nequi</span>
+        <div class="w-4 h-4 rounded-full border-2 border-[#FF0066]/30 group-[.selected]:border-[#FF0066] group-[.selected]:bg-[#FF0066] group-[.selected]:shadow-[0_0_15px_#FF0066] transition-all"></div>
+      </button>
+      <button class="payment-btn group flex items-center justify-between p-4 rounded-2xl border border-white/5 hover:border-[#DA291C]/50 hover:bg-[#DA291C]/5 transition-all" data-method="Daviplata">
+        <span class="text-slate-300 font-black tracking-widest uppercase text-xs group-hover:text-[#DA291C] group-[.selected]:text-[#DA291C] transition-colors">Daviplata</span>
+        <div class="w-4 h-4 rounded-full border-2 border-[#DA291C]/30 group-[.selected]:border-[#DA291C] group-[.selected]:bg-[#DA291C] group-[.selected]:shadow-[0_0_15px_#DA291C] transition-all"></div>
+      </button>
+      <button class="payment-btn group flex items-center justify-between p-4 rounded-2xl border border-white/5 hover:border-[#0079C1]/50 hover:bg-[#0079C1]/5 transition-all" data-method="PSE">
+        <span class="text-slate-300 font-black tracking-widest uppercase text-xs group-hover:text-[#0079C1] group-[.selected]:text-[#0079C1] transition-colors">PSE</span>
+        <div class="w-4 h-4 rounded-full border-2 border-[#0079C1]/30 group-[.selected]:border-[#0079C1] group-[.selected]:bg-[#0079C1] group-[.selected]:shadow-[0_0_15px_#0079C1] transition-all"></div>
+      </button>
+    </div>
+  </div>
+
+  <button id="btn-confirm-order" class="btn-primary py-5 mt-2 shadow-[0_0_30px_rgba(56,189,248,0.2)] hover:shadow-[0_0_40px_rgba(56,189,248,0.5)] disabled:opacity-30 disabled:cursor-not-allowed uppercase font-black tracking-[0.3em] text-[11px] rounded-[1.5rem]" disabled>
+    Confirmar Pedido
+  </button>
+</div>
+
+<!-- Modal Instrucciones de Pago -->
+<div id="payment-modal" class="fixed inset-0 z-[500] bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500 flex items-center justify-center p-4">
+  <div class="glass-neon p-8 md:p-10 rounded-[3rem] border-neon-blue/30 max-w-md w-full relative scale-95 transition-all duration-500 transform shadow-[0_30px_60px_rgba(0,0,0,0.8)] bg-[#020617]" id="payment-modal-content">
+    <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-xl text-slate-500 hover:text-white hover:bg-white/5 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-neon-blue/10 border border-neon-blue/30 rounded-xl text-neon-blue text-[10px] font-mono font-black tracking-[0.2em] mb-6 shadow-[0_0_15px_rgba(56,189,248,0.2)]">
+        <span class="w-1.5 h-1.5 rounded-full bg-neon-blue animate-pulse"></span>
+        TICKET <span id="ticket-id" class="text-white ml-1">#DP-0000</span>
+      </div>
+      <h3 class="text-2xl font-black text-white uppercase italic tracking-tighter mb-3">Paso Final</h3>
+      <p class="text-slate-400 text-xs font-medium leading-relaxed">Transfiere el total exacto a nuestra cuenta oficial y luego notifícanos por WhatsApp adjuntando el comprobante.</p>
+    </div>
+
+    <div class="bg-black/40 border border-white/5 rounded-3xl p-6 mb-8 space-y-4 font-mono text-xs">
+      <div class="flex justify-between items-center pb-4 border-b border-white/5">
+        <span class="text-slate-500 uppercase font-bold tracking-widest">Total:</span>
+        <span id="modal-total" class="text-neon-blue font-black text-lg">$0</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-slate-500 uppercase font-bold tracking-widest">Plataforma:</span>
+        <span id="modal-method" class="text-white font-bold bg-white/5 px-3 py-1 rounded-lg">Nequi</span>
+      </div>
+      <div class="flex justify-between items-center pt-2">
+        <span class="text-slate-500 uppercase font-bold tracking-widest">Cuenta:</span>
+        <span class="text-white font-black tracking-[0.2em] text-sm">300 000 0000</span>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <a id="link-pay" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary w-full py-4 text-center block !text-dark-bg font-black tracking-[0.2em] uppercase rounded-2xl shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:scale-[1.02] transition-transform">
+        Ir a la App
+      </a>
+      <button id="btn-whatsapp" class="group relative w-full py-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:bg-[#25D366]/20 flex items-center justify-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#25D366]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span class="text-[#25D366] font-black text-[10px] tracking-[0.2em] uppercase drop-shadow-sm">Notificar WhatsApp</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { cartItems, cartTotal } from "../../store/cartStore";
+  import { formatCOP } from "../../lib/formatters";
+
+  let deliveryMethod = "Domicilio";
+  let paymentMethod = "";
+  let currentTicket = "";
+
+  document.addEventListener('astro:page-load', () => {
+    const btnDelivery = document.getElementById("btn-delivery");
+    const btnPickup = document.getElementById("btn-pickup");
+    const indicator = document.getElementById("delivery-indicator");
+    const addressField = document.getElementById("address-field");
+    const pickupInfo = document.getElementById("pickup-info");
+    const addressInput = document.getElementById("delivery-address") as HTMLInputElement;
+    const confirmBtn = document.getElementById("btn-confirm-order") as HTMLButtonElement;
+    
+    const paymentBtns = document.querySelectorAll(".payment-btn");
+    
+    const modal = document.getElementById("payment-modal");
+    const modalContent = document.getElementById("payment-modal-content");
+    const closeModal = document.getElementById("close-modal");
+
+    // Toggle Logic
+    const setDelivery = (isDelivery: boolean) => {
+      deliveryMethod = isDelivery ? "Domicilio" : "Recoger en Búnker";
+      if (indicator) {
+        indicator.style.transform = isDelivery ? "translateX(0)" : "translateX(calc(100% - 4px))";
+      }
+      
+      btnDelivery?.classList.toggle("text-white", isDelivery);
+      btnDelivery?.classList.toggle("text-slate-500", !isDelivery);
+      
+      btnPickup?.classList.toggle("text-white", !isDelivery);
+      btnPickup?.classList.toggle("text-slate-500", isDelivery);
+
+      if (isDelivery) {
+        addressField?.classList.remove("hidden");
+        pickupInfo?.classList.add("hidden");
+      } else {
+        addressField?.classList.add("hidden");
+        pickupInfo?.classList.remove("hidden");
+      }
+      checkValidity();
+    };
+
+    btnDelivery?.addEventListener("click", () => setDelivery(true));
+    btnPickup?.addEventListener("click", () => setDelivery(false));
+    addressInput?.addEventListener("input", checkValidity);
+
+    // Payment Logic
+    paymentBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        paymentBtns.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        paymentMethod = btn.getAttribute("data-method") || "";
+        checkValidity();
+      });
+    });
+
+    function checkValidity() {
+      if (!confirmBtn) return;
+      const isAddressValid = deliveryMethod === "Recoger en Búnker" || (addressInput?.value.trim().length > 3);
+      if (paymentMethod && isAddressValid) {
+        confirmBtn.disabled = false;
+      } else {
+        confirmBtn.disabled = true;
+      }
+    }
+
+    // Modal Trigger
+    confirmBtn?.addEventListener("click", () => {
+      currentTicket = "DP-" + Math.floor(1000 + Math.random() * 9000);
+      
+      const ticketEl = document.getElementById("ticket-id");
+      const totalEl = document.getElementById("modal-total");
+      const methodEl = document.getElementById("modal-method");
+      const linkPay = document.getElementById("link-pay") as HTMLAnchorElement;
+
+      if (ticketEl) ticketEl.innerText = "#" + currentTicket;
+      if (totalEl) totalEl.innerText = formatCOP(cartTotal.get());
+      if (methodEl) methodEl.innerText = paymentMethod;
+
+      if (paymentMethod === "Nequi") linkPay.href = "https://nequi.com.co";
+      else if (paymentMethod === "Daviplata") linkPay.href = "https://daviplata.com";
+      else linkPay.href = "https://pse.com.co";
+
+      modal?.classList.remove("opacity-0", "pointer-events-none");
+      modalContent?.classList.remove("scale-95");
+    });
+
+    closeModal?.addEventListener("click", () => {
+      modal?.classList.add("opacity-0", "pointer-events-none");
+      modalContent?.classList.add("scale-95");
+    });
+
+    // WhatsApp Integration
+    document.getElementById("btn-whatsapp")?.addEventListener("click", () => {
+      const items = Object.values(cartItems.get());
+      const itemsText = items.map(i => `${i.quantity}x ${i.name}`).join('%0A');
+      const total = formatCOP(cartTotal.get());
+      const address = deliveryMethod === "Domicilio" ? addressInput?.value : "Recoger en Búnker";
+
+      const message = `🚀 *NUEVO PEDIDO BÚNKER - TICKET #${currentTicket}*%0A%0A*Detalle:*%0A${itemsText}%0A%0A*Total:* ${total}%0A*Método:* ${paymentMethod}%0A*Entrega:* ${address}%0A%0AInstrucción: Ya realicé el pago, adjunto comprobante.`;
+      
+      const adminPhone = "573000000000";
+      window.open(`https://wa.me/${adminPhone}?text=${message}`, '_blank');
+      
+      // Optativo: Limpiar carrito o cerrar modal después
+      modal?.classList.add("opacity-0", "pointer-events-none");
+      modalContent?.classList.add("scale-95");
+    });
+  });
+</script>

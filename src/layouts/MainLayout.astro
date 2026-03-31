@@ -5,6 +5,7 @@ import Navbar from "@components/ui/Navbar.astro";
 import LiquidBackground from "@components/ui/LiquidBackground.astro";
 import MagicNavbar from "@components/ui/MagicNavbar.astro"; // 👈 Importamos la pieza clave
 import AgeGate from "@components/ui/AgeGate.astro";
+import CartDrawer from "@components/cart/CartDrawer.astro";
 
 interface Props {
     title: string;
@@ -48,6 +49,8 @@ const widthClass = containerClass
         <LiquidBackground />
 
         <AgeGate />
+
+        <CartDrawer />
 
         <Navbar />
 

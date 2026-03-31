@@ -9,8 +9,19 @@ export interface CartItem {
   quantity: number;
 }
 
-export const cartItems = map<Record<string, CartItem>>({});
+// Sync with localStorage
+const isBrowser = typeof window !== "undefined";
+const savedCart = isBrowser ? localStorage.getItem("bunker_cart") : null;
+const initialCart = savedCart ? JSON.parse(savedCart) : {};
+
+export const cartItems = map<Record<string, CartItem>>(initialCart);
 export const isCartOpen = atom(false);
+
+if (isBrowser) {
+  cartItems.subscribe((items) => {
+    localStorage.setItem("bunker_cart", JSON.stringify(items));
+  });
+}
 
 const parsePrice = (priceStr: string): number => {
   return parseInt(priceStr.replace(/[^0-9]/g, ''), 10);
