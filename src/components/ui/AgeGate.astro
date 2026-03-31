@@ -45,6 +45,13 @@
 
   document.addEventListener('astro:page-load', () => {
     const ageGate = document.getElementById('age-gate');
+    
+    // Double check for SPA navigations (View Transitions)
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('ageVerified') === 'true') {
+      if (ageGate) ageGate.style.display = 'none';
+      return;
+    }
+
     if (!ageGate || ageGate.style.display === 'none') return;
 
     const btnYes = document.getElementById('btn-age-yes');
