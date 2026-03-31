@@ -1,5 +1,5 @@
 ---
-import { Home, Package, Map, Wine } from "lucide-astro";
+import { Home, Package, Map, Wine, Users } from "lucide-astro";
 
 const pathname = Astro.url.pathname;
 
@@ -7,6 +7,7 @@ const navItems = [
     { href: "/", icon: Home, label: "Inicio" },
     { href: "/productos", icon: Package, label: "Tienda" },
     { href: "/mapa", icon: Map, label: "Mapa" },
+    { href: "/nosotros", icon: Users, label: "Nosotros" },
     { href: "/cocteleria", icon: Wine, label: "Coctelería" },
 ];
 
@@ -25,10 +26,10 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
     <nav
         id="magic-navbar"
         transition:persist="magic-navbar"
-        class="navigation pointer-events-auto relative w-full max-w-[280px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
+        class="navigation pointer-events-auto relative w-full max-w-[340px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
     >
         <div
-            class="relative w-[240px]"
+            class="relative w-[300px]"
             style={`--active-index: ${currentIndex};`}
         >
             <div
@@ -115,7 +116,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
             }
         });
 
-        const container = navbar.querySelector(".relative.w-\\[240px\\]");
+        const container = navbar.querySelector(".relative.w-\\[300px\\]");
         if (container) {
             (container as HTMLElement).style.setProperty("--active-index", activeIdx.toString());
         }
