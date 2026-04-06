@@ -1,0 +1,54 @@
+---
+import { Sun, Moon } from "lucide-astro";
+---
+
+<button
+    id="theme-toggle"
+    class="glass-neon w-10 h-10 rounded-full flex items-center justify-center relative overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 group cursor-pointer"
+    aria-label="Toggle Theme"
+>
+    <!-- Sun Icon (Visible in Dark Mode, to switch to light) -->
+    <div class="absolute inset-0 flex items-center justify-center transition-all duration-500 transform group-[.is-light]:rotate-90 group-[.is-light]:opacity-0 group-[.is-light]:scale-50 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] icon-sun">
+        <Sun class="w-5 h-5" />
+    </div>
+
+    <!-- Moon Icon (Visible in Light Mode, to switch to dark) -->
+    <div class="absolute inset-0 flex items-center justify-center transition-all duration-500 transform -rotate-90 opacity-0 scale-50 group-[.is-light]:rotate-0 group-[.is-light]:opacity-100 group-[.is-light]:scale-100 text-neutral-900 drop-shadow-[0_0_8px_rgba(23,23,23,0.3)] icon-moon">
+        <Moon class="w-5 h-5" />
+    </div>
+</button>
+
+<script>
+    const setupThemeToggle = () => {
+        const toggleBtn = document.getElementById('theme-toggle');
+        if (!toggleBtn) return;
+        
+        // Set initial button state based on html class
+        if (document.documentElement.classList.contains('light')) {
+            toggleBtn.classList.add('is-light');
+        } else {
+            toggleBtn.classList.remove('is-light');
+        }
+        
+        // Remove old listener if re-running
+        toggleBtn.removeEventListener('click', window.__themeBtnHandler);
+        
+        // Define click handler
+        window.__themeBtnHandler = () => {
+            const isLight = document.documentElement.classList.toggle('light');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            
+            if (isLight) {
+                toggleBtn.classList.add('is-light');
+            } else {
+                toggleBtn.classList.remove('is-light');
+            }
+        };
+        
+        toggleBtn.addEventListener('click', window.__themeBtnHandler);
+    };
+
+    // Run on initial load and after view transitions
+    document.addEventListener('astro:page-load', setupThemeToggle);
+    setupThemeToggle();
+</script>

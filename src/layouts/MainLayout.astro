@@ -6,6 +6,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 import MagicNavbar from "@components/ui/MagicNavbar.astro"; // 👈 Importamos la pieza clave
 import AgeGate from "@components/ui/AgeGate.astro";
 import CartDrawer from "@components/cart/CartDrawer.astro";
+import Footer from "@components/ui/Footer.astro";
 
 interface Props {
     title: string;
@@ -30,7 +31,7 @@ const widthClass = containerClass
 ---
 
 <!DOCTYPE html>
-<html lang="es" class="bg-[#020617]">
+<html lang="es" class="bg-dark-bg transition-colors duration-500">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
@@ -42,9 +43,22 @@ const widthClass = containerClass
 
         <ClientRouter />
         <slot name="head" />
+
+        <!-- Theme Initialization Script -->
+        <script is:inline>
+            (function() {
+                try {
+                    const savedTheme = localStorage.getItem('theme');
+                    const isSystemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                    if (savedTheme === 'light' || (!savedTheme && isSystemLight)) {
+                        document.documentElement.classList.add('light');
+                    }
+                } catch (e) {}
+            })();
+        </script>
     </head>
     <body
-        class="selection:bg-neon-pink selection:text-white antialiased text-slate-300 min-h-screen bg-transparent overflow-x-hidden relative"
+        class="selection:bg-neon-pink selection:text-white antialiased text-body-color min-h-screen bg-transparent overflow-x-hidden relative transition-colors duration-500"
     >
         <LiquidBackground />
 
@@ -65,6 +79,8 @@ const widthClass = containerClass
         </main>
 
         <MagicNavbar />
+
+        <Footer />
 
         <style is:global>
             @reference "@styles/global.css";

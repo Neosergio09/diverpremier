@@ -1,127 +1,309 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { Clock, MapPin, MessageCircle } from "lucide-astro";
+import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
 ---
 
 <MainLayout title="Diverpremier - Tactical Map" isProse={false} containerClass="p-0 m-0 max-w-none h-screen w-full relative overflow-hidden bg-dark-bg">
+  <!-- Leaflet Map Container -->
   <div id="tactical-map" class="absolute inset-0 z-0"></div>
-  
-  <div class="absolute inset-0 z-0 pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"></div>
 
-  <div class="absolute top-32 lg:top-36 right-4 lg:right-10 z-[1000]">
-    <div class="glass-neon p-6 rounded-3xl border border-white/5 w-[85vw] max-w-[320px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-5 backdrop-blur-xl bg-[#020617]/80">
+  <!-- Cinematic Vignette Overlay -->
+  <div class="absolute inset-0 z-[1] pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.7)]"></div>
+
+  <!-- Info Panel -->
+  <div id="info-panel" class="absolute top-32 lg:top-36 right-4 lg:right-10 z-[1000]">
+    <div class="info-card glass-neon p-6 rounded-3xl border border-white/5 w-[85vw] max-w-[320px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-5 backdrop-blur-xl">
+
+      <!-- Header -->
       <div class="flex justify-between items-center pb-4 border-b border-white/10">
         <div>
-          <h2 class="text-white font-black uppercase tracking-widest text-sm">Central Álamos</h2>
-          <p class="text-slate-400 text-[10px] uppercase tracking-widest mt-1">Status Operativo</p>
+          <h2 class="info-title font-black uppercase tracking-widest text-sm">Central Álamos</h2>
+          <p class="info-subtitle text-[10px] uppercase tracking-widest mt-1">Status Operativo</p>
         </div>
-        <div class="flex items-center gap-2 bg-teal-500/10 px-3 py-1.5 rounded-full border border-teal-500/20">
+        <div class="status-badge-live flex items-center gap-2 px-3 py-1.5 rounded-full border">
           <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.5)]"></span>
           <span class="text-teal-400 text-[10px] font-bold uppercase tracking-wider">OPEN</span>
         </div>
       </div>
 
+      <!-- Stats -->
       <div class="space-y-4">
-        <div class="flex items-center gap-4 text-slate-300">
-           <div class="w-10 h-10 rounded-full bg-teal-400/10 flex items-center justify-center border border-teal-400/20">
-              <Clock size={16} class="text-teal-400" />
-           </div>
-           <div>
-              <p class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Delivery Estimado</p>
-              <p class="text-white font-black text-lg drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">15 - 25 <span class="text-xs text-teal-400 font-bold">MIN</span></p>
-           </div>
+        <div class="flex items-center gap-4">
+          <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border">
+            <Clock size={16} class="text-teal-400" />
+          </div>
+          <div>
+            <p class="info-label text-[10px] uppercase font-bold tracking-widest">Delivery Estimado</p>
+            <p class="info-value font-black text-lg">15 - 25 <span class="text-xs text-teal-400 font-bold">MIN</span></p>
+          </div>
         </div>
 
-        <div class="flex items-center gap-4 text-slate-300">
-           <div class="w-10 h-10 rounded-full bg-teal-400/10 flex items-center justify-center border border-teal-400/20">
-              <MapPin size={16} class="text-teal-400" />
-           </div>
-           <div>
-              <p class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Zona Cobertura</p>
-              <p class="text-white font-black text-xs uppercase tracking-wider">Flash Delivery Zone</p>
-           </div>
+        <div class="flex items-center gap-4">
+          <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border">
+            <MapPin size={16} class="text-teal-400" />
+          </div>
+          <div>
+            <p class="info-label text-[10px] uppercase font-bold tracking-widest">Zona Cobertura</p>
+            <p class="info-value font-black text-xs uppercase tracking-wider">Flash Delivery Zone</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border">
+            <Navigation size={16} class="text-teal-400" />
+          </div>
+          <div>
+            <p class="info-label text-[10px] uppercase font-bold tracking-widest">Radio de Operación</p>
+            <p class="info-value font-black text-xs uppercase tracking-wider">2.5 KM</p>
+          </div>
         </div>
       </div>
 
-      <a href="#" class="mt-2 group relative w-full py-4 rounded-xl bg-gradient-to-r from-teal-500/10 to-teal-400/20 border border-teal-500/30 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(45,212,191,0.2)] flex items-center justify-center gap-2 cursor-pointer">
-          <MessageCircle size={18} class="text-teal-400 group-hover:scale-110 transition-transform" />
-          <span class="text-teal-400 font-black text-[10px] tracking-[0.2em] uppercase">Contactar Central</span>
+      <!-- CTA Button -->
+      <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" class="cta-btn mt-2 group relative w-full py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border">
+        <MessageCircle size={18} class="text-teal-400 group-hover:scale-110 transition-transform" />
+        <span class="text-teal-400 font-black text-[10px] tracking-[0.2em] uppercase">Contactar Central</span>
       </a>
     </div>
   </div>
 </MainLayout>
 
+<!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <style is:global>
+  /* ═══════════════════════════════════════════
+     LEAFLET CONTAINER – THEME-AWARE
+     ═══════════════════════════════════════════ */
   .leaflet-container {
-    background: #020617 !important;
+    background: var(--color-dark-bg) !important;
+    transition: background-color 0.5s ease;
   }
+
+  /* Hide default Leaflet attribution */
+  .leaflet-control-attribution {
+    display: none !important;
+  }
+
+  /* Light mode filter on tile layer for warm palette */
+  html.light .leaflet-tile-pane {
+    transition: filter 0.6s ease;
+  }
+
+  /* ═══════════════════════════════════════════
+     MARKER PULSE ANIMATIONS
+     ═══════════════════════════════════════════ */
   .neon-teal-marker {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   .pulse-ring {
     animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
   }
+
   @keyframes pulse-ring {
     0% { transform: scale(0.5); opacity: 0; }
     50% { opacity: 1; }
     100% { transform: scale(1.5); opacity: 0; }
   }
+
+  /* ═══════════════════════════════════════════
+     INFO PANEL – ADAPTIVE THEME STYLES
+     ═══════════════════════════════════════════ */
+  .info-card {
+    background: rgba(2, 6, 23, 0.85);
+    transition: background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  .info-title { color: #fff; }
+  .info-subtitle { color: #94a3b8; }
+  .info-label { color: #64748b; }
+  .info-value { color: #fff; }
+  .icon-circle {
+    background: rgba(45, 212, 191, 0.1);
+    border-color: rgba(45, 212, 191, 0.2);
+  }
+  .status-badge-live {
+    background: rgba(45, 212, 191, 0.1);
+    border-color: rgba(45, 212, 191, 0.2);
+  }
+  .cta-btn {
+    background: linear-gradient(to right, rgba(20, 184, 166, 0.1), rgba(45, 212, 191, 0.2));
+    border-color: rgba(45, 212, 191, 0.3);
+  }
+  .cta-btn:hover {
+    box-shadow: 0 0 30px rgba(45, 212, 191, 0.2);
+  }
+
+  /* ── Light Mode ── */
+  html.light .info-card {
+    background: rgba(244, 244, 245, 0.92);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  }
+  html.light .info-title { color: #171717; }
+  html.light .info-subtitle { color: #64748b; }
+  html.light .info-label { color: #475569; }
+  html.light .info-value { color: #171717; }
+  html.light .icon-circle {
+    background: rgba(20, 184, 166, 0.08);
+    border-color: rgba(20, 184, 166, 0.15);
+  }
+  html.light .status-badge-live {
+    background: rgba(20, 184, 166, 0.08);
+    border-color: rgba(20, 184, 166, 0.2);
+  }
+  html.light .cta-btn {
+    background: linear-gradient(to right, rgba(20, 184, 166, 0.06), rgba(45, 212, 191, 0.12));
+    border-color: rgba(20, 184, 166, 0.25);
+  }
+  html.light .cta-btn:hover {
+    box-shadow: 0 0 25px rgba(20, 184, 166, 0.15);
+  }
+
+  /* Light mode marker label adaptation */
+  html.light .marker-label {
+    background: rgba(244, 244, 245, 0.9) !important;
+    border-color: rgba(20, 184, 166, 0.3) !important;
+  }
+  html.light .marker-label span {
+    color: #0f766e !important;
+  }
 </style>
 
 <script is:inline>
-  document.addEventListener('astro:page-load', () => {
-    const mapContainer = document.getElementById('tactical-map');
-    if (!mapContainer) return;
-    
-    // Check if map is already initialized
-    if (mapContainer._leaflet_id) {
-       mapContainer._leaflet_id = null;
+  // ═══════════════════════════════════════════════════════
+  // TACTICAL MAP ENGINE — Theme-Reactive Leaflet System
+  // ═══════════════════════════════════════════════════════
+
+  (function() {
+    /** @type {L.Map | null} */
+    let mapInstance = null;
+    /** @type {L.TileLayer | null} */
+    let currentTileLayer = null;
+    /** @type {MutationObserver | null} */
+    let themeObserver = null;
+
+    const BUNKER_COORDS = [4.698, -74.112];
+
+    const TILES = {
+      dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+    };
+
+    function isLightMode() {
+      return document.documentElement.classList.contains('light');
     }
 
-    const bunkerCoords = [4.698, -74.112];
-    
-    const map = L.map('tactical-map', {
-      zoomControl: false,
-      attributionControl: false,
-    }).setView(bunkerCoords, 14.5);
+    function getCurrentTileUrl() {
+      return isLightMode() ? TILES.light : TILES.dark;
+    }
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 20
-    }).addTo(map);
+    /**
+     * Swap TileLayer without destroying the map.
+     * Strategy: Remove the old layer, add a new one.
+     * This avoids Leaflet's internal _url caching issues
+     * and delivers a clean visual transition.
+     */
+    function swapTileLayer() {
+      if (!mapInstance) return;
 
-    const bunkerIcon = L.divIcon({
-      className: 'neon-teal-marker',
-      html: `
+      if (currentTileLayer) {
+        mapInstance.removeLayer(currentTileLayer);
+      }
+
+      currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
+        maxZoom: 20,
+        attribution: ''
+      }).addTo(mapInstance);
+    }
+
+    function createMarkerHtml() {
+      return `
         <div class="relative flex items-center justify-center w-12 h-12">
-            <div class="absolute w-full h-full bg-teal-400/40 rounded-full blur-xl animate-pulse"></div>
-            <div class="absolute w-24 h-24 border border-teal-400/40 rounded-full pulse-ring" style="animation-duration: 3s"></div>
-            <div class="absolute w-16 h-16 border border-teal-400/60 rounded-full pulse-ring" style="animation-duration: 2s; animation-delay: 0.5s"></div>
-            <div class="relative w-5 h-5 bg-teal-400 rounded-full shadow-[0_0_20px_#2dd4bf] border border-white flex justify-center items-center">
-               <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
-            </div>
-            <div class="absolute mt-16 whitespace-nowrap px-3 py-1.5 glass-neon rounded-xl border border-teal-500/30 bg-[#020617]/80 backdrop-blur-md">
-               <span class="text-teal-400 font-black text-[9px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]">BUNKER ÁLAMOS</span>
-            </div>
+          <div class="absolute w-full h-full bg-teal-400/40 rounded-full blur-xl animate-pulse"></div>
+          <div class="absolute w-24 h-24 border border-teal-400/40 rounded-full pulse-ring" style="animation-duration:3s"></div>
+          <div class="absolute w-16 h-16 border border-teal-400/60 rounded-full pulse-ring" style="animation-duration:2s;animation-delay:0.5s"></div>
+          <div class="relative w-5 h-5 bg-teal-400 rounded-full shadow-[0_0_20px_#2dd4bf] border border-white flex justify-center items-center">
+            <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+          </div>
+          <div class="marker-label absolute mt-16 whitespace-nowrap px-3 py-1.5 glass-neon rounded-xl border border-teal-500/30 bg-[#020617]/80 backdrop-blur-md">
+            <span class="text-teal-400 font-black text-[9px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]">BUNKER ÁLAMOS</span>
+          </div>
         </div>
-      `,
-      iconSize: [48, 48],
-      iconAnchor: [24, 24]
-    });
+      `;
+    }
 
-    L.marker(bunkerCoords, { icon: bunkerIcon }).addTo(map);
+    function initMap() {
+      const container = document.getElementById('tactical-map');
+      if (!container) return;
 
-    L.circle(bunkerCoords, {
-      color: '#2dd4bf',
-      fillColor: '#2dd4bf',
-      fillOpacity: 0.05,
-      weight: 1,
-      dashArray: '5, 10',
-      radius: 2500 // 2.5km radius for flash delivery
-    }).addTo(map);
-  });
+      // ── Cleanup: Prevent double-init on View Transitions ──
+      if (mapInstance) {
+        themeObserver?.disconnect();
+        mapInstance.remove();
+        mapInstance = null;
+        currentTileLayer = null;
+      }
+
+      // Clear any stale Leaflet ID from a previous lifecycle
+      if (container._leaflet_id) {
+        container._leaflet_id = null;
+        container.innerHTML = '';
+      }
+
+      // ── Create Map ──
+      mapInstance = L.map('tactical-map', {
+        zoomControl: false,
+        attributionControl: false,
+      }).setView(BUNKER_COORDS, 14.5);
+
+      // ── Initial Tile Layer ──
+      currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
+        maxZoom: 20,
+        attribution: ''
+      }).addTo(mapInstance);
+
+      // ── Bunker Marker ──
+      const bunkerIcon = L.divIcon({
+        className: 'neon-teal-marker',
+        html: createMarkerHtml(),
+        iconSize: [48, 48],
+        iconAnchor: [24, 24]
+      });
+
+      L.marker(BUNKER_COORDS, { icon: bunkerIcon }).addTo(mapInstance);
+
+      // ── Coverage Radius ──
+      L.circle(BUNKER_COORDS, {
+        color: '#2dd4bf',
+        fillColor: '#2dd4bf',
+        fillOpacity: 0.05,
+        weight: 1,
+        dashArray: '5, 10',
+        radius: 2500
+      }).addTo(mapInstance);
+
+      // ═══════════════════════════════════════════
+      // THEME OBSERVER — MutationObserver Strategy
+      // ═══════════════════════════════════════════
+      themeObserver = new MutationObserver(function(mutations) {
+        for (const mutation of mutations) {
+          if (mutation.attributeName === 'class') {
+            swapTileLayer();
+          }
+        }
+      });
+
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    }
+
+    // ── Boot on Astro page-load (View Transitions safe) ──
+    document.addEventListener('astro:page-load', initMap);
+  })();
 </script>

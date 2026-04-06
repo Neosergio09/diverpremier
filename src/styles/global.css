@@ -6,50 +6,23 @@
   --color-neon-blue: #38BDF8;
   --color-neon-pink: #F472B6;
   --color-dark-bg: #020617;
+  --color-body-text: #cbd5e1;
+  /* slate-300 */
 
   /* 🚀 Animaciones de Micro-interacción */
   --animate-float: float 4s ease-in-out infinite;
   --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
 
   @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-12px) rotate(1deg); }
-  }
 
-  @keyframes pulse-glow {
-    0%, 100% {
-      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
-      opacity: 0.8;
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
     }
+
     50% {
-      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.7));
-      opacity: 1;
+      transform: translateY(-12px) rotate(1deg);
     }
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes nod {
-    0%, 100% { transform: translate(5px, -5px); }
-    50% { transform: translate(5px, 8px); }
-  }
-
-  @keyframes reveal {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fall-in {
-    from { opacity: 0; transform: translateY(-50px) scale(1.02); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  @keyframes fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
   }
 
   @keyframes pulse-glow {
@@ -65,7 +38,158 @@
       opacity: 1;
     }
   }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes nod {
+
+    0%,
+    100% {
+      transform: translate(5px, -5px);
+    }
+
+    50% {
+      transform: translate(5px, 8px);
+    }
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fall-in {
+    from {
+      opacity: 0;
+      transform: translateY(-50px) scale(1.02);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
 }
+
+/* 🌞 Light Mode Overrides - Accessibility Pro Level */
+html.light {
+  --color-dark-bg: #f4f4f5; /* Zinc-100 for eye comfort */
+  --color-body-text: #171717; /* Neutral-900 */
+  color: var(--color-body-text);
+}
+
+/* Premium Contrast Flips for Day Mode */
+html.light .bg-\[\#020617\],
+html.light .bg-dark-bg,
+html.light .bg-neutral-900 {
+  background-color: #f4f4f5 !important;
+}
+
+html.light .text-white {
+  color: #171717 !important;
+}
+
+html.light .text-slate-300,
+html.light .text-slate-400,
+html.light .text-neutral-400,
+html.light .text-neutral-500 {
+  color: #475569 !important;
+  /* Pass AA Contrast for sub-text */
+}
+
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/30 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .btn-secondary {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  color: #171717 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .btn-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .btn-bunker {
+  background-color: rgba(56, 189, 248, 0.08) !important;
+  color: #0369a1 !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  box-shadow: none !important;
+}
+
+html.light .btn-bunker:hover {
+  background-color: rgba(56, 189, 248, 0.15) !important;
+}
+
+html.light .btn-primary {
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.2) !important;
+}
+
+html.light .magic-navbar {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .magic-navbar .text-white\/30 {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+html.light .magic-navbar .group-\[\.active\]\:text-white {
+  color: #0369a1 !important;
+  /* Active Icon Focus Color */
+}
+
+html.light .magic-navbar .indicator {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 5px 15px rgba(56, 189, 248, 0.2) !important;
+}
+
+html.light .from-\[\#020617\] {
+  --tw-gradient-from: #f4f4f5 !important;
+  --tw-gradient-to: rgba(244, 244, 245, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+/* Base Body Styles utilizing semantic colors */
+@layer base {
+  .text-body-color {
+    color: var(--color-body-text);
+  }
+}
+
+
 
 /* 🖋️ Selección de Texto */
 ::selection {
@@ -86,6 +210,12 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+html.light .glass-neon {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* 🛠️ COMPONENTES DEL ADMIN (BUNKER UI) */
@@ -174,12 +304,15 @@
 
 /* 🖱️ Interacciones de Scrollbar & Helpers */
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 ::-webkit-scrollbar {

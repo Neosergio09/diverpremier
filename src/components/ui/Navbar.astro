@@ -1,5 +1,6 @@
 ---
 import { MapPin, FlaskConical } from "lucide-astro";
+import ThemeToggle from "./ThemeToggle.astro";
 
 const navItems = [
   { name: "Inicio", url: "/" },
@@ -60,6 +61,9 @@ const currentPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
     </ul>
 
     <div class="flex items-center gap-4 relative z-10">
+      <!-- 🌞 Theme Toggle Button -->
+      <ThemeToggle />
+
       <div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-slate-300">
         <MapPin size={12} class="text-neon-purple" />
         Álamos, Bogotá

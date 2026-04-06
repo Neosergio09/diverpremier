@@ -11,6 +11,28 @@ export default defineConfig({
   // 🛠️ Adaptador oficial para que Vercel entienda el código del servidor
   adapter: vercel(),
 
+  image: {
+    domains: ['placehold.co', 'images.unsplash.com', 'upload.wikimedia.org', 'kzzpbxgsffmeyvckdmhs.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+    ],
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },
