@@ -100,8 +100,10 @@
 
 /* 🌞 Light Mode Overrides - Accessibility Pro Level */
 html.light {
-  --color-dark-bg: #f4f4f5; /* Zinc-100 for eye comfort */
-  --color-body-text: #171717; /* Neutral-900 */
+  --color-dark-bg: #f4f4f5;
+  /* Zinc-100 for eye comfort */
+  --color-body-text: #171717;
+  /* Neutral-900 */
   color: var(--color-body-text);
 }
 
@@ -216,6 +218,25 @@ html.light .glass-neon {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 📱 Mobile GPU Optimization: Reduce blur overdraw */
+@media (max-width: 767px) {
+  .glass-neon {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* MagicNavbar clearance zone */
+  body {
+    padding-bottom: 100px;
+  }
+}
+
+/* 🖼️ CLS Guard: aspect-ratio baseline for images */
+img {
+  aspect-ratio: auto;
+  height: auto;
 }
 
 /* 🛠️ COMPONENTES DEL ADMIN (BUNKER UI) */

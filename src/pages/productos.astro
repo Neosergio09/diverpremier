@@ -71,7 +71,7 @@ const products = [
         Abierto 24/7 en Engativá
       </div>
       <h1
-        class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase leading-none text-white"
+        class="text-4xl sm:text-6xl md:text-8xl font-black italic tracking-tighter uppercase leading-none text-white"
       >
         <span class="neon-glow-blue">Licores</span>
         <br />
@@ -88,13 +88,13 @@ const products = [
     </header>
 
     <nav
-      class="flex overflow-x-auto py-2 gap-4 no-scrollbar sticky top-24 z-30 bg-dark-bg/80 backdrop-blur-md -mx-6 px-6"
+      class="flex overflow-x-auto py-2 gap-3 sm:gap-4 no-scrollbar sticky top-20 md:top-24 z-30 bg-dark-bg/80 backdrop-blur-md -mx-6 px-6"
     >
       {
         categories.map((cat, index) => (
           <button
             class:list={[
-              "px-8 py-3 rounded-2xl glass-neon border transition-all duration-300 font-bold uppercase text-xs tracking-widest whitespace-nowrap",
+               "px-5 sm:px-8 py-3 min-h-[44px] min-w-[44px] rounded-2xl glass-neon border transition-all duration-300 font-bold uppercase text-xs tracking-widest whitespace-nowrap flex items-center justify-center",
               index === 0
                 ? "border-neon-blue text-neon-blue bg-neon-blue/10 shadow-[0_0_15px_rgba(0,209,255,0.2)]"
                 : "border-white/10 text-slate-400 hover:border-white/30 hover:text-white",
@@ -185,9 +185,6 @@ const products = [
         ))
       }
     </div>
-
-    <!-- SEO Footer -->
-    ...
   </div>
 </MainLayout>
 
@@ -206,4 +203,3 @@ const products = [
     });
   });
 </script>
-

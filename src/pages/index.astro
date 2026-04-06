@@ -118,7 +118,7 @@ const featuredProducts = [
             </div>
 
             <h1
-                class="text-7xl md:text-[11rem] font-black mb-10 leading-[0.8] tracking-tighter uppercase italic text-white mix-blend-difference"
+                class="text-5xl sm:text-7xl md:text-[11rem] font-black mb-10 leading-[0.85] sm:leading-[0.8] tracking-tighter uppercase italic text-white mix-blend-difference"
             >
                 Diver<span class="text-teal-500">premier</span>
             </h1>
@@ -143,7 +143,7 @@ const featuredProducts = [
                 </a>
                 <a
                     href="/productos"
-                    class="group text-neutral-500 hover:text-white font-black tracking-widest uppercase text-xs flex items-center gap-3 transition-all"
+                    class="group text-neutral-500 hover:text-white font-black tracking-widest uppercase text-xs flex items-center gap-3 transition-all py-3 min-h-[44px]"
                 >
                     Ver Catálogo Completo <ChevronRight
                         size={20}
@@ -180,7 +180,7 @@ const featuredProducts = [
                     categories.map((cat) => (
                         <a
                             href={`/productos?cat=${cat.name}`}
-                            class="group relative aspect-[4/5] overflow-hidden rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900"
+                            class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900"
                         >
                             <Image
                                 width={800}
@@ -285,7 +285,7 @@ const featuredProducts = [
                 {
                     featuredProducts.map((prod) => (
                         <div class="group relative">
-                            <div class="glass-neon rounded-[3rem] p-8 border-white/5 hover:border-teal-500/20 transition-all duration-500 flex flex-col h-full">
+                            <div class="glass-neon rounded-2xl sm:rounded-[3rem] p-5 sm:p-8 border-white/5 hover:border-teal-500/20 transition-all duration-500 flex flex-col h-full">
                                 <div class="aspect-square rounded-[2rem] overflow-hidden mb-10 bg-white/[0.03] border border-white/5 relative">
                                     {prod.isHot && (
                                         <span class="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-teal-500 text-dark-bg text-[9px] font-black uppercase tracking-widest">

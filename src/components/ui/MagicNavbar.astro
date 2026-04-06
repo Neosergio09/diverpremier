@@ -1,5 +1,5 @@
 ---
-import { Home, Package, Map, Wine, Users } from "lucide-astro";
+import { Home, Package, Map, Wine, Users, Sun, Moon } from "lucide-astro";
 
 const pathname = Astro.url.pathname;
 
@@ -8,7 +8,7 @@ const navItems = [
     { href: "/productos", icon: Package, label: "Tienda" },
     { href: "/mapa", icon: Map, label: "Mapa" },
     { href: "/nosotros", icon: Users, label: "Nosotros" },
-    { href: "/cocteleria", icon: Wine, label: "Coctelería" },
+    { href: "/cocteleria", icon: Wine, label: "Cócteles" },
 ];
 
 const activeIndex = navItems.findIndex((item) => {
@@ -21,17 +21,18 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
 ---
 
 <div
-    class="fixed bottom-0 left-0 w-full flex justify-center z-[5000] md:hidden pb-10 px-4 pointer-events-none"
+    class="fixed bottom-0 left-0 w-full flex justify-center z-[5000] md:hidden pb-6 px-3 pointer-events-none"
 >
     <nav
         id="magic-navbar"
         transition:persist="magic-navbar"
-        class="navigation magic-navbar pointer-events-auto relative w-full max-w-[340px] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
+        class="navigation magic-navbar pointer-events-auto relative w-full max-w-[95vw] h-[62px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
     >
         <div
-            class="relative w-[300px]"
+            class="relative w-full max-w-[360px]"
             style={`--active-index: ${currentIndex};`}
         >
+            <!-- Active Page Indicator Bubble -->
             <div
                 class="indicator absolute -top-[50%] left-0 w-[60px] h-[60px] bg-neon-blue/20 backdrop-blur-xl rounded-full border border-white/30 transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)] z-0 shadow-[0_10px_30px_rgba(56,189,248,0.4)]"
             >
@@ -47,7 +48,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                 {
                     navItems.map((item, index) => (
                         <li
-                            class={`relative w-[60px] h-[65px] z-10 flex-shrink-0 group ${
+                            class={`relative w-[52px] sm:w-[60px] h-[62px] z-10 flex-shrink-0 group ${
                                 index === currentIndex ? "active" : ""
                             }`}
                         >
@@ -55,33 +56,61 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                                 href={item.href}
                                 class="relative flex justify-center items-center flex-col w-full h-full"
                             >
-                                <span class="icon relative block text-white/30 transition-all duration-500 group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-8">
+                                <span class="icon relative block text-white/30 transition-all duration-500 will-change-transform group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-8">
                                     <item.icon
-                                        size={22}
+                                        size={20}
                                         strokeWidth={
                                             index === currentIndex ? 2.5 : 2
                                         }
                                     />
                                 </span>
 
-                                <span class="text absolute bottom-[-22px] text-neon-blue font-black text-[10px] tracking-[0.2em] opacity-0 transition-all duration-500 group-[.active]:opacity-100 uppercase">
+                                <span class="text absolute bottom-[-18px] text-neon-blue font-black text-[8px] sm:text-[10px] tracking-[0.15em] sm:tracking-[0.2em] opacity-0 transition-all duration-500 group-[.active]:opacity-100 uppercase whitespace-nowrap">
                                     {item.label}
                                 </span>
                             </a>
                         </li>
                     ))
                 }
+
+                <!-- Theme Toggle (6th Item) -->
+                <li class="relative w-[52px] sm:w-[60px] h-[62px] z-10 flex-shrink-0">
+                    <button
+                        id="magic-theme-toggle"
+                        class="relative flex justify-center items-center w-full h-full cursor-pointer bg-transparent border-none outline-none"
+                        aria-label="Toggle Theme"
+                    >
+                        <!-- Sun Icon (visible in dark mode) -->
+                        <span class="theme-icon-sun absolute transition-all duration-500 will-change-transform text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                            <Sun size={20} strokeWidth={2} />
+                        </span>
+                        <!-- Moon Icon (visible in light mode) -->
+                        <span class="theme-icon-moon absolute transition-all duration-500 will-change-transform text-slate-600 drop-shadow-[0_0_8px_rgba(100,116,139,0.4)] rotate-90 opacity-0 scale-50">
+                            <Moon size={20} strokeWidth={2} />
+                        </span>
+                    </button>
+                </li>
             </ul>
         </div>
     </nav>
 </div>
 
 <style>
+    /* ═══════════════════════════════════════════
+       INDICATOR POSITIONING
+       ═══════════════════════════════════════════ */
     .indicator {
-        transform: translateX(calc(var(--active-index) * 60px));
+        /* Each nav item is fluid; compute offset based on item width fraction */
+        transform: translateX(calc(var(--active-index) * 52px));
     }
 
-    /* Efecto de pulso sutil cuando la burbuja está quieta */
+    @media (min-width: 640px) {
+        .indicator {
+            transform: translateX(calc(var(--active-index) * 60px));
+        }
+    }
+
+    /* Subtle pulse on the active bubble */
     .indicator {
         animation: bubble-glow 3s ease-in-out infinite;
     }
@@ -95,15 +124,54 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
             box-shadow: 0 10px 45px rgba(56, 189, 248, 0.6);
         }
     }
+
+    /* ═══════════════════════════════════════════
+       THEME TOGGLE ANIMATIONS (GPU-accelerated)
+       ═══════════════════════════════════════════ */
+    .theme-icon-sun,
+    .theme-icon-moon {
+        will-change: transform, opacity;
+        backface-visibility: hidden;
+    }
+
+    /* Light mode active: hide sun, show moon */
+    :global(html.light) .theme-icon-sun {
+        transform: rotate(90deg);
+        opacity: 0;
+        scale: 0.5;
+    }
+    :global(html.light) .theme-icon-moon {
+        transform: rotate(0deg);
+        opacity: 1;
+        scale: 1;
+    }
+
+    /* Tap feedback glow */
+    #magic-theme-toggle:active {
+        animation: toggle-pulse 0.3s ease-out;
+    }
+
+    @keyframes toggle-pulse {
+        0% {
+            filter: drop-shadow(0 0 0px rgba(56, 189, 248, 0));
+        }
+        50% {
+            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
+        }
+        100% {
+            filter: drop-shadow(0 0 0px rgba(56, 189, 248, 0));
+        }
+    }
 </style>
 
 <script>
-    document.addEventListener("astro:page-load", () => {
+    function initMagicNavbar() {
         const navbar = document.getElementById("magic-navbar");
         if (!navbar) return;
 
+        // ─── Active Page Highlight ───
         const path = window.location.pathname;
-        const links = navbar.querySelectorAll("a");
+        const links = navbar.querySelectorAll("ul > li:not(:last-child) a"); // Exclude toggle
         let activeIdx = 2; // Default (Map)
 
         links.forEach((a, idx) => {
@@ -116,12 +184,12 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
             }
         });
 
-        const container = navbar.querySelector(".relative.w-\\[300px\\]");
+        const container = navbar.querySelector("[style*='--active-index']") as HTMLElement;
         if (container) {
-            (container as HTMLElement).style.setProperty("--active-index", activeIdx.toString());
+            container.style.setProperty("--active-index", activeIdx.toString());
         }
 
-        const items = navbar.querySelectorAll("li");
+        const items = navbar.querySelectorAll("ul > li:not(:last-child)");
         items.forEach((li, idx) => {
             if (idx === activeIdx) {
                 li.classList.add("active");
@@ -129,5 +197,61 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                 li.classList.remove("active");
             }
         });
-    });
+
+        // ─── Theme Toggle Logic ───
+        const toggleBtn = document.getElementById("magic-theme-toggle");
+        if (!toggleBtn) return;
+
+        // Remove previous handler to prevent duplicates on View Transitions
+        if ((window as any).__magicThemeHandler) {
+            toggleBtn.removeEventListener("click", (window as any).__magicThemeHandler);
+        }
+
+        (window as any).__magicThemeHandler = () => {
+            const isLight = document.documentElement.classList.toggle("light");
+            localStorage.setItem("theme", isLight ? "light" : "dark");
+
+            // Sync the desktop ThemeToggle button state if it exists
+            const desktopToggle = document.getElementById("theme-toggle");
+            if (desktopToggle) {
+                if (isLight) {
+                    desktopToggle.classList.add("is-light");
+                } else {
+                    desktopToggle.classList.remove("is-light");
+                }
+            }
+        };
+
+        toggleBtn.addEventListener("click", (window as any).__magicThemeHandler);
+
+        // ─── MutationObserver: Sync icon state when desktop toggle fires ───
+        if ((window as any).__magicThemeObserver) {
+            (window as any).__magicThemeObserver.disconnect();
+        }
+
+        (window as any).__magicThemeObserver = new MutationObserver((mutations: MutationRecord[]) => {
+            for (const mutation of mutations) {
+                if (mutation.attributeName === "class") {
+                    // Icons auto-sync via :global(html.light) CSS — no JS needed
+                    // But we do need to sync the desktop button class
+                    const isLight = document.documentElement.classList.contains("light");
+                    const desktopToggle = document.getElementById("theme-toggle");
+                    if (desktopToggle) {
+                        if (isLight) {
+                            desktopToggle.classList.add("is-light");
+                        } else {
+                            desktopToggle.classList.remove("is-light");
+                        }
+                    }
+                }
+            }
+        });
+
+        (window as any).__magicThemeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+    }
+
+    document.addEventListener("astro:page-load", initMagicNavbar);
 </script>

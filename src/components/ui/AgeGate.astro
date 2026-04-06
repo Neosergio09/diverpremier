@@ -1,27 +1,28 @@
+---
 // AgeGate.astro - Búnker Nightclub Entrance (Auto-Door Edition)
 ---
 
 <div id="age-gate" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000">
-  
+
   <div id="left-door" class="absolute top-0 left-0 w-1/2 h-full bg-neutral-950 border-r border-teal-500/20 shadow-[10px_0_40px_rgba(20,184,166,0.15)] z-0 transition-transform duration-[1500ms] ease-[cubic-bezier(0.7,0,0.3,1)]">
     <div class="absolute inset-y-0 right-0 w-px bg-white/5"></div>
   </div>
-  
+
   <div id="right-door" class="absolute top-0 right-0 w-1/2 h-full bg-neutral-950 border-l border-teal-500/20 shadow-[-10px_0_40px_rgba(20,184,166,0.15)] z-0 transition-transform duration-[1500ms] ease-[cubic-bezier(0.7,0,0.3,1)]">
     <div class="absolute inset-y-0 left-0 w-px bg-white/5"></div>
   </div>
 
-  <div id="age-gate-panel" class="glass-neon p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border-white/5 relative z-10 text-center max-w-md mx-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl bg-[#020617]/80 transition-all duration-500 w-[calc(100%-2rem)] md:w-auto">
+  <div id="age-gate-panel" class="glass-neon p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border-white/5 relative z-10 text-center max-w-sm sm:max-w-md mx-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl bg-[#020617]/80 transition-all duration-500 w-[calc(100%-2rem)] md:w-auto">
     <div class="mb-6 flex justify-center">
       <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-teal-500/10 flex items-center justify-center border border-teal-500/30 shadow-[0_0_20px_rgba(20,184,166,0.3)]">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 md:w-8 md:h-8 text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path><path d="m9 12 2 2 4-4"></path></svg>
       </div>
     </div>
-    
+
     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase italic mb-2 md:mb-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
       ¿Control de Acceso?
     </h2>
-    
+
     <p class="text-neutral-400 mb-8 md:mb-10 text-xs md:text-sm font-medium leading-relaxed px-2 md:px-0">
       Confirma que eres mayor de edad (+18) para ingresar al búnker de Diverpremier.
     </p>
@@ -45,7 +46,7 @@
 
   document.addEventListener('astro:page-load', () => {
     const ageGate = document.getElementById('age-gate');
-    
+
     // Double check for SPA navigations (View Transitions)
     if (typeof localStorage !== 'undefined' && localStorage.getItem('ageVerified') === 'true') {
       if (ageGate) ageGate.style.display = 'none';
@@ -70,12 +71,12 @@
       // 1. Desvanecer el panel primero (Señal de acceso concedido)
       panel.style.opacity = '0';
       panel.style.transform = 'scale(0.9)';
-      
+
       // 2. Abrir las puertas con un ligero delay para realismo mecánico
       setTimeout(() => {
         if (leftDoor) leftDoor.style.transform = 'translateX(-100%)';
         if (rightDoor) rightDoor.style.transform = 'translateX(100%)';
-        
+
         // 3. Desvanecer el contenedor general al final
         setTimeout(() => {
           ageGate.style.opacity = '0';

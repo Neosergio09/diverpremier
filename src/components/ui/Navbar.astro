@@ -14,7 +14,7 @@ const pathname = Astro.url.pathname;
 const currentPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
 ---
 
-<nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[90] w-full max-w-7xl px-4">
+<nav class="hidden md:block fixed top-6 left-1/2 -translate-x-1/2 z-[90] w-full max-w-7xl px-4">
   <div
     class="glass-neon border-neon-purple/30 rounded-3xl px-8 py-5 flex items-center justify-between relative overflow-hidden bg-[#020617]/60 backdrop-blur-xl"
   >
