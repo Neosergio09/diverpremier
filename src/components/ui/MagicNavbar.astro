@@ -74,18 +74,24 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                 }
 
                 <!-- Theme Toggle (6th Item) -->
-                <li class="relative w-[52px] sm:w-[60px] h-[62px] z-10 flex-shrink-0">
+                <li
+                    class="relative w-[52px] sm:w-[60px] h-[62px] z-10 flex-shrink-0"
+                >
                     <button
                         id="magic-theme-toggle"
                         class="relative flex justify-center items-center w-full h-full cursor-pointer bg-transparent border-none outline-none"
                         aria-label="Toggle Theme"
                     >
                         <!-- Sun Icon (visible in dark mode) -->
-                        <span class="theme-icon-sun absolute transition-all duration-500 will-change-transform text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                        <span
+                            class="theme-icon-sun absolute transition-all duration-500 will-change-transform text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                        >
                             <Sun size={20} strokeWidth={2} />
                         </span>
                         <!-- Moon Icon (visible in light mode) -->
-                        <span class="theme-icon-moon absolute transition-all duration-500 will-change-transform text-slate-600 drop-shadow-[0_0_8px_rgba(100,116,139,0.4)] rotate-90 opacity-0 scale-50">
+                        <span
+                            class="theme-icon-moon absolute transition-all duration-500 will-change-transform text-slate-600 drop-shadow-[0_0_8px_rgba(100,116,139,0.4)] rotate-90 opacity-0 scale-50"
+                        >
                             <Moon size={20} strokeWidth={2} />
                         </span>
                     </button>
@@ -186,7 +192,9 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
             }
         });
 
-        const container = navbar.querySelector("[style*='--active-index']") as HTMLElement;
+        const container = navbar.querySelector(
+            "[style*='--active-index']",
+        ) as HTMLElement;
         if (container) {
             container.style.setProperty("--active-index", activeIdx.toString());
         }
@@ -206,7 +214,10 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
 
         // Remove previous handler to prevent duplicates on View Transitions
         if ((window as any).__magicThemeHandler) {
-            toggleBtn.removeEventListener("click", (window as any).__magicThemeHandler);
+            toggleBtn.removeEventListener(
+                "click",
+                (window as any).__magicThemeHandler,
+            );
         }
 
         (window as any).__magicThemeHandler = () => {
@@ -224,30 +235,39 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
             }
         };
 
-        toggleBtn.addEventListener("click", (window as any).__magicThemeHandler);
+        toggleBtn.addEventListener(
+            "click",
+            (window as any).__magicThemeHandler,
+        );
 
         // ─── MutationObserver: Sync icon state when desktop toggle fires ───
         if ((window as any).__magicThemeObserver) {
             (window as any).__magicThemeObserver.disconnect();
         }
 
-        (window as any).__magicThemeObserver = new MutationObserver((mutations: MutationRecord[]) => {
-            for (const mutation of mutations) {
-                if (mutation.attributeName === "class") {
-                    // Icons auto-sync via :global(html.light) CSS — no JS needed
-                    // But we do need to sync the desktop button class
-                    const isLight = document.documentElement.classList.contains("light");
-                    const desktopToggle = document.getElementById("theme-toggle");
-                    if (desktopToggle) {
-                        if (isLight) {
-                            desktopToggle.classList.add("is-light");
-                        } else {
-                            desktopToggle.classList.remove("is-light");
+        (window as any).__magicThemeObserver = new MutationObserver(
+            (mutations: MutationRecord[]) => {
+                for (const mutation of mutations) {
+                    if (mutation.attributeName === "class") {
+                        // Icons auto-sync via :global(html.light) CSS — no JS needed
+                        // But we do need to sync the desktop button class
+                        const isLight =
+                            document.documentElement.classList.contains(
+                                "light",
+                            );
+                        const desktopToggle =
+                            document.getElementById("theme-toggle");
+                        if (desktopToggle) {
+                            if (isLight) {
+                                desktopToggle.classList.add("is-light");
+                            } else {
+                                desktopToggle.classList.remove("is-light");
+                            }
                         }
                     }
                 }
-            }
-        });
+            },
+        );
 
         (window as any).__magicThemeObserver.observe(document.documentElement, {
             attributes: true,
