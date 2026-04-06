@@ -3,74 +3,138 @@ import MainLayout from "../layouts/MainLayout.astro";
 import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
 ---
 
-<MainLayout title="Diverpremier - Tactical Map" isProse={false} containerClass="p-0 m-0 max-w-none h-screen w-full relative overflow-hidden bg-dark-bg">
+<MainLayout
+  title="Diverpremier - Tactical Map"
+  isProse={false}
+  containerClass="p-0 m-0 max-w-none h-screen w-full relative overflow-hidden bg-dark-bg"
+>
   <!-- Leaflet Map Container -->
   <div id="tactical-map" class="absolute inset-0 z-0"></div>
 
   <!-- Cinematic Vignette Overlay -->
-  <div class="absolute inset-0 z-[1] pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.7)]"></div>
+  <div
+    class="absolute inset-0 z-[1] pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.7)]"
+  >
+  </div>
 
   <!-- Info Panel -->
-  <div id="info-panel" class="absolute top-32 lg:top-36 right-4 lg:right-10 z-[1000]">
-    <div class="info-card glass-neon p-6 rounded-3xl border border-white/5 w-[85vw] max-w-[320px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-5 backdrop-blur-xl">
-
+  <div
+    id="info-panel"
+    class="absolute bottom-32 md:top-32 lg:top-36 right-4 lg:right-10 z-[1000] flex justify-center md:block"
+  >
+    <div
+      class="info-card glass-neon p-5 md:p-6 rounded-3xl border border-white/5 w-[90vw] md:w-[85vw] max-w-[320px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-4 md:gap-5 backdrop-blur-xl"
+    >
       <!-- Header -->
-      <div class="flex justify-between items-center pb-4 border-b border-white/10">
+      <div
+        class="flex justify-between items-center pb-4 border-b border-white/10"
+      >
         <div>
-          <h2 class="info-title font-black uppercase tracking-widest text-sm">Central Álamos</h2>
-          <p class="info-subtitle text-[10px] uppercase tracking-widest mt-1">Status Operativo</p>
+          <h2 class="info-title font-black uppercase tracking-widest text-sm">
+            Central Álamos
+          </h2>
+          <p class="info-subtitle text-[10px] uppercase tracking-widest mt-1">
+            Status Operativo
+          </p>
         </div>
-        <div class="status-badge-live flex items-center gap-2 px-3 py-1.5 rounded-full border">
-          <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.5)]"></span>
-          <span class="text-teal-400 text-[10px] font-bold uppercase tracking-wider">OPEN</span>
+        <div
+          class="status-badge-live flex items-center gap-2 px-3 py-1.5 rounded-full border"
+        >
+          <span
+            class="w-2 h-2 rounded-full bg-teal-400 animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.5)]"
+          ></span>
+          <span
+            class="text-teal-400 text-[10px] font-bold uppercase tracking-wider"
+            >OPEN</span
+          >
         </div>
       </div>
 
       <!-- Stats -->
       <div class="space-y-4">
         <div class="flex items-center gap-4">
-          <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border">
+          <div
+            class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border"
+          >
             <Clock size={16} class="text-teal-400" />
           </div>
           <div>
-            <p class="info-label text-[10px] uppercase font-bold tracking-widest">Delivery Estimado</p>
-            <p class="info-value font-black text-lg">15 - 25 <span class="text-xs text-teal-400 font-bold">MIN</span></p>
+            <p
+              class="info-label text-[10px] uppercase font-bold tracking-widest"
+            >
+              Delivery Estimado
+            </p>
+            <p class="info-value font-black text-lg">
+              15 - 25 <span class="text-xs text-teal-400 font-bold">MIN</span>
+            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-4">
-          <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border">
+          <div
+            class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border"
+          >
             <MapPin size={16} class="text-teal-400" />
           </div>
           <div>
-            <p class="info-label text-[10px] uppercase font-bold tracking-widest">Zona Cobertura</p>
-            <p class="info-value font-black text-xs uppercase tracking-wider">Flash Delivery Zone</p>
+            <p
+              class="info-label text-[10px] uppercase font-bold tracking-widest"
+            >
+              Zona Cobertura
+            </p>
+            <p class="info-value font-black text-xs uppercase tracking-wider">
+              Flash Delivery Zone
+            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-4">
-          <div class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border">
+          <div
+            class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border"
+          >
             <Navigation size={16} class="text-teal-400" />
           </div>
           <div>
-            <p class="info-label text-[10px] uppercase font-bold tracking-widest">Radio de Operación</p>
-            <p class="info-value font-black text-xs uppercase tracking-wider">2.5 KM</p>
+            <p
+              class="info-label text-[10px] uppercase font-bold tracking-widest"
+            >
+              Radio de Operación
+            </p>
+            <p class="info-value font-black text-xs uppercase tracking-wider">
+              2.5 KM
+            </p>
           </div>
         </div>
       </div>
 
       <!-- CTA Button -->
-      <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" class="cta-btn mt-2 group relative w-full py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border">
-        <MessageCircle size={18} class="text-teal-400 group-hover:scale-110 transition-transform" />
-        <span class="text-teal-400 font-black text-[10px] tracking-[0.2em] uppercase">Contactar Central</span>
+      <a
+        href="https://wa.me/573000000000"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cta-btn mt-2 group relative w-full py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border"
+      >
+        <MessageCircle
+          size={18}
+          class="text-teal-400 group-hover:scale-110 transition-transform"
+        />
+        <span
+          class="text-teal-400 font-black text-[10px] tracking-[0.2em] uppercase"
+          >Contactar Central</span
+        >
       </a>
     </div>
   </div>
 </MainLayout>
 
 <!-- Leaflet CSS & JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  crossorigin=""
+/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""
+></script>
 
 <style is:global>
   /* ═══════════════════════════════════════════
@@ -105,9 +169,17 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   }
 
   @keyframes pulse-ring {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: scale(1.5); opacity: 0; }
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
   }
 
   /* ═══════════════════════════════════════════
@@ -115,12 +187,23 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
      ═══════════════════════════════════════════ */
   .info-card {
     background: rgba(2, 6, 23, 0.85);
-    transition: background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+    transition:
+      background-color 0.5s ease,
+      border-color 0.5s ease,
+      box-shadow 0.5s ease;
   }
-  .info-title { color: #fff; }
-  .info-subtitle { color: #94a3b8; }
-  .info-label { color: #64748b; }
-  .info-value { color: #fff; }
+  .info-title {
+    color: #fff;
+  }
+  .info-subtitle {
+    color: #94a3b8;
+  }
+  .info-label {
+    color: #64748b;
+  }
+  .info-value {
+    color: #fff;
+  }
   .icon-circle {
     background: rgba(45, 212, 191, 0.1);
     border-color: rgba(45, 212, 191, 0.2);
@@ -130,7 +213,11 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     border-color: rgba(45, 212, 191, 0.2);
   }
   .cta-btn {
-    background: linear-gradient(to right, rgba(20, 184, 166, 0.1), rgba(45, 212, 191, 0.2));
+    background: linear-gradient(
+      to right,
+      rgba(20, 184, 166, 0.1),
+      rgba(45, 212, 191, 0.2)
+    );
     border-color: rgba(45, 212, 191, 0.3);
   }
   .cta-btn:hover {
@@ -143,10 +230,18 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     border-color: rgba(0, 0, 0, 0.08);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
   }
-  html.light .info-title { color: #171717; }
-  html.light .info-subtitle { color: #64748b; }
-  html.light .info-label { color: #475569; }
-  html.light .info-value { color: #171717; }
+  html.light .info-title {
+    color: #171717;
+  }
+  html.light .info-subtitle {
+    color: #64748b;
+  }
+  html.light .info-label {
+    color: #475569;
+  }
+  html.light .info-value {
+    color: #171717;
+  }
   html.light .icon-circle {
     background: rgba(20, 184, 166, 0.08);
     border-color: rgba(20, 184, 166, 0.15);
@@ -156,7 +251,11 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     border-color: rgba(20, 184, 166, 0.2);
   }
   html.light .cta-btn {
-    background: linear-gradient(to right, rgba(20, 184, 166, 0.06), rgba(45, 212, 191, 0.12));
+    background: linear-gradient(
+      to right,
+      rgba(20, 184, 166, 0.06),
+      rgba(45, 212, 191, 0.12)
+    );
     border-color: rgba(20, 184, 166, 0.25);
   }
   html.light .cta-btn:hover {
@@ -178,7 +277,7 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   // TACTICAL MAP ENGINE — Theme-Reactive Leaflet System
   // ═══════════════════════════════════════════════════════
 
-  (function() {
+  (function () {
     /** @type {L.Map | null} */
     let mapInstance = null;
     /** @type {L.TileLayer | null} */
@@ -186,15 +285,16 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     /** @type {MutationObserver | null} */
     let themeObserver = null;
 
-    const BUNKER_COORDS = [4.698, -74.112];
+    const BUNKER_COORDS = [4.702527, -74.1186421];
 
     const TILES = {
-      dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+      dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+      light:
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
     };
 
     function isLightMode() {
-      return document.documentElement.classList.contains('light');
+      return document.documentElement.classList.contains("light");
     }
 
     function getCurrentTileUrl() {
@@ -216,7 +316,7 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
 
       currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
         maxZoom: 20,
-        attribution: ''
+        attribution: "",
       }).addTo(mapInstance);
     }
 
@@ -237,7 +337,7 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     }
 
     function initMap() {
-      const container = document.getElementById('tactical-map');
+      const container = document.getElementById("tactical-map");
       if (!container) return;
 
       // ── Cleanup: Prevent double-init on View Transitions ──
@@ -251,11 +351,11 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
       // Clear any stale Leaflet ID from a previous lifecycle
       if (container._leaflet_id) {
         container._leaflet_id = null;
-        container.innerHTML = '';
+        container.innerHTML = "";
       }
 
       // ── Create Map ──
-      mapInstance = L.map('tactical-map', {
+      mapInstance = L.map("tactical-map", {
         zoomControl: false,
         attributionControl: false,
       }).setView(BUNKER_COORDS, 14.5);
@@ -263,35 +363,35 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
       // ── Initial Tile Layer ──
       currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
         maxZoom: 20,
-        attribution: ''
+        attribution: "",
       }).addTo(mapInstance);
 
       // ── Bunker Marker ──
       const bunkerIcon = L.divIcon({
-        className: 'neon-teal-marker',
+        className: "neon-teal-marker",
         html: createMarkerHtml(),
         iconSize: [48, 48],
-        iconAnchor: [24, 24]
+        iconAnchor: [24, 24],
       });
 
       L.marker(BUNKER_COORDS, { icon: bunkerIcon }).addTo(mapInstance);
 
       // ── Coverage Radius ──
       L.circle(BUNKER_COORDS, {
-        color: '#2dd4bf',
-        fillColor: '#2dd4bf',
+        color: "#2dd4bf",
+        fillColor: "#2dd4bf",
         fillOpacity: 0.05,
         weight: 1,
-        dashArray: '5, 10',
-        radius: 2500
+        dashArray: "5, 10",
+        radius: 2500,
       }).addTo(mapInstance);
 
       // ═══════════════════════════════════════════
       // THEME OBSERVER — MutationObserver Strategy
       // ═══════════════════════════════════════════
-      themeObserver = new MutationObserver(function(mutations) {
+      themeObserver = new MutationObserver(function (mutations) {
         for (const mutation of mutations) {
-          if (mutation.attributeName === 'class') {
+          if (mutation.attributeName === "class") {
             swapTileLayer();
           }
         }
@@ -299,11 +399,11 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
 
       themeObserver.observe(document.documentElement, {
         attributes: true,
-        attributeFilter: ['class']
+        attributeFilter: ["class"],
       });
     }
 
     // ── Boot on Astro page-load (View Transitions safe) ──
-    document.addEventListener('astro:page-load', initMap);
+    document.addEventListener("astro:page-load", initMap);
   })();
 </script>
