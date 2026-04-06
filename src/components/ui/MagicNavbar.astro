@@ -26,7 +26,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
     <nav
         id="magic-navbar"
         transition:persist="magic-navbar"
-        class="navigation magic-navbar pointer-events-auto relative w-full max-w-[95vw] h-[62px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
+        class="navigation magic-navbar pointer-events-auto relative w-full max-w-[95vw] h-[65px] bg-white/[0.05] backdrop-blur-md rounded-full flex justify-center items-center px-1 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
     >
         <div
             class="relative w-full max-w-[360px]"
@@ -34,7 +34,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
         >
             <!-- Active Page Indicator Bubble -->
             <div
-                class="indicator absolute top-[-35px] left-0 w-[60px] h-[60px] bg-neon-blue/20 backdrop-blur-xl rounded-full border border-white/30 transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)] z-0 shadow-[0_10px_30px_rgba(56,189,248,0.4)]"
+                class="indicator absolute top-[-32px] left-0 w-[60px] h-[60px] bg-neon-blue/20 backdrop-blur-xl rounded-full border border-white/30 transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)] z-0 shadow-[0_10px_30px_rgba(56,189,248,0.4)]"
             >
                 <div
                     class="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent"
@@ -48,7 +48,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                 {
                     navItems.map((item, index) => (
                         <li
-                            class={`relative w-[52px] sm:w-[60px] h-[62px] z-10 flex-shrink-0 group ${
+                            class={`relative w-[60px] h-[65px] z-10 flex-shrink-0 group ${
                                 index === currentIndex ? "active" : ""
                             }`}
                         >
@@ -56,7 +56,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                                 href={item.href}
                                 class="relative flex justify-center items-center flex-col w-full h-full"
                             >
-                                <span class="icon relative block text-white/30 transition-all duration-500 will-change-transform group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-[36px]">
+                                <span class="icon relative block text-white/30 transition-all duration-500 will-change-transform group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-[34.5px]">
                                     <item.icon
                                         size={20}
                                         strokeWidth={
@@ -75,7 +75,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
 
                 <!-- Theme Toggle (6th Item) -->
                 <li
-                    class="relative w-[52px] sm:w-[60px] h-[62px] z-10 flex-shrink-0"
+                    class="relative w-[60px] h-[65px] z-10 flex-shrink-0"
                 >
                     <button
                         id="magic-theme-toggle"
@@ -106,16 +106,8 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
        INDICATOR POSITIONING
        ═══════════════════════════════════════════ */
     .indicator {
-        /* Each nav item is fluid; compute offset based on item width fraction */
-        /* On mobile, item is 52px, indicator is 60px. To center: (60-52)/2 = 4px offset */
-        transform: translateX(calc(var(--active-index) * 52px - 4px));
-    }
-
-    @media (min-width: 640px) {
-        .indicator {
-            /* On desktop/sm, both item and indicator are 60px */
-            transform: translateX(calc(var(--active-index) * 60px));
-        }
+        /* Exact 60px linear grid matrix. Zero arbitrary offsets. */
+        transform: translateX(calc(var(--active-index) * 60px));
     }
 
     /* Subtle pulse on the active bubble */
