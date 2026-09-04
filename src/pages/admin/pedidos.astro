@@ -1,0 +1,491 @@
+---
+export const prerender = false;
+import AdminLayout from "@layouts/AdminLayout.astro";
+import { supabaseAdmin } from "@lib/supabase";
+import { formatCOP } from "@lib/formatters";
+
+const { data: ordersRaw, error } = await supabaseAdmin
+  .from("orders")
+  .select("*")
+  .order("created_at", { ascending: false });
+
+const orders = (ordersRaw || []) as any[];
+
+// Stats reales desde BD
+const total = orders.length;
+const pendingPayment   = orders.filter(o => o.status === 'pending_payment').length;
+const verificationPending = orders.filter(o => o.status === 'verification_pending').length;
+const verified         = orders.filter(o => o.status === 'verified').length;
+
+// Helpers
+const getItemCount = (items: any): number => {
+  if (!items || typeof items !== 'object') return 0;
+  return Object.values(items).reduce((acc: number, item: any) => acc + (item.quantity || 0), 0);
+};
+
+const statusLabel: Record<string, string> = {
+  pending_payment:      'Pago Pendiente',
+  verification_pending: 'Verificando Pago',
+  verified:             'Verificado',
+};
+
+const statusClass: Record<string, string> = {
+  pending_payment:      'status-yellow',
+  verification_pending: 'status-orange',
+  verified:             'status-green',
+};
+
+const stats = [
+  { name: 'Total Pedidos',     value: total.toString(),              color: 'text-neutral-300', bg: 'bg-white/5',           border: 'border-white/10' },
+  { name: 'Pago Pendiente',    value: pendingPayment.toString(),     color: 'text-amber-400',   bg: 'bg-amber-500/10',      border: 'border-amber-500/20' },
+  { name: 'Verificando Pago',  value: verificationPending.toString(),color: 'text-orange-400',  bg: 'bg-orange-500/10',     border: 'border-orange-500/20' },
+  { name: 'Verificados',       value: verified.toString(),           color: 'text-teal-400',    bg: 'bg-teal-500/10',       border: 'border-teal-500/20' },
+];
+---
+
+<AdminLayout title="Pedidos - Diverpremier Admin">
+  <div class="max-w-6xl mx-auto space-y-12">
+
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+          <span class="text-xs font-bold text-teal-500/70 uppercase tracking-[0.2em]">Operaciones</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">Gestión de Pedidos</h1>
+        <p class="text-neutral-500 mt-2 font-medium text-sm md:text-base">
+          Monitoreo y verificación de órdenes en tiempo real.
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btn-refresh" class="btn-secondary text-xs py-2 px-4 md:py-3 md:px-6 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          Actualizar
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {stats.map(stat => (
+        <div class={`rounded-3xl p-5 md:p-6 border ${stat.border} ${stat.bg} backdrop-blur-sm`}>
+          <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">{stat.name}</p>
+          <h2 class={`text-3xl font-black ${stat.color} tracking-tight`}>{stat.value}</h2>
+        </div>
+      ))}
+    </div>
+
+    <!-- Filter Chips -->
+    <nav class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1">
+      <button class="filter-chip active" data-filter="all">Todos</button>
+      <button class="filter-chip" data-filter="pending_payment">Pago Pendiente</button>
+      <button class="filter-chip" data-filter="verification_pending">Verificando Pago</button>
+      <button class="filter-chip" data-filter="verified">Verificados</button>
+    </nav>
+
+    <!-- Orders Table -->
+    <section>
+      {error && (
+        <div class="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-400 text-center font-medium">
+          Error al conectar con el búnker de datos.
+        </div>
+      )}
+
+      <div class="rounded-3xl bg-neutral-900/40 border border-white/5 p-2 backdrop-blur-md overflow-x-auto">
+        <table class="w-full text-left border-collapse" id="orders-table">
+          <thead>
+            <tr>
+              <th class="table-head pl-6">Ticket</th>
+              <th class="table-head hidden sm:table-cell">Items</th>
+              <th class="table-head">Total</th>
+              <th class="table-head hidden md:table-cell">Fecha</th>
+              <th class="table-head">Estado</th>
+              <th class="table-head text-right pr-6">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5" id="orders-tbody">
+            {orders.map(order => (
+              <tr
+                class="order-row group hover:bg-white/[0.02] transition-colors"
+                data-status={order.status}
+                data-order={JSON.stringify({
+                  id:         order.id,
+                  ticket_id:  order.ticket_id  ?? '—',
+                  total_price:order.total_price ?? 0,
+                  items:      order.items       ?? {},
+                  status:     order.status,
+                  created_at: order.created_at,
+                })}
+              >
+                <!-- Ticket -->
+                <td class="py-5 pl-6">
+                  <span class="font-mono text-xs font-bold text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2.5 py-1 rounded-lg">
+                    #{order.ticket_id ?? order.id.split('-')[0]}
+                  </span>
+                </td>
+
+                <!-- Items count -->
+                <td class="py-5 text-sm text-neutral-300 font-medium hidden sm:table-cell">
+                  {getItemCount(order.items)} unid.
+                </td>
+
+                <!-- Total -->
+                <td class="py-5 text-sm font-bold text-white">
+                  {formatCOP(order.total_price ?? 0)}
+                </td>
+
+                <!-- Fecha -->
+                <td class="py-5 text-sm text-neutral-400 hidden md:table-cell">
+                  {new Date(order.created_at).toLocaleDateString('es-CO', {
+                    day: '2-digit', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                  })}
+                </td>
+
+                <!-- Estado -->
+                <td class="py-5">
+                  <span class={`status-badge ${statusClass[order.status] ?? 'status-neutral'}`}>
+                    {statusLabel[order.status] ?? order.status}
+                  </span>
+                </td>
+
+                <!-- Acciones -->
+                <td class="py-5 pr-6 text-right">
+                  <button class="open-detail-btn text-[10px] font-bold text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-teal-500 hover:text-neutral-950 hover:border-teal-500 transition-all">Ver Detalle</button>
+                </td>
+              </tr>
+            ))}
+
+            {orders.length === 0 && !error && (
+              <tr>
+                <td colspan="6" class="py-16 text-center text-neutral-600 font-medium italic">
+                  No hay pedidos registrados aún.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty state al filtrar -->
+      <div id="empty-state" class="hidden mt-6">
+        <div class="rounded-3xl bg-neutral-900/40 border border-white/5 p-16 text-center backdrop-blur-md">
+          <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-5 text-neutral-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white uppercase tracking-widest mb-2">Sin Resultados</h3>
+          <p class="text-neutral-500 text-sm">No hay pedidos con este estado.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ─── MODAL DE DETALLE ──────────────────────────────────────── -->
+  <div id="detail-modal" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+    <div id="modal-content" class="w-full md:max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] bg-neutral-900 border border-white/10 p-6 md:p-10 relative transform translate-y-4 md:translate-y-0 md:scale-95 transition-all duration-300 max-h-[90vh] overflow-y-auto">
+
+      <!-- Close -->
+      <button id="close-modal" class="absolute top-5 right-5 p-2 rounded-xl hover:bg-white/5 text-neutral-500 hover:text-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="mb-7">
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-400 text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+          Detalle de Orden
+        </span>
+        <h3 class="text-2xl font-black text-white tracking-tight">
+          Ticket <span id="modal-ticket" class="text-teal-400">#—</span>
+        </h3>
+        <p id="modal-date" class="text-xs text-neutral-500 mt-1 font-mono"></p>
+      </div>
+
+      <!-- Resumen -->
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="rounded-2xl bg-white/5 border border-white/5 p-4">
+          <p class="text-[9px] uppercase font-bold text-neutral-500 tracking-widest mb-1.5">Total</p>
+          <p id="modal-total" class="text-xl font-black text-white">$0</p>
+        </div>
+        <div class="rounded-2xl bg-white/5 border border-white/5 p-4">
+          <p class="text-[9px] uppercase font-bold text-neutral-500 tracking-widest mb-1.5">Estado Actual</p>
+          <p id="modal-status-label" class="text-sm font-bold text-amber-400">—</p>
+        </div>
+      </div>
+
+      <!-- Items del pedido -->
+      <div class="mb-6">
+        <p class="text-[10px] uppercase font-bold text-neutral-500 tracking-widest mb-3">Productos</p>
+        <div id="modal-items" class="space-y-2 rounded-2xl bg-black/30 border border-white/5 p-4">
+          <!-- Renderizado por JS -->
+        </div>
+      </div>
+
+      <!-- Cambiar Estado -->
+      <div class="mb-6">
+        <p class="text-[10px] uppercase font-bold text-neutral-500 tracking-widest mb-3">Actualizar Estado</p>
+        <div class="grid grid-cols-3 gap-2" id="status-buttons">
+          <button
+            class="status-action-btn py-3 px-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all duration-200"
+            data-target-status="pending_payment"
+          >
+            Pago<br/>Pendiente
+          </button>
+          <button
+            class="status-action-btn py-3 px-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all duration-200"
+            data-target-status="verification_pending"
+          >
+            Verificando<br/>Pago
+          </button>
+          <button
+            class="status-action-btn py-3 px-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all duration-200"
+            data-target-status="verified"
+          >
+            Verificado
+          </button>
+        </div>
+      </div>
+
+      <button id="close-modal-bottom" class="btn-secondary w-full">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ─── TOAST ────────────────────────────────────────────────── -->
+  <div id="toast" class="fixed bottom-10 right-6 z-[200] translate-x-[150%] transition-transform duration-500">
+    <div class="glass-neon px-6 py-4 rounded-2xl border-teal-500/30 flex items-center gap-4 shadow-xl">
+      <div class="w-8 h-8 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <p class="text-sm font-bold text-white" id="toast-title">Estado Actualizado</p>
+        <p class="text-[10px] text-teal-500/70 font-mono uppercase tracking-wider" id="toast-sub">Sync Completa con el Búnker</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  /* Variantes de estado no definidas en global.css */
+  .status-orange {
+    background-color: rgb(249 115 22 / 0.1);
+    color: rgb(251 146 60);
+    border-color: rgb(249 115 22 / 0.2);
+  }
+  .status-neutral {
+    background-color: rgb(255 255 255 / 0.05);
+    color: rgb(163 163 163);
+    border-color: rgb(255 255 255 / 0.1);
+  }
+</style>
+
+<script>
+  import { formatCOP } from "@lib/formatters";
+
+  // ── Helpers ──────────────────────────────────────────────────
+  const STATUS_LABEL: Record<string, string> = {
+    pending_payment:      'Pago Pendiente',
+    verification_pending: 'Verificando Pago',
+    verified:             'Verificado',
+  };
+  const STATUS_COLOR: Record<string, string> = {
+    pending_payment:      'text-amber-400',
+    verification_pending: 'text-orange-400',
+    verified:             'text-teal-400',
+  };
+  const STATUS_BTN_ACTIVE: Record<string, string> = {
+    pending_payment:      'bg-amber-500/10 border-amber-500/30 text-amber-400',
+    verification_pending: 'bg-orange-500/10 border-orange-500/30 text-orange-400',
+    verified:             'bg-teal-500/10  border-teal-500/30  text-teal-400',
+  };
+  const STATUS_BTN_INACTIVE = 'bg-white/5 border-white/10 text-neutral-500 hover:border-white/20 hover:text-neutral-300';
+
+  // ── State ─────────────────────────────────────────────────────
+  let activeOrder: any = null;
+
+  // ── DOM refs ─────────────────────────────────────────────────
+  const modal        = document.getElementById('detail-modal')!;
+  const modalContent = document.getElementById('modal-content')!;
+  const toast        = document.getElementById('toast')!;
+  let toastTimer: ReturnType<typeof setTimeout>;
+
+  // ── Filter chips ─────────────────────────────────────────────
+  const chips     = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
+  const rows      = document.querySelectorAll<HTMLTableRowElement>('.order-row');
+  const emptyEl   = document.getElementById('empty-state')!;
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const filter = chip.dataset.filter!;
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      let visible = 0;
+      rows.forEach(row => {
+        const show = filter === 'all' || row.dataset.status === filter;
+        row.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+
+      emptyEl.classList.toggle('hidden', visible > 0);
+    });
+  });
+
+  // ── Refresh ───────────────────────────────────────────────────
+  document.getElementById('btn-refresh')?.addEventListener('click', () => {
+    window.location.reload();
+  });
+
+  // ── Open modal ───────────────────────────────────────────────
+  const openModal = (order: any) => {
+    activeOrder = order;
+
+    // Populate header
+    (document.getElementById('modal-ticket') as HTMLElement).innerText =
+      '#' + (order.ticket_id ?? order.id?.split('-')[0] ?? '—');
+
+    (document.getElementById('modal-date') as HTMLElement).innerText =
+      new Date(order.created_at).toLocaleString('es-CO', {
+        day: '2-digit', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+
+    (document.getElementById('modal-total') as HTMLElement).innerText =
+      formatCOP(order.total_price ?? 0);
+
+    // Status label
+    const statusLabelEl = document.getElementById('modal-status-label') as HTMLElement;
+    statusLabelEl.innerText = STATUS_LABEL[order.status] ?? order.status;
+    statusLabelEl.className = 'text-sm font-bold ' + (STATUS_COLOR[order.status] ?? 'text-neutral-300');
+
+    // Items list
+    const itemsContainer = document.getElementById('modal-items') as HTMLElement;
+    const items = order.items && typeof order.items === 'object'
+      ? Object.values(order.items) as any[]
+      : [];
+
+    if (items.length === 0) {
+      itemsContainer.innerHTML = '<p class="text-neutral-600 text-xs text-center italic py-3">Sin detalle de productos.</p>';
+    } else {
+      itemsContainer.innerHTML = items.map((item: any) => `
+        <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-neutral-400">
+              ${item.quantity}x
+            </span>
+            <span class="text-sm text-neutral-200 font-medium">${item.name}</span>
+          </div>
+          <span class="text-xs font-mono text-neutral-400 whitespace-nowrap ml-4">
+            ${item.priceFormatted ?? formatCOP(item.price ?? 0)}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    // Status buttons
+    renderStatusButtons(order.status);
+
+    // Show modal
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    modalContent.classList.remove('translate-y-4', 'md:scale-95');
+  };
+
+  const closeModal = () => {
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    modalContent.classList.add('translate-y-4', 'md:scale-95');
+    activeOrder = null;
+  };
+
+  // ── Status buttons ────────────────────────────────────────────
+  const renderStatusButtons = (currentStatus: string) => {
+    document.querySelectorAll<HTMLButtonElement>('.status-action-btn').forEach(btn => {
+      const target = btn.dataset.targetStatus!;
+      btn.className = `status-action-btn py-3 px-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all duration-200 ${
+        target === currentStatus ? STATUS_BTN_ACTIVE[target] : STATUS_BTN_INACTIVE
+      }`;
+      btn.disabled = target === currentStatus;
+    });
+  };
+
+  // ── Status change ─────────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.status-action-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!activeOrder) return;
+      const newStatus = btn.dataset.targetStatus!;
+
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+
+      try {
+        const res = await fetch('/api/update-order', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket_id: activeOrder.ticket_id, status: newStatus }),
+        });
+
+        if (res.ok) {
+          activeOrder.status = newStatus;
+
+          // Actualizar label en modal
+          const statusLabelEl = document.getElementById('modal-status-label') as HTMLElement;
+          statusLabelEl.innerText = STATUS_LABEL[newStatus] ?? newStatus;
+          statusLabelEl.className = 'text-sm font-bold ' + (STATUS_COLOR[newStatus] ?? 'text-neutral-300');
+
+          // Actualizar botones
+          renderStatusButtons(newStatus);
+
+          // Actualizar badge en la tabla — buscar por ticket
+          rows.forEach(row => {
+            const orderData = JSON.parse(row.dataset.order ?? '{}');
+            if (orderData.ticket_id === activeOrder.ticket_id) {
+              row.dataset.status = newStatus;
+              const badge = row.querySelector<HTMLElement>('.status-badge');
+              if (badge) {
+                badge.textContent = STATUS_LABEL[newStatus] ?? newStatus;
+                badge.className = `status-badge ${
+                  newStatus === 'verified'             ? 'status-green'  :
+                  newStatus === 'verification_pending' ? 'status-orange' :
+                  'status-yellow'
+                }`;
+              }
+            }
+          });
+
+          showToast('Estado Actualizado', STATUS_LABEL[newStatus]);
+        } else {
+          showToast('Error al actualizar', 'Revisa la consola', true);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Error de conexión', 'No se pudo contactar el búnker', true);
+      } finally {
+        btn.style.opacity = '1';
+      }
+    });
+  });
+
+  // ── Event listeners de apertura ───────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.open-detail-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest<HTMLTableRowElement>('.order-row');
+      if (!row) return;
+      const order = JSON.parse(row.dataset.order ?? '{}');
+      openModal(order);
+    });
+  });
+
+  document.getElementById('close-modal')?.addEventListener('click', closeModal);
+  document.getElementById('close-modal-bottom')?.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Toast ─────────────────────────────────────────────────────
+  const showToast = (title: string, sub: string, _isError = false) => {
+    (document.getElementById('toast-title') as HTMLElement).innerText = title;
+    (document.getElementById('toast-sub')   as HTMLElement).innerText = sub;
+    toast.classList.remove('translate-x-[150%]');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.add('translate-x-[150%]'), 3000);
+  };
+</script>

@@ -1,6 +1,7 @@
 ---
+export const prerender = true;
+
 import MainLayout from "../layouts/MainLayout.astro";
-import { Image } from "astro:assets";
 import { formatCOP } from "@lib/formatters";
 import {
     Phone,
@@ -182,10 +183,11 @@ const featuredProducts = [
                             href={`/productos?cat=${cat.name}`}
                             class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900"
                         >
-                            <Image
-                                width={800}
-                                height={1000}
+                            <img
+                                width="800"
+                                height="1000"
                                 loading="lazy"
+                                decoding="async"
                                 src={cat.image}
                                 alt={cat.name}
                                 class="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-1000 scale-105 group-hover:scale-110"
@@ -292,10 +294,11 @@ const featuredProducts = [
                                             Más Pedido
                                         </span>
                                     )}
-                                    <Image
-                                        width={800}
-                                        height={800}
+                                    <img
+                                        width="800"
+                                        height="800"
                                         loading="lazy"
+                                        decoding="async"
                                         src={prod.image}
                                         alt={prod.name}
                                         class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700"

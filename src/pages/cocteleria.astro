@@ -1,11 +1,276 @@
 ---
-// 1. Importas el Layout y el componente mágico
 import MainLayout from "@layouts/MainLayout.astro";
-import CocteleriaShowcase from "@components/store/CocteleriaShowcase.astro";
+import CocktailModal from "@components/ui/CocktailModal.astro";
+import FloatingCocktailCard from "@components/ui/FloatingCocktailCard.astro";
+import { getCachedCocktails } from "@lib/cache";
+
+// SWR In-Memory Cached Fetching (< 1ms on cache hit)
+let cocktails: any[] = [];
+try {
+  cocktails = await getCachedCocktails();
+} catch (error) {
+  console.error("Error fetching cocktails:", error);
+}
+
+const displayCocktails = cocktails || [];
 ---
 
-<MainLayout title="Mixología Premium | Diverpremier">
-    <section class="py-10">
-        <CocteleriaShowcase />
-    </section>
+<MainLayout title="Mixología Premium | El Arsenal | Diverpremier">
+  <link
+    slot="head"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+    rel="stylesheet"
+  />
+
+  <section class="relative w-full min-h-[calc(100vh-14rem)] flex flex-col items-center justify-between py-2 sm:py-4 pointer-events-none">
+    <!-- Background Decor (Ambient) -->
+    <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-neon-cyan/5 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-neon-magenta/5 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0"></div>
+
+    <div class="text-center z-10 w-full px-4 mb-4 md:mb-6 flex-shrink-0">
+      <h3 class="text-neon-pink font-black text-[10px] md:text-xs tracking-[0.5em] uppercase mb-1">Exhibición</h3>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-['Bebas_Neue'] uppercase text-white tracking-widest leading-none drop-shadow-md">
+        LA <span class="text-neon-cyan drop-shadow-[0_0_15px_rgba(56,189,248,0.5)]">COLECCIÓN</span>
+      </h1>
+    </div>
+
+    <!-- The 3D Carousel Container (centered vertically at half the page) -->
+    <div id="carousel-stage" class="relative w-full h-[340px] sm:h-[380px] md:h-[400px] max-w-6xl mx-auto perspective-[1200px] flex items-center justify-center transform-style-[preserve-3d] pointer-events-auto my-auto select-none">
+      {displayCocktails.map((cocktail, index) => (
+        <FloatingCocktailCard cocktail={cocktail} index={index} />
+      ))}
+
+      {displayCocktails.length === 0 && (
+         <div class="absolute flex flex-col items-center justify-center text-white/50 border border-white/5 rounded-[3rem] p-12 backdrop-blur-md bg-white/5">
+            <p class="text-xs uppercase tracking-widest">Base de datos de Mixología Vacía</p>
+         </div>
+      )}
+    </div>
+
+    <!-- Carousel Controls (Arrows & indicator) -->
+    {displayCocktails.length > 0 && (
+      <div class="flex flex-col items-center gap-2 z-40 pointer-events-auto mt-3 flex-shrink-0">
+        <div class="flex items-center gap-5 sm:gap-7">
+          <button id="carousel-prev" aria-label="Anterior cóctel" class="p-3 sm:p-3.5 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl text-white/70 hover:text-white hover:border-neon-cyan/50 hover:bg-neon-cyan/10 hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] active:scale-95 transition-all cursor-pointer focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+
+          <div id="carousel-indicator" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-inner">
+            <span id="carousel-current" class="text-neon-cyan font-mono font-black text-xs">{String(Math.floor(displayCocktails.length / 2) + 1).padStart(2, '0')}</span>
+            <span class="text-white/30 text-xs font-mono">/</span>
+            <span id="carousel-total" class="text-white/50 font-mono text-xs">{String(displayCocktails.length).padStart(2, '0')}</span>
+          </div>
+
+          <button id="carousel-next" aria-label="Siguiente cóctel" class="p-3 sm:p-3.5 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl text-white/70 hover:text-white hover:border-neon-cyan/50 hover:bg-neon-cyan/10 hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] active:scale-95 transition-all cursor-pointer focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    )}
+  </section>
+
+  <!-- The Interactive Modal -->
+  <CocktailModal />
+
 </MainLayout>
+
+<script>
+  import { openCocktailModal } from "../store/cocktailStore";
+
+  function initCarousel() {
+    const cards = document.querySelectorAll('.floating-cocktail-card');
+    if(cards.length === 0) return;
+
+    let activeIndex = Math.floor(cards.length / 2); // Start in middle
+
+    const currentEl = document.getElementById('carousel-current');
+    const totalEl = document.getElementById('carousel-total');
+    if (totalEl) {
+      totalEl.textContent = String(cards.length).padStart(2, '0');
+    }
+
+    function updateCarousel() {
+      const isMobile = window.innerWidth < 640;
+      const isTablet = window.innerWidth < 1024;
+      
+      // Radius of the 3D rotating cylinder
+      const radius = isMobile ? 340 : isTablet ? 460 : 560;
+      // Angular separation between products in the 3D carousel
+      const angleStep = isMobile ? 38 : isTablet ? 32 : 28;
+
+      cards.forEach((cardEl, index) => {
+        const offset = index - activeIndex;
+        const absOffset = Math.abs(offset);
+        const zIndex = 100 - absOffset;
+        
+        // 3D Angle in radians
+        const angleDeg = offset * angleStep;
+        const angleRad = (angleDeg * Math.PI) / 180;
+
+        // Cylindrical coordinates along the circular 3D orbit
+        const xTranslate = Math.sin(angleRad) * radius;
+        // zTranslate pulls products back into depth as they rotate around the cylinder
+        const zTranslate = (Math.cos(angleRad) - 1) * radius - (absOffset * 25);
+        
+        // Angular 3D rotation: product faces the viewer gracefully as it reaches center
+        const rotateY = angleDeg * 0.85;
+        
+        // Scale and blur
+        const scale = 1 - (absOffset * 0.08);
+        const blurAmount = absOffset === 0 ? 0 : Math.min(6, absOffset * 2.2);
+        const opacity = absOffset === 0 ? 1 : Math.max(0, 0.9 - (absOffset * 0.2));
+        
+        // Apply True 3D Transforms
+        const card = cardEl as HTMLElement;
+        card.style.zIndex = zIndex.toString();
+        card.style.transform = `translate3d(calc(-50% + ${xTranslate.toFixed(1)}px), -50%, ${zTranslate.toFixed(1)}px) rotateY(${rotateY.toFixed(1)}deg) scale(${Math.max(0.68, scale).toFixed(3)})`;
+        card.style.filter = `blur(${blurAmount}px)`;
+        card.style.opacity = Math.max(0, opacity).toString();
+
+        if (offset === 0) {
+            card.classList.add('is-active');
+            card.style.pointerEvents = 'auto';
+        } else {
+            card.classList.remove('is-active');
+            card.style.pointerEvents = absOffset > 2 ? 'none' : 'auto';
+        }
+      });
+
+      if (currentEl) {
+        currentEl.textContent = String(activeIndex + 1).padStart(2, '0');
+      }
+    }
+
+    // Controls
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+
+    const goPrev = () => {
+        if(activeIndex > 0) {
+          activeIndex--;
+          updateCarousel();
+        }
+    };
+
+    const goNext = () => {
+        if(activeIndex < cards.length - 1) {
+          activeIndex++;
+          updateCarousel();
+        }
+    };
+
+    prevBtn?.addEventListener('click', goPrev);
+    nextBtn?.addEventListener('click', goNext);
+
+    // Keyboard controls
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', handleKeydown);
+
+    // Initial render
+    updateCarousel();
+
+    // Click on Cards
+    cards.forEach((card, index) => {
+      card.addEventListener('click', () => {
+        if (index === activeIndex) {
+          // If already central, open the Modal
+          const dataRaw = card.getAttribute('data-cocktail');
+          if(dataRaw) {
+              try {
+                  const cocktailData = JSON.parse(dataRaw);
+                  openCocktailModal(cocktailData);
+              } catch(e) {
+                  console.error("Invalid cocktail data format", e);
+              }
+          }
+        } else {
+          // If peripheral, scroll to it
+          activeIndex = index;
+          updateCarousel();
+        }
+      });
+    });
+
+    // Touch swipe horizontally
+    const stage = document.getElementById('carousel-stage');
+    let touchStartX = 0;
+    stage?.addEventListener('touchstart', e => { 
+      touchStartX = (e as TouchEvent).changedTouches[0].screenX; 
+    }, {passive: true});
+
+    stage?.addEventListener('touchend', e => {
+        const touchEndX = (e as TouchEvent).changedTouches[0].screenX;
+        if(touchEndX < touchStartX - 40) goNext();
+        if(touchEndX > touchStartX + 40) goPrev();
+    }, {passive: true});
+
+    // Mouse wheel horizontally or vertically
+    let wheelCooldown = false;
+    stage?.addEventListener('wheel', (e) => {
+      const we = e as WheelEvent;
+      if (wheelCooldown) return;
+      if (Math.abs(we.deltaX) > 25 || Math.abs(we.deltaY) > 25) {
+        if (we.deltaX > 25 || we.deltaY > 25) goNext();
+        else goPrev();
+        wheelCooldown = true;
+        setTimeout(() => { wheelCooldown = false; }, 350);
+      }
+    }, { passive: true });
+
+    // Interactive 3D Parallax Tilt on Mouse Move
+    let isHovering = false;
+    stage?.addEventListener('mouseenter', () => { isHovering = true; });
+    stage?.addEventListener('mouseleave', () => {
+      isHovering = false;
+      const activeCard = document.querySelector('.floating-cocktail-card.is-active') as HTMLElement;
+      if (activeCard) {
+        const inner = activeCard.querySelector('.cocktail-card-inner') as HTMLElement;
+        if (inner) {
+          inner.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        }
+      }
+    });
+
+    stage?.addEventListener('mousemove', (e) => {
+      if (!isHovering) return;
+      const activeCard = document.querySelector('.floating-cocktail-card.is-active') as HTMLElement;
+      if (!activeCard) return;
+      
+      const rect = activeCard.getBoundingClientRect();
+      const cardCenterX = rect.left + rect.width / 2;
+      const cardCenterY = rect.top + rect.height / 2;
+      
+      const deltaX = ((e as MouseEvent).clientX - cardCenterX) / (rect.width / 2);
+      const deltaY = ((e as MouseEvent).clientY - cardCenterY) / (rect.height / 2);
+      
+      // Subtle 3D tilt response to cursor
+      const tiltY = Math.max(-12, Math.min(12, deltaX * 12));
+      const tiltX = Math.max(-10, Math.min(10, -deltaY * 10));
+      
+      const inner = activeCard.querySelector('.cocktail-card-inner') as HTMLElement;
+      if (inner) {
+        inner.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+      }
+    });
+
+    // Responsive recalibration on window resize
+    window.addEventListener('resize', updateCarousel);
+  }
+
+  document.addEventListener("astro:page-load", initCarousel);
+  if (document.readyState !== "loading") {
+    initCarousel();
+  }
+</script>
+
+<style>
+  .perspective-\[1200px\] {
+      perspective: 1200px;
+  }
+  .transform-style-\[preserve-3d\] {
+      transform-style: preserve-3d;
+  }
+</style>

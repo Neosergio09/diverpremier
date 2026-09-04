@@ -67,6 +67,53 @@ export interface Database {
           quantity: number
         }
       }
+      cocktails: {
+        Row: {
+          id: string
+          name: string
+          base_liquor?: string
+          description?: string
+          history?: string
+          glass_type: string
+          ingredients: Json
+          how_to_mix?: string
+          how_to_serve?: string
+          how_to_garnish?: string
+          instructions: Json
+          image_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          base_liquor?: string
+          description?: string
+          history?: string
+          glass_type: string
+          ingredients: Json
+          how_to_mix?: string
+          how_to_serve?: string
+          how_to_garnish?: string
+          instructions: Json
+          image_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          base_liquor?: string
+          description?: string
+          history?: string
+          glass_type?: string
+          ingredients?: Json
+          how_to_mix?: string
+          how_to_serve?: string
+          how_to_garnish?: string
+          instructions?: Json
+          image_url?: string | null
+          created_at?: string
+        }
+      }
     }
     Views: {
       view_product_catalog: {

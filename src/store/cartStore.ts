@@ -2,6 +2,7 @@ import { map, computed, atom } from 'nanostores';
 
 export interface CartItem {
   id: string;
+  productId?: string;
   name: string;
   price: number;
   priceFormatted: string;
@@ -27,18 +28,20 @@ const parsePrice = (priceStr: string): number => {
   return parseInt(priceStr.replace(/[^0-9]/g, ''), 10);
 };
 
-export const addItem = (product: { name: string; price: string; image_url: string }) => {
+export const addItem = (product: { name: string; price: string; image_url: string; id?: string }) => {
   const items = cartItems.get();
   const existing = items[product.name];
   
   if (existing) {
     cartItems.setKey(product.name, {
       ...existing,
+      productId: product.id || existing.productId,
       quantity: existing.quantity + 1,
     });
   } else {
     cartItems.setKey(product.name, {
       id: product.name,
+      productId: product.id,
       name: product.name,
       price: parsePrice(product.price),
       priceFormatted: product.price,

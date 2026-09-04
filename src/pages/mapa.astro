@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import MainLayout from "../layouts/MainLayout.astro";
 import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
 ---
@@ -137,7 +139,7 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   crossorigin=""
 />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""
+<script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""
 ></script>
 
 <style is:global>

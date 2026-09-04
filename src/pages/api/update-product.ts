@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@supabase/supabase-js";
+import { invalidateCatalogCache } from "@lib/cache";
 
 export const prerender = false;
 
@@ -46,6 +47,8 @@ export const PATCH: APIRoute = async ({ request }) => {
         headers: { "Content-Type": "application/json" },
       });
     }
+
+    invalidateCatalogCache();
 
     return new Response(JSON.stringify({ 
         message: "¡Búnker actualizado correctamente!",

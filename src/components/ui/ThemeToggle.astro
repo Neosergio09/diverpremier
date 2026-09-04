@@ -31,10 +31,10 @@ import { Sun, Moon } from "lucide-astro";
         }
         
         // Remove old listener if re-running
-        toggleBtn.removeEventListener('click', window.__themeBtnHandler);
+        toggleBtn.removeEventListener('click', (window as any).__themeBtnHandler);
         
         // Define click handler
-        window.__themeBtnHandler = () => {
+        (window as any).__themeBtnHandler = () => {
             const isLight = document.documentElement.classList.toggle('light');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
             
@@ -45,7 +45,7 @@ import { Sun, Moon } from "lucide-astro";
             }
         };
         
-        toggleBtn.addEventListener('click', window.__themeBtnHandler);
+        toggleBtn.addEventListener('click', (window as any).__themeBtnHandler);
     };
 
     // Run on initial load and after view transitions

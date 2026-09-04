@@ -13,6 +13,7 @@ interface Props {
     description?: string;
     containerClass?: string;
     isProse?: boolean;
+    hideFooter?: boolean;
 }
 
 const {
@@ -20,6 +21,7 @@ const {
     description = "Diverpremier Go - Central de Inteligencia y Logística de Licores en Álamos, Bogotá.",
     containerClass = "",
     isProse = false,
+    hideFooter = false,
 } = Astro.props;
 
 // Lógica para determinar el ancho del contenedor
@@ -85,7 +87,9 @@ const widthClass = containerClass
 
         <MagicNavbar />
 
-        <Footer />
+        <slot name="page-footer" />
+
+        { !hideFooter && <Footer /> }
 
         <style is:global>
             @reference "@styles/global.css";

@@ -1,19 +1,44 @@
 ---
-/* src/components/LiquidBackground.astro */
+/* src/components/ui/LiquidBackground.astro */
 ---
 
 <div
     id="liquid-wrap"
-    class="fixed inset-0 overflow-hidden pointer-events-none bg-[#020617] hidden md:block"
-    style="z-index: 0;"
+    class="fixed inset-0 overflow-hidden pointer-events-none bg-[#020617] transition-colors duration-500 z-0 block"
     transition:persist
 >
     <canvas
         id="liquid-canvas"
-        style="width: 100%; height: 100%; display: block;"></canvas>
+        class="w-full h-full block"
+    ></canvas>
 </div>
 
 <script>
+    interface Bubble {
+        xBase: number;
+        x: number;
+        y: number;
+        radius: number;
+        speedY: number;
+        wobbleAngle: number;
+        wobbleSpeed: number;
+        wobbleAmp: number;
+        alpha: number;
+        maxAlpha: number;
+        colorIndex: number;
+        vx: number;
+        vy: number;
+    }
+
+    interface Ripple {
+        x: number;
+        y: number;
+        r: number;
+        maxR: number;
+        alpha: number;
+        rgb: string;
+    }
+
     class LiquidEngine {
         private static instance: LiquidEngine | null = null;
         private canvas: HTMLCanvasElement;
@@ -22,16 +47,37 @@
         private width: number = 0;
         private height: number = 0;
         private dpr: number = 1;
-        private offset: number = 0;
-        private ripples: any[] = [];
-        private mouse = { x: -1000, y: -1000, active: false };
-        private initialized: boolean = false;
+        private waveOffset: number = 0;
+        private bubbles: Bubble[] = [];
+        private ripples: Ripple[] = [];
+        private mouse = {
+            x: -2000,
+            y: -2000,
+            vx: 0,
+            vy: 0,
+            active: false,
+        };
+        private lastPointerTime: number = performance.now();
+        private lastFrameTime: number = performance.now();
+        private isLight: boolean = false;
         private isMobile: boolean = false;
+        private themeObserver: MutationObserver | null = null;
+        private prefersReducedMotion: boolean = false;
 
-        private readonly COLORS = [
-            { h: 199, s: 89, l: 48, alpha: 0.6 }, // Neon Blue
-            { h: 282, s: 100, l: 66, alpha: 0.4 }, // Purple Neon
-            { h: 330, s: 98, l: 65, alpha: 0.3 }, // Pink Neon
+        // Dark Mode: Neones Bunker (Cian, Púrpura, Rosa Neón, Dorado Champán)
+        private readonly DARK_COLORS = [
+            "56, 189, 248",   // Neon Cyan (#38BDF8)
+            "208, 82, 255",   // Neon Purple (#D052FF)
+            "244, 114, 182",  // Neon Pink (#F472B6)
+            "251, 191, 36",   // Amber / Champagne (#FBBF24)
+        ];
+
+        // Light Mode: Cristalina y Bebidas Refinadas
+        private readonly LIGHT_COLORS = [
+            "14, 165, 233",   // Vivid Sky Blue
+            "217, 119, 6",    // Warm Golden Amber
+            "168, 85, 247",   // Soft Lavender
+            "16, 185, 129",   // Mint Green
         ];
 
         constructor(canvas: HTMLCanvasElement) {
@@ -41,154 +87,383 @@
         }
 
         public static getInstance(canvas: HTMLCanvasElement): LiquidEngine {
-            if (!LiquidEngine.instance) {
-                LiquidEngine.instance = new LiquidEngine(canvas);
-            } else if (LiquidEngine.instance.canvas !== canvas) {
-                LiquidEngine.instance.cleanup();
+            if (!LiquidEngine.instance || LiquidEngine.instance.canvas !== canvas) {
+                if (LiquidEngine.instance) {
+                    LiquidEngine.instance.cleanup();
+                }
                 LiquidEngine.instance = new LiquidEngine(canvas);
             }
             return LiquidEngine.instance;
         }
 
         private init() {
-            if (this.initialized) return;
-            
+            this.prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            this.checkTheme();
             this.resize();
-            // Early return if mobile, engine won't run at all
-            if (this.isMobile) return;
+            this.initBubbles();
+            this.bindEvents();
 
-            this.addEventListeners();
-            this.start();
-            this.initialized = true;
-        }
-
-        private addEventListeners() {
-            window.addEventListener("resize", this.handleResize);
-            window.addEventListener("pointermove", this.handlePointerMove);
-        }
-
-
-        private handleResize = () => {
-            this.resize();
-        };
-
-        private resize() {
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
-            this.dpr = window.devicePixelRatio || 1;
-            this.isMobile = this.width < 768;
-
-            // If we resized into mobile, stop everything
-            if (this.isMobile) {
-                this.stop();
-                return;
-            } else if (this.initialized && !this.animationId) {
-                // If weresized out of mobile, restart if was initialized
-                this.addEventListeners();
+            if (this.prefersReducedMotion) {
+                this.renderFrame();
+            } else {
+                this.lastFrameTime = performance.now();
                 this.start();
             }
-
-            this.canvas.width = this.width * this.dpr;
-            this.canvas.height = this.height * this.dpr;
-            this.ctx.scale(this.dpr, this.dpr);
         }
 
-        private handlePointerMove = (e: PointerEvent) => {
-            this.updateInteraction(e.clientX, e.clientY);
+        private checkTheme() {
+            this.isLight = document.documentElement.classList.contains("light");
+            this.updateCanvasBlend();
+        }
+
+        private updateCanvasBlend() {
+            this.canvas.style.mixBlendMode = this.isLight ? "normal" : "screen";
+        }
+
+        private resize = () => {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.isMobile = this.width < 768;
+
+            const maxDpr = this.isMobile ? 1 : 1.5;
+            this.dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+
+            this.canvas.width = Math.floor(this.width * this.dpr);
+            this.canvas.height = Math.floor(this.height * this.dpr);
+            this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+            this.ctx.scale(this.dpr, this.dpr);
+
+            const targetCount = this.isMobile ? 18 : 45;
+            while (this.bubbles.length < targetCount) {
+                this.bubbles.push(this.createBubble(true));
+            }
+            if (this.bubbles.length > targetCount) {
+                this.bubbles.length = targetCount;
+            }
         };
 
-        private updateInteraction(x: number, y: number) {
-            this.mouse.x = x;
-            this.mouse.y = y;
+        private createBubble(scatterVertical: boolean = false): Bubble {
+            const radius = Math.random() * (this.isMobile ? 3.5 : 5.5) + 2.2;
+            const maxAlpha = Math.random() * 0.4 + 0.3;
+            const x = Math.random() * this.width;
+            const y = scatterVertical ? Math.random() * this.height : this.height + Math.random() * 40 + 10;
+
+            return {
+                xBase: x,
+                x,
+                y,
+                radius,
+                speedY: Math.random() * 0.55 + 0.45,
+                wobbleAngle: Math.random() * Math.PI * 2,
+                wobbleSpeed: Math.random() * 0.03 + 0.02,
+                wobbleAmp: Math.random() * 3.0 + 1.5,
+                alpha: scatterVertical ? maxAlpha * Math.random() : 0,
+                maxAlpha,
+                colorIndex: Math.floor(Math.random() * this.DARK_COLORS.length),
+                vx: 0,
+                vy: 0,
+            };
+        }
+
+        private initBubbles() {
+            const count = this.isMobile ? 18 : 45;
+            this.bubbles = [];
+            for (let i = 0; i < count; i++) {
+                this.bubbles.push(this.createBubble(true));
+            }
+        }
+
+        private bindEvents() {
+            window.addEventListener("resize", this.resize, { passive: true });
+            window.addEventListener("pointermove", this.handlePointerMove, { passive: true });
+            window.addEventListener("pointerdown", this.handlePointerDown, { passive: true });
+            window.addEventListener("pointerleave", this.handlePointerLeave, { passive: true });
+            document.addEventListener("visibilitychange", this.handleVisibilityChange);
+
+            this.themeObserver = new MutationObserver(() => {
+                const prev = this.isLight;
+                this.checkTheme();
+                if (prev !== this.isLight && this.prefersReducedMotion) {
+                    this.renderFrame();
+                }
+            });
+            this.themeObserver.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ["class"],
+            });
+        }
+
+        private handleVisibilityChange = () => {
+            if (document.hidden) {
+                this.stop();
+            } else if (!this.prefersReducedMotion) {
+                this.lastFrameTime = performance.now();
+                this.start();
+            }
+        };
+
+        private handlePointerMove = (e: PointerEvent) => {
+            const now = performance.now();
+            const elapsed = Math.max(1, now - this.lastPointerTime);
+
+            if (this.mouse.active) {
+                // Cálculo de velocidad del mouse suavizada (px/frame equivalente a 60fps)
+                const rawVx = ((e.clientX - this.mouse.x) / elapsed) * 16.67;
+                const rawVy = ((e.clientY - this.mouse.y) / elapsed) * 16.67;
+                this.mouse.vx = this.mouse.vx * 0.4 + rawVx * 0.6;
+                this.mouse.vy = this.mouse.vy * 0.4 + rawVy * 0.6;
+            } else {
+                this.mouse.vx = 0;
+                this.mouse.vy = 0;
+            }
+
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
             this.mouse.active = true;
+            this.lastPointerTime = now;
 
-            const maxRipples = this.isMobile ? 12 : 20;
-            const threshold = this.isMobile ? 0.90 : 0.85;
-
-            if (Math.random() > threshold && this.ripples.length < maxRipples) {
-                const color = this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
-                this.ripples.push({
-                    x: this.mouse.x,
-                    y: this.mouse.y,
-                    r: 5,
-                    alpha: 0.8,
-                    color: `hsla(${color.h}, ${color.s}%, ${color.l}%,`,
-                });
+            // Generar onda suave solo si el cursor tiene velocidad considerable
+            const speed = Math.hypot(this.mouse.vx, this.mouse.vy);
+            if (speed > 8 && this.ripples.length < 6 && Math.random() > 0.75) {
+                this.spawnRipple(this.mouse.x, this.mouse.y, Math.min(speed * 3, 35));
             }
+        };
+
+        private handlePointerLeave = () => {
+            this.mouse.active = false;
+            this.mouse.vx = 0;
+            this.mouse.vy = 0;
+        };
+
+        private handlePointerDown = (e: PointerEvent) => {
+            this.spawnRipple(e.clientX, e.clientY, 42);
+
+            // Efervescencia suave de 4 micro-burbujas en el punto de contacto
+            const maxAllowed = this.isMobile ? 22 : 55;
+            const burstCount = Math.min(4, Math.max(0, maxAllowed - this.bubbles.length));
+
+            for (let i = 0; i < burstCount; i++) {
+                const b = this.createBubble(false);
+                b.xBase = e.clientX + (Math.random() - 0.5) * 20;
+                b.x = b.xBase;
+                b.y = e.clientY + (Math.random() - 0.5) * 15;
+                b.speedY = Math.random() * 0.8 + 0.6;
+                b.vx = (Math.random() - 0.5) * 1.5;
+                b.alpha = b.maxAlpha;
+                this.bubbles.push(b);
+            }
+        };
+
+        private spawnRipple(x: number, y: number, maxR: number) {
+            const palette = this.isLight ? this.LIGHT_COLORS : this.DARK_COLORS;
+            const color = palette[Math.floor(Math.random() * palette.length)];
+            this.ripples.push({
+                x,
+                y,
+                r: 3,
+                maxR: Math.max(maxR, 30),
+                alpha: this.isLight ? 0.35 : 0.5,
+                rgb: color,
+            });
         }
 
-        private drawWave(
-            color: any,
-            yBase: number,
-            freqA: number,
-            freqB: number,
-            ampA: number,
-            ampB: number,
-            shift: number
-        ) {
-            const { ctx, width } = this;
-            ctx.beginPath();
-            ctx.strokeStyle = `hsla(${color.h}, ${color.s}%, ${color.l}%, ${color.alpha})`;
-            ctx.lineWidth = 4;
-            ctx.lineCap = "round";
+        private updatePhysics(dt: number) {
+            // Amortiguar velocidad residual del cursor
+            this.mouse.vx *= Math.pow(0.85, dt);
+            this.mouse.vy *= Math.pow(0.85, dt);
 
-            // Performance Tuning: Balance entre fluidez y CPU
-            const step = this.isMobile ? 18 : 8;
+            const repulseRadius = 85;
+            const repulseRadiusSq = repulseRadius * repulseRadius;
+            const mouseSpeed = Math.hypot(this.mouse.vx, this.mouse.vy);
 
-            for (let x = 0; x <= width + step; x += step) {
-                const dx = x - this.mouse.x;
-                const dy = yBase - this.mouse.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                const mouseInertia = dist < 250 ? (1 - dist / 250) * 50 : 0;
-
-                const y =
-                    Math.sin(x * freqA + shift) * (ampA + mouseInertia) +
-                    Math.sin(x * freqB + shift * 1.3) * ampB +
-                    yBase;
-
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+            // Interacción con ondas en la base si el cursor está abajo
+            if (this.mouse.active && this.mouse.y > this.height * 0.6) {
+                this.waveOffset += this.mouse.vx * 0.0003 * dt;
             }
-            ctx.stroke();
-        }
 
-        private updateRipples() {
-            const { ctx } = this;
-            for (let i = this.ripples.length - 1; i >= 0; i--) {
-                const r = this.ripples[i];
-                r.r += 2.5;
-                r.alpha -= 0.01;
+            // Actualizar burbujas
+            for (let i = this.bubbles.length - 1; i >= 0; i--) {
+                const b = this.bubbles[i];
 
-                if (r.alpha <= 0) {
-                    this.ripples.splice(i, 1);
-                    continue;
+                // 1. Interacción fluida con el cursor (solo si está dentro de la ventana)
+                if (this.mouse.active) {
+                    const dx = b.x - this.mouse.x;
+                    const dy = b.y - this.mouse.y;
+                    const distSq = dx * dx + dy * dy;
+
+                    if (distSq < repulseRadiusSq && distSq > 0.1) {
+                        const dist = Math.sqrt(distSq);
+                        const normDist = dist / repulseRadius;
+                        const falloff = 1 - normDist;
+                        const smoothFalloff = falloff * falloff; // Dispersión cuadrática suave
+
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+
+                        // Fuerza de evasión suave (no explosiva)
+                        const repulseForce = 0.85 * smoothFalloff * dt;
+                        b.vx += nx * repulseForce;
+                        b.vy += ny * repulseForce * 0.35;
+
+                        // Estela hidrodinámica (las burbujas acompañan el movimiento del agua)
+                        if (mouseSpeed > 0.5) {
+                            const dragForce = 0.15 * smoothFalloff * dt;
+                            b.vx += this.mouse.vx * dragForce;
+                            b.vy += this.mouse.vy * dragForce;
+                        }
+                    }
                 }
 
+                // 2. Resistencia viscosa del líquido (fricción fluida constante)
+                const damping = Math.pow(0.91, dt);
+                b.vx *= damping;
+                b.vy *= damping;
+
+                // 3. Velocidad terminal segura (evita sacudidas bruscas o saltos)
+                const maxSpeed = 3.2;
+                b.vx = Math.max(-maxSpeed, Math.min(maxSpeed, b.vx));
+                b.vy = Math.max(-maxSpeed, Math.min(maxSpeed, b.vy));
+
+                // 4. Integración de posición: ascenso vertical y oscilación horizontal sinusoidal
+                b.xBase += b.vx * dt;
+                b.y -= (b.speedY + b.vy) * dt;
+                b.wobbleAngle += b.wobbleSpeed * dt;
+                b.x = b.xBase + Math.sin(b.wobbleAngle) * b.wobbleAmp;
+
+                // 5. Ciclo de vida y opacidad suave
+                if (b.y > this.height - 70) {
+                    b.alpha = Math.min(b.maxAlpha, b.alpha + 0.02 * dt);
+                } else if (b.y < 80) {
+                    b.alpha = Math.max(0, b.alpha - 0.02 * dt);
+                }
+
+                // Si sale de la pantalla o se desvanece por completo, reciclar abajo
+                if (b.y < -15 || (b.alpha <= 0 && b.y < 90)) {
+                    this.bubbles[i] = this.createBubble(false);
+                }
+            }
+
+            // Actualizar ondas (ripples) con interpolación suave
+            for (let i = this.ripples.length - 1; i >= 0; i--) {
+                const rip = this.ripples[i];
+                rip.r += (rip.maxR - rip.r) * 0.1 * dt + 0.6 * dt;
+                rip.alpha -= 0.015 * dt;
+
+                if (rip.alpha <= 0 || rip.r >= rip.maxR) {
+                    this.ripples.splice(i, 1);
+                }
+            }
+        }
+
+        private drawWaves() {
+            const { ctx, width, height, isLight } = this;
+            this.waveOffset += 0.005;
+
+            const waves = isLight
+                ? [
+                      { y: height * 0.92, amp: 14, freq: 0.002, speed: 1.0, color: "rgba(14, 165, 233, 0.07)" },
+                      { y: height * 0.95, amp: 18, freq: 0.003, speed: 0.7, color: "rgba(245, 158, 11, 0.05)" },
+                      { y: height * 0.89, amp: 10, freq: 0.0015, speed: 1.3, color: "rgba(168, 85, 247, 0.04)" },
+                  ]
+                : [
+                      { y: height * 0.91, amp: 16, freq: 0.002, speed: 1.0, color: "rgba(56, 189, 248, 0.06)" },
+                      { y: height * 0.95, amp: 22, freq: 0.003, speed: 0.7, color: "rgba(208, 82, 255, 0.05)" },
+                      { y: height * 0.88, amp: 12, freq: 0.0015, speed: 1.2, color: "rgba(244, 114, 182, 0.04)" },
+                  ];
+
+            const step = this.isMobile ? 24 : 14;
+
+            for (const wave of waves) {
                 ctx.beginPath();
-                ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
-                ctx.strokeStyle = `${r.color}${r.alpha})`;
-                ctx.lineWidth = 2;
+                ctx.moveTo(0, height);
+
+                for (let x = 0; x <= width + step; x += step) {
+                    const y = Math.sin(x * wave.freq + this.waveOffset * wave.speed) * wave.amp + wave.y;
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.lineTo(width, height);
+                ctx.closePath();
+                ctx.fillStyle = wave.color;
+                ctx.fill();
+            }
+        }
+
+        private drawBubbles() {
+            const { ctx, isLight } = this;
+            const palette = isLight ? this.LIGHT_COLORS : this.DARK_COLORS;
+
+            for (const b of this.bubbles) {
+                if (b.alpha <= 0.01) continue;
+
+                const rgb = palette[b.colorIndex % palette.length];
+                const r = b.radius;
+
+                // 1. Cuerpo translúcido
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, r, 0, Math.PI * 2);
+                ctx.fillStyle = isLight
+                    ? `rgba(${rgb}, ${b.alpha * 0.18})`
+                    : `rgba(${rgb}, ${b.alpha * 0.28})`;
+                ctx.fill();
+
+                // 2. Tensión superficial (borde sutil)
+                ctx.lineWidth = isLight ? 1.2 : 1.4;
+                ctx.strokeStyle = isLight
+                    ? `rgba(${rgb}, ${b.alpha * 0.45})`
+                    : `rgba(${rgb}, ${b.alpha * 0.75})`;
+                ctx.stroke();
+
+                // 3. Brillo de reflejo especular
+                const highlightX = b.x - r * 0.35;
+                const highlightY = b.y - r * 0.35;
+                const highlightR = Math.max(0.8, r * 0.25);
+
+                ctx.beginPath();
+                ctx.arc(highlightX, highlightY, highlightR, 0, Math.PI * 2);
+                ctx.fillStyle = isLight
+                    ? `rgba(255, 255, 255, ${b.alpha * 0.85})`
+                    : `rgba(255, 255, 255, ${b.alpha * 0.95})`;
+                ctx.fill();
+            }
+        }
+
+        private drawRipples() {
+            const { ctx } = this;
+            for (const rip of this.ripples) {
+                ctx.beginPath();
+                ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = `rgba(${rip.rgb}, ${Math.max(0, rip.alpha)})`;
                 ctx.stroke();
             }
         }
 
-        private draw = () => {
+        private renderFrame = () => {
             const { ctx, width, height } = this;
-            ctx.fillStyle = "rgba(2, 6, 23, 0.2)";
-            ctx.fillRect(0, 0, width, height);
+            ctx.clearRect(0, 0, width, height);
 
-            this.offset += 0.007;
-            this.updateRipples();
+            this.drawWaves();
+            this.drawBubbles();
+            this.drawRipples();
+        };
 
-            this.drawWave(this.COLORS[0], height * 0.65, 0.002, 0.005, 50, 20, this.offset);
-            this.drawWave(this.COLORS[1], height * 0.75, 0.0025, 0.004, 40, 25, this.offset * 0.8);
-            this.drawWave(this.COLORS[2], height * 0.35, 0.0015, 0.006, 30, 15, this.offset * 0.5 + 2);
+        private loop = () => {
+            const now = performance.now();
+            // Normalizar a base 60 FPS (16.67ms) con límite de seguridad (máximo dt = 2.0)
+            const dt = Math.min((now - this.lastFrameTime) / 16.67, 2.0);
+            this.lastFrameTime = now;
 
-            this.animationId = requestAnimationFrame(this.draw);
+            this.updatePhysics(dt);
+            this.renderFrame();
+            this.animationId = requestAnimationFrame(this.loop);
         };
 
         public start() {
-            if (!this.animationId) this.draw();
+            if (!this.animationId && !this.prefersReducedMotion) {
+                this.lastFrameTime = performance.now();
+                this.loop();
+            }
         }
 
         public stop() {
@@ -200,29 +475,30 @@
 
         public cleanup() {
             this.stop();
-            window.removeEventListener("resize", this.handleResize);
+            window.removeEventListener("resize", this.resize);
             window.removeEventListener("pointermove", this.handlePointerMove);
-            this.initialized = false;
+            window.removeEventListener("pointerdown", this.handlePointerDown);
+            window.removeEventListener("pointerleave", this.handlePointerLeave);
+            document.removeEventListener("visibilitychange", this.handleVisibilityChange);
+            if (this.themeObserver) {
+                this.themeObserver.disconnect();
+                this.themeObserver = null;
+            }
         }
     }
 
-
-    function init() {
-        const canvas = document.getElementById("liquid-canvas") as HTMLCanvasElement;
+    function setupLiquid() {
+        const canvas = document.getElementById("liquid-canvas") as HTMLCanvasElement | null;
         if (canvas) {
             const engine = LiquidEngine.getInstance(canvas);
             engine.start();
         }
     }
 
-    document.addEventListener("astro:page-load", init);
-    if (document.readyState !== "loading") init();
-</script>
-
-<style>
-    #liquid-canvas {
-        /* REDUCIDO: De 40px a 12px para que las ondas se vean nítidas pero etéreas */
-        filter: blur(12px);
-        mix-blend-mode: screen;
+    document.addEventListener("astro:page-load", setupLiquid);
+    if (document.readyState !== "loading") {
+        setupLiquid();
+    } else {
+        document.addEventListener("DOMContentLoaded", setupLiquid);
     }
-</style>
+</script>

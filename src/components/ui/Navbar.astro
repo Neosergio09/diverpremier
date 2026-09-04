@@ -35,6 +35,7 @@ const currentPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
             <li class="relative py-2 group">
               <a
                 href={item.url}
+                data-astro-prefetch="hover"
                 class:list={[
                   "text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300",
                   isActive

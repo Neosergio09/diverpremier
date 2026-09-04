@@ -39,7 +39,7 @@
 </div>
 
 <script is:inline>
-  if (typeof localStorage !== 'undefined' && localStorage.getItem('ageVerified') === 'true') {
+  if (typeof localStorage !== 'undefined' && (localStorage.getItem('ageVerified') === 'true' || new URLSearchParams(window.location.search).has('no_age_gate'))) {
     const gate = document.getElementById('age-gate');
     if (gate) gate.style.display = 'none';
   }

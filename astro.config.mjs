@@ -8,6 +8,12 @@ export default defineConfig({
   // 🚀 CRUCIAL: Esto le dice a Astro que el búnker es dinámico
   output: 'server',
 
+  // ⚡ Prefetching global para transiciones instantáneas entre páginas
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
+
   // 🛠️ Adaptador oficial para que Vercel entienda el código del servidor
   adapter: vercel(),
 

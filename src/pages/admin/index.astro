@@ -1,27 +1,37 @@
 ---
 export const prerender = false;
 import AdminLayout from "@layouts/AdminLayout.astro";
-import { supabase } from "@lib/supabase";
+import { supabaseAdmin } from "@lib/supabase";
+import { formatCOP } from "@lib/formatters";
 
-// Fetch KPI Data
-const { data: catalog } = await supabase
-  .from('view_product_catalog')
-  .select('*');
+// Fetch KPI Data in parallel
+const [
+  { data: catalog },
+  { data: recentOrders },
+  { data: allOrders }
+] = await Promise.all([
+  supabaseAdmin
+    .from('view_product_catalog')
+    .select('*'),
+  supabaseAdmin
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(5),
+  supabaseAdmin
+    .from('orders')
+    .select('total_price, status')
+]);
 
-const { data: recentOrders } = await supabase
-  .from('orders')
-  .select('*')
-  .order('created_at', { ascending: false })
-  .limit(5);
-
-// Calculate Stats (Simulated or partial from DB)
+// Calculate Real Stats from DB
 const stockCritico = (catalog || []).filter(item => item.stock_status === 'OUT OF STOCK' || item.stock_status === 'LOW STOCK').length;
-const totalSales = 1245.50; // In a real app, this would be a SUM query on verified orders
-const pendingOrders = 8; // In a real app, COUNT where status = 'pending'
+const verifiedOrders = (allOrders || []).filter(o => o.status === 'verified');
+const totalSales = verifiedOrders.reduce((sum, o) => sum + (Number(o.total_price) || 0), 0);
+const pendingOrders = (allOrders || []).filter(o => o.status === 'pending_payment' || o.status === 'verification_pending').length;
 
 const stats = [
-  { name: 'Ventas del Día', value: `$${totalSales.toFixed(2)}`, trend: '+12%', color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
-  { name: 'Pedidos Pendientes', value: pendingOrders.toString(), trend: '3 nuevos', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  { name: 'Ventas Totales Verificadas', value: formatCOP(totalSales), trend: `${verifiedOrders.length} verificadas`, color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
+  { name: 'Pedidos Pendientes', value: pendingOrders.toString(), trend: `${pendingOrders} por verificar`, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
   { name: 'Stock Crítico', value: stockCritico.toString(), trend: 'Atención', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
 ];
 ---

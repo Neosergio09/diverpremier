@@ -1,44 +1,17 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import { Image } from 'astro:assets';
-import { supabase } from '../lib/supabase';
+import { getCachedCategoriesWithProducts, type CatalogCategory, type CatalogProduct } from '../lib/cache';
 import { formatCOP } from '../lib/formatters';
 
-interface Product {
-  name: string;
-  price: number | string;
-  stock_quantity: number;
-  category_id?: string;
-}
-
-interface Category {
-  name: string;
-  products: Product[];
-}
+type Product = CatalogProduct;
+type Category = CatalogCategory;
 
 let categories: Category[] = [];
 let fetchError: string | null = null;
 
 try {
-  console.log('--- Fetching Categories and Products from Supabase ---');
-  const { data, error } = await supabase
-    .from('categories')
-    .select('name, products(name, price, stock_quantity, category_id)')
-    .order('name');
-
-  if (error) {
-    console.error('❌ Supabase Error:', error.message);
-    throw error;
-  }
-  
-  console.log(`✅ Fetched ${data?.length || 0} categories.`);
-  if (data) {
-    data.forEach(cat => {
-      console.log(`- Category "${cat.name}": ${cat.products?.length || 0} products`);
-    });
-  }
-  
-  categories = data || [];
+  categories = await getCachedCategoriesWithProducts();
 } catch (e: any) {
   fetchError = e.message || "Error al conectar con la base de datos";
 }
@@ -158,6 +131,7 @@ try {
 
                               <button 
                                 class="add-to-cart-btn flex items-center justify-center w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_20px_rgba(255,0,229,0.6)] transition-all duration-300 active:scale-90 group/btn"
+                                data-id={product.id}
                                 data-name={product.name}
                                 data-price={priceFormatted}
                                 data-image={'https://placehold.co/600x800/0A0F1E/white?text=Producto'}
@@ -205,9 +179,9 @@ try {
 
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      const { name, price, image } = btn.dataset;
+      const { id, name, price, image } = btn.dataset;
       if (name && price && image) {
-        addItem({ name, price, image_url: image });
+        addItem({ id, name, price, image_url: image });
         isCartOpen.set(true);
       }
     });

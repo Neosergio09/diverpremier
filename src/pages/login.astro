@@ -1,9 +1,11 @@
 ---
+export const prerender = true;
+
 import MainLayout from "@layouts/MainLayout.astro";
 import LiquidBackground from "@components/ui/LiquidBackground.astro";
 ---
 
-<MainLayout title="Acceso al Búnker | Diverpremier">
+<MainLayout title="Acceso al Búnker | Diverpremier" hideFooter={true}>
   <link
     slot="head"
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
@@ -130,6 +132,22 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
       </div>
     </div>
   </div>
+
+  <!-- FOOTER -->
+  <footer slot="page-footer" class="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] w-full z-20 md:pr-80 px-6 flex justify-center md:justify-end pointer-events-none">
+    <div class="w-full max-w-md flex flex-col items-center justify-center gap-1.5 pointer-events-auto">
+      <div class="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/30 hover:text-neon-blue transition-colors duration-300 cursor-default">
+        <span class="relative flex h-1.5 w-1.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+        </span>
+        Secure Connection Established
+      </div>
+      <div class="text-[10px] tracking-[0.2em] text-white/30 hover:text-neon-blue transition-colors duration-300 cursor-default">
+        © 2026 OTTEROCK DIGITAL
+      </div>
+    </div>
+  </footer>
 </MainLayout>
 
 <script>

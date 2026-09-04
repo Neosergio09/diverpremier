@@ -1,6 +1,7 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
+import { invalidateCatalogCache } from '@lib/cache';
 
 const slugify = (text: string) => 
     text.toString().toLowerCase()
@@ -79,6 +80,8 @@ export const POST: APIRoute = async ({ request }) => {
             console.error('⚠️ Error en la base de datos (productos):', error);
             return new Response(JSON.stringify({ error: error.message }), { status: 500 });
         }
+
+        invalidateCatalogCache();
 
         return new Response(JSON.stringify({
             message: '¡Sincronización completa! Productos y categorías actualizados.',

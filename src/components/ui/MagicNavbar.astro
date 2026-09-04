@@ -54,6 +54,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                         >
                             <a
                                 href={item.href}
+                                data-astro-prefetch="hover"
                                 class="relative flex justify-center items-center flex-col w-full h-full"
                             >
                                 <span class="icon relative block text-white/30 transition-all duration-500 will-change-transform group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-[34.5px]">
@@ -231,6 +232,26 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
             "click",
             (window as any).__magicThemeHandler,
         );
+
+        // ─── Theme Icon Persistence Init (No Flicker) ───
+        const sunIcon = document.querySelector(".theme-icon-sun") as HTMLElement;
+        const moonIcon = document.querySelector(".theme-icon-moon") as HTMLElement;
+
+        if (sunIcon && moonIcon) {
+            // Temporarily disable CSS transitions
+            sunIcon.classList.remove("transition-all", "duration-500");
+            moonIcon.classList.remove("transition-all", "duration-500");
+
+            // Force reflow so the browser renders them in their final state instantly
+            void sunIcon.offsetWidth;
+            void moonIcon.offsetWidth;
+
+            // Re-eneable transitions after a short delay
+            setTimeout(() => {
+                sunIcon.classList.add("transition-all", "duration-500");
+                moonIcon.classList.add("transition-all", "duration-500");
+            }, 50);
+        }
 
         // ─── MutationObserver: Sync icon state when desktop toggle fires ───
         if ((window as any).__magicThemeObserver) {
