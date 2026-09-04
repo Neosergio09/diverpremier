@@ -2,11 +2,19 @@
 export const prerender = true;
 
 import MainLayout from "../layouts/MainLayout.astro";
-import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
+import {
+  Clock,
+  MapPin,
+  MessageCircle,
+  Navigation,
+  Search,
+  Crosshair,
+  ExternalLink,
+} from "lucide-astro";
 ---
 
 <MainLayout
-  title="Diverpremier - Tactical Map"
+  title="Búnker Central & Cobertura Táctica | Diverpremier"
   isProse={false}
   containerClass="p-0 m-0 max-w-none h-screen w-full relative overflow-hidden bg-dark-bg"
 >
@@ -19,115 +27,186 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   >
   </div>
 
-  <!-- Info Panel: Bottom-Sheet (mobile) / Floating Card (desktop) -->
+  <!-- ═══════════════════════════════════════════════════════
+       BARRA DE BÚSQUEDA Y NORMALIZADOR ESTILO PIBOX
+       ═══════════════════════════════════════════════════════ -->
   <div
-    id="info-panel"
-    class="fixed bottom-[110px] left-3 right-3 md:absolute md:bottom-auto md:top-32 lg:top-36 md:left-auto md:right-10 z-[1000]"
+    id="search-panel"
+    class="fixed top-4 md:top-28 left-3 right-3 md:left-8 md:right-auto md:w-[380px] lg:w-[420px] z-[1000]"
   >
     <div
-      class="info-card glass-neon p-5 md:p-6 rounded-2xl md:rounded-3xl border border-white/5 w-full md:w-[85vw] max-w-[320px] mx-auto md:mx-0 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-4 md:gap-5 backdrop-blur-xl"
+      class="glass-neon p-3.5 md:p-4 rounded-2xl md:rounded-3xl border border-white/10 bg-[#020617]/90 backdrop-blur-xl shadow-[0_15px_40px_rgba(0,0,0,0.6)] flex flex-col gap-2"
+    >
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse shadow-[0_0_8px_#2dd4bf]"></span>
+          <span class="text-[9px] font-black uppercase tracking-[0.2em] text-teal-400">
+            Localizador Táctico
+          </span>
+        </div>
+        <span class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">
+          Álamos • Bogotá
+        </span>
+      </div>
+
+      <!-- Input Form -->
+      <form id="address-form" class="relative flex items-center gap-1.5">
+        <div class="relative flex-1">
+          <input
+            type="text"
+            id="address-input"
+            placeholder="Dirección o barrio (ej: Cl 72 # 110-20)..."
+            autocomplete="off"
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 pl-9 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-teal-400/60 focus:bg-teal-400/5 transition-all shadow-inner"
+          />
+          <Search
+            size={14}
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+          />
+        </div>
+
+        <!-- GPS Button -->
+        <button
+          type="button"
+          id="btn-gps"
+          title="Usar mi ubicación GPS actual"
+          class="p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-teal-400/20 hover:border-teal-400/40 text-teal-400 transition-all cursor-pointer flex-shrink-0"
+        >
+          <Crosshair size={16} />
+        </button>
+
+        <!-- Search Button -->
+        <button
+          type="submit"
+          id="btn-search"
+          class="px-3.5 py-2.5 rounded-xl border border-teal-400/30 bg-teal-400/10 hover:bg-teal-400 hover:text-dark-bg text-teal-400 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex-shrink-0"
+        >
+          Buscar
+        </button>
+      </form>
+
+      <!-- Feedback de Normalización & Estado -->
+      <div id="search-feedback" class="hidden px-2 pt-1 flex items-center justify-between text-[9px] font-medium border-t border-white/5">
+        <span id="normalized-text" class="text-slate-400 truncate max-w-[250px]"></span>
+        <button
+          type="button"
+          id="btn-reset-map"
+          class="text-teal-400/80 hover:text-teal-300 underline uppercase tracking-wider text-[8px] cursor-pointer ml-2 flex-shrink-0"
+        >
+          Centrar Búnker
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PANEL DE INFORMACIÓN DEL BÚNKER & COBERTURA
+       ═══════════════════════════════════════════════════════ -->
+  <div
+    id="info-panel"
+    class="fixed bottom-[95px] md:bottom-auto md:top-28 left-3 right-3 md:left-auto md:right-8 z-[1000] max-h-[62vh] md:max-h-[85vh] overflow-y-auto no-scrollbar"
+  >
+    <div
+      class="info-card glass-neon p-4 md:p-6 rounded-2xl md:rounded-3xl border border-white/10 w-full md:w-[85vw] max-w-[340px] lg:max-w-[360px] mx-auto md:mx-0 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col gap-3.5 md:gap-4 backdrop-blur-xl"
     >
       <!-- Mobile Grabber Line -->
-      <div class="flex justify-center md:hidden mb-1">
+      <div class="flex justify-center md:hidden mb-0.5">
         <div class="w-10 h-1 rounded-full bg-white/20"></div>
       </div>
-      <!-- Header -->
-      <div
-        class="flex justify-between items-center pb-4 border-b border-white/10"
-      >
+
+      <!-- Header Búnker -->
+      <div class="flex justify-between items-start pb-3 border-b border-white/10">
         <div>
-          <h2 class="info-title font-black uppercase tracking-widest text-sm">
-            Central Álamos
+          <span class="text-[9px] font-black uppercase tracking-[0.25em] text-teal-400">Búnker Central</span>
+          <h2 class="info-title font-black uppercase tracking-tight text-lg md:text-xl leading-tight text-white">
+            Álamos Norte
           </h2>
-          <p class="info-subtitle text-[10px] uppercase tracking-widest mt-1">
-            Status Operativo
+          <p class="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
+            <MapPin size={11} class="text-teal-400 flex-shrink-0" />
+            <span>Cl. 71B # 100-38, Engativá, Bogotá</span>
           </p>
         </div>
-        <div
-          class="status-badge-live flex items-center gap-2 px-3 py-1.5 rounded-full border"
-        >
-          <span
-            class="w-2 h-2 rounded-full bg-teal-400 animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.5)]"
-          ></span>
-          <span
-            class="text-teal-400 text-[10px] font-bold uppercase tracking-wider"
-            >OPEN</span
-          >
+        <div class="status-badge-live flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-teal-400/30 bg-teal-400/10">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse shadow-[0_0_8px_#2dd4bf]"></span>
+          <span class="text-teal-400 text-[9px] font-bold uppercase tracking-wider">OPEN</span>
         </div>
       </div>
 
-      <!-- Stats -->
-      <div class="space-y-4">
-        <div class="flex items-center gap-4">
-          <div
-            class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border"
+      <!-- Botones "Cómo Llegar" al Negocio (Waze / Google Maps) -->
+      <div class="space-y-1.5">
+        <p class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
+          Navegar hacia el Búnker
+        </p>
+        <div class="grid grid-cols-2 gap-2">
+          <a
+            href="https://www.google.com/maps/dir/?api=1&destination=4.7026601,-74.1174237"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white text-[9px] font-bold tracking-wider uppercase transition-all"
           >
-            <Clock size={16} class="text-teal-400" />
-          </div>
-          <div>
-            <p
-              class="info-label text-[10px] uppercase font-bold tracking-widest"
-            >
-              Delivery Estimado
-            </p>
-            <p class="info-value font-black text-lg">
-              15 - 25 <span class="text-xs text-teal-400 font-bold">MIN</span>
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <div
-            class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border"
+            <span>Google Maps</span>
+            <ExternalLink size={11} class="text-teal-400" />
+          </a>
+          <a
+            href="https://waze.com/ul?ll=4.7026601,-74.1174237&navigate=yes"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-teal-400/20 bg-teal-400/5 hover:bg-teal-400/15 hover:border-teal-400/40 text-teal-400 text-[9px] font-bold tracking-wider uppercase transition-all"
           >
-            <MapPin size={16} class="text-teal-400" />
-          </div>
-          <div>
-            <p
-              class="info-label text-[10px] uppercase font-bold tracking-widest"
-            >
-              Zona Cobertura
-            </p>
-            <p class="info-value font-black text-xs uppercase tracking-wider">
-              Flash Delivery Zone
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <div
-            class="icon-circle w-10 h-10 rounded-full flex items-center justify-center border"
-          >
-            <Navigation size={16} class="text-teal-400" />
-          </div>
-          <div>
-            <p
-              class="info-label text-[10px] uppercase font-bold tracking-widest"
-            >
-              Radio de Operación
-            </p>
-            <p class="info-value font-black text-xs uppercase tracking-wider">
-              2.5 KM
-            </p>
-          </div>
+            <span>Waze</span>
+            <Navigation size={11} class="text-teal-400" />
+          </a>
         </div>
       </div>
 
-      <!-- CTA Button -->
+      <!-- Sección de Cobertura Interactiva Dinámica -->
+      <div
+        id="coverage-status-box"
+        class="p-3 rounded-2xl border border-teal-400/20 bg-teal-400/5 transition-all duration-300"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
+            Estado de Cobertura
+          </span>
+          <span id="coverage-badge" class="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-teal-400/40 bg-teal-400/10 text-teal-400">
+            ZONA FLASH ⚡
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-center">
+          <div class="p-2 rounded-xl bg-white/5 border border-white/5">
+            <span class="text-[8px] uppercase tracking-wider text-slate-400 block">Distancia</span>
+            <span id="stat-distance" class="text-sm md:text-base font-black text-white">0.0 KM</span>
+          </div>
+          <div class="p-2 rounded-xl bg-white/5 border border-white/5">
+            <span class="text-[8px] uppercase tracking-wider text-slate-400 block">Entrega Estimada</span>
+            <span id="stat-time" class="text-sm md:text-base font-black text-teal-400">15 - 25 MIN</span>
+          </div>
+        </div>
+
+        <p id="coverage-note" class="text-[9px] text-slate-400 text-center mt-2 leading-relaxed">
+          📍 Toca cualquier punto del mapa o busca tu dirección para verificar la entrega en tu puerta.
+        </p>
+      </div>
+
+      <!-- Botón Pedir a este punto por WhatsApp -->
       <a
-        href="https://wa.me/573000000000"
+        id="btn-whatsapp-delivery"
+        href="https://wa.me/573000000000?text=Hola%20Diverpremier,%20quiero%20hacer%20un%20pedido%20para%20Central%20%C3%81lamos."
         target="_blank"
         rel="noopener noreferrer"
-        class="cta-btn mt-2 group relative w-full py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border"
+        class="cta-btn group relative w-full py-3.5 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border"
       >
         <MessageCircle
-          size={18}
+          size={16}
           class="text-teal-400 group-hover:scale-110 transition-transform"
         />
         <span
-          class="text-teal-400 font-black text-[10px] tracking-[0.2em] uppercase"
-          >Contactar Central</span
+          id="btn-whatsapp-label"
+          class="text-teal-400 font-black text-[10px] tracking-[0.18em] uppercase"
         >
+          Consultar Domicilio
+        </span>
       </a>
     </div>
   </div>
@@ -151,20 +230,25 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     transition: background-color 0.5s ease;
   }
 
-  /* Hide default Leaflet attribution */
   .leaflet-control-attribution {
     display: none !important;
   }
 
-  /* Light mode filter on tile layer for warm palette */
+  /* ═══════════════════════════════════════════
+     DARK & LIGHT TILE FILTERS (OSM CLEAN TILES)
+     ═══════════════════════════════════════════ */
+  html:not(.light) .leaflet-tile-pane {
+    filter: invert(100%) hue-rotate(180deg) brightness(80%) contrast(110%);
+  }
+
   html.light .leaflet-tile-pane {
-    transition: filter 0.6s ease;
+    filter: contrast(95%) brightness(98%);
   }
 
   /* ═══════════════════════════════════════════
      MARKER PULSE ANIMATIONS
      ═══════════════════════════════════════════ */
-  .neon-teal-marker {
+  .neon-teal-marker, .neon-pink-marker {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -189,10 +273,10 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   }
 
   /* ═══════════════════════════════════════════
-     INFO PANEL – ADAPTIVE THEME STYLES
+     ADAPTIVE THEME STYLES
      ═══════════════════════════════════════════ */
   .info-card {
-    background: rgba(2, 6, 23, 0.85);
+    background: rgba(2, 6, 23, 0.88);
     transition:
       background-color 0.5s ease,
       border-color 0.5s ease,
@@ -201,19 +285,6 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   .info-title {
     color: #fff;
   }
-  .info-subtitle {
-    color: #94a3b8;
-  }
-  .info-label {
-    color: #64748b;
-  }
-  .info-value {
-    color: #fff;
-  }
-  .icon-circle {
-    background: rgba(45, 212, 191, 0.1);
-    border-color: rgba(45, 212, 191, 0.2);
-  }
   .status-badge-live {
     background: rgba(45, 212, 191, 0.1);
     border-color: rgba(45, 212, 191, 0.2);
@@ -221,56 +292,29 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
   .cta-btn {
     background: linear-gradient(
       to right,
-      rgba(20, 184, 166, 0.1),
-      rgba(45, 212, 191, 0.2)
+      rgba(20, 184, 166, 0.12),
+      rgba(45, 212, 191, 0.22)
     );
-    border-color: rgba(45, 212, 191, 0.3);
+    border-color: rgba(45, 212, 191, 0.35);
   }
   .cta-btn:hover {
-    box-shadow: 0 0 30px rgba(45, 212, 191, 0.2);
+    box-shadow: 0 0 30px rgba(45, 212, 191, 0.25);
   }
 
   /* ── Light Mode ── */
   html.light .info-card {
-    background: rgba(244, 244, 245, 0.92);
-    border-color: rgba(0, 0, 0, 0.08);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+    background: rgba(244, 244, 245, 0.94);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   }
   html.light .info-title {
     color: #171717;
   }
-  html.light .info-subtitle {
-    color: #64748b;
+  html.light #stat-distance {
+    color: #171717 !important;
   }
-  html.light .info-label {
-    color: #475569;
-  }
-  html.light .info-value {
-    color: #171717;
-  }
-  html.light .icon-circle {
-    background: rgba(20, 184, 166, 0.08);
-    border-color: rgba(20, 184, 166, 0.15);
-  }
-  html.light .status-badge-live {
-    background: rgba(20, 184, 166, 0.08);
-    border-color: rgba(20, 184, 166, 0.2);
-  }
-  html.light .cta-btn {
-    background: linear-gradient(
-      to right,
-      rgba(20, 184, 166, 0.06),
-      rgba(45, 212, 191, 0.12)
-    );
-    border-color: rgba(20, 184, 166, 0.25);
-  }
-  html.light .cta-btn:hover {
-    box-shadow: 0 0 25px rgba(20, 184, 166, 0.15);
-  }
-
-  /* Light mode marker label adaptation */
   html.light .marker-label {
-    background: rgba(244, 244, 245, 0.9) !important;
+    background: rgba(244, 244, 245, 0.92) !important;
     border-color: rgba(20, 184, 166, 0.3) !important;
   }
   html.light .marker-label span {
@@ -280,7 +324,7 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
 
 <script is:inline>
   // ═══════════════════════════════════════════════════════
-  // TACTICAL MAP ENGINE — Theme-Reactive Leaflet System
+  // TACTICAL MAP ENGINE — PIBOX ADDRESS LOCATOR & ROUTING
   // ═══════════════════════════════════════════════════════
 
   (function () {
@@ -288,15 +332,21 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
     let mapInstance = null;
     /** @type {L.TileLayer | null} */
     let currentTileLayer = null;
+    /** @type {L.Marker | null} */
+    let userMarker = null;
+    /** @type {L.Polyline | null} */
+    let connectionLine = null;
     /** @type {MutationObserver | null} */
     let themeObserver = null;
 
-    const BUNKER_COORDS = [4.702527, -74.1186421];
+    // Coordenadas fijas del Búnker Álamos Norte (Bogotá): Cl. 71B # 100-38
+    const BUNKER_COORDS = [4.7026601, -74.1174237];
+    const FLASH_RADIUS_METERS = 2500; // 2.5 KM
+    const EXTENDED_RADIUS_METERS = 6000; // 6.0 KM
 
     const TILES = {
-      dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-      light:
-        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      dark: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      light: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     };
 
     function isLightMode() {
@@ -307,26 +357,19 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
       return isLightMode() ? TILES.light : TILES.dark;
     }
 
-    /**
-     * Swap TileLayer without destroying the map.
-     * Strategy: Remove the old layer, add a new one.
-     * This avoids Leaflet's internal _url caching issues
-     * and delivers a clean visual transition.
-     */
     function swapTileLayer() {
       if (!mapInstance) return;
-
       if (currentTileLayer) {
         mapInstance.removeLayer(currentTileLayer);
       }
-
       currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
-        maxZoom: 20,
+        maxNativeZoom: 19,
+        maxZoom: 19,
         attribution: "",
       }).addTo(mapInstance);
     }
 
-    function createMarkerHtml() {
+    function createBunkerMarkerHtml() {
       return `
         <div class="relative flex items-center justify-center w-12 h-12">
           <div class="absolute w-full h-full bg-teal-400/40 rounded-full blur-xl animate-pulse"></div>
@@ -336,65 +379,312 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
             <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
           </div>
           <div class="marker-label absolute mt-16 whitespace-nowrap px-3 py-1.5 glass-neon rounded-xl border border-teal-500/30 bg-[#020617]/80 backdrop-blur-md">
-            <span class="text-teal-400 font-black text-[9px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]">BUNKER ÁLAMOS</span>
+            <span class="text-teal-400 font-black text-[9px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]">BÚNKER ÁLAMOS</span>
           </div>
         </div>
       `;
     }
 
+    function createUserMarkerHtml(label) {
+      return `
+        <div class="relative flex items-center justify-center w-10 h-10 cursor-grab active:cursor-grabbing">
+          <div class="absolute w-full h-full bg-pink-500/30 rounded-full blur-lg animate-pulse"></div>
+          <div class="relative w-4 h-4 bg-pink-500 rounded-full shadow-[0_0_15px_#ec4899] border-2 border-white flex justify-center items-center">
+            <div class="w-1 h-1 bg-white rounded-full"></div>
+          </div>
+          <div class="marker-label absolute mt-14 whitespace-nowrap px-2.5 py-1 glass-neon rounded-lg border border-pink-500/40 bg-[#020617]/90 backdrop-blur-md shadow-lg">
+            <span class="text-pink-400 font-black text-[8px] uppercase tracking-wider">${label || "TU UBICACIÓN"}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // NORMALIZADOR DE DIRECCIONES COLOMBIANAS (ESTILO PIBOX)
+    // ─────────────────────────────────────────────────────────────
+    function normalizeColombianAddress(raw) {
+      if (!raw) return "";
+      let str = raw.trim().toLowerCase();
+
+      // 1. Desacoplar complementos residenciales (Apto, Torre, Casa, etc.)
+      str = str.replace(/\b(apto|apartamento|torre|tr|bloque|blq|int|interior|casa|cs|piso|local|lc|oficina|of|conjunto|conj)\b.*$/i, "");
+
+      // 2. Normalizar tipo de vía
+      str = str.replace(/\b(cll|cl|c\.|calle)\b/gi, "Calle");
+      str = str.replace(/\b(cra|cr|kra|k\.|k|ak|carrera)\b/gi, "Carrera");
+      str = str.replace(/\b(dg|diag|diagonal)\b/gi, "Diagonal");
+      str = str.replace(/\b(tv|trans|trv|transversal)\b/gi, "Transversal");
+      str = str.replace(/\b(av\s*cl|av\s*calle|ac)\b/gi, "Avenida Calle");
+      str = str.replace(/\b(av\s*cra|av\s*carrera|ak)\b/gi, "Avenida Carrera");
+      str = str.replace(/\b(av|avenida)\b/gi, "Avenida");
+
+      // 3. Normalizar conectores (#, No., N°)
+      str = str.replace(/\b(no\.|n°|no|num|numero)\b/gi, "#");
+      str = str.replace(/([a-z0-9])#/gi, "$1 #");
+      str = str.replace(/\s+/g, " ").trim();
+
+      return str;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CÁLCULO DE COBERTURA Y DISTANCIA
+    // ─────────────────────────────────────────────────────────────
+    function updateCoverage(lat, lng, addressLabel) {
+      if (!mapInstance) return;
+
+      const userPos = L.latLng(lat, lng);
+      const bunkerPos = L.latLng(BUNKER_COORDS[0], BUNKER_COORDS[1]);
+      const distanceMeters = bunkerPos.distanceTo(userPos);
+      const distanceKm = (distanceMeters / 1000).toFixed(1);
+
+      // 1. Actualizar o crear marcador de usuario
+      const userIcon = L.divIcon({
+        className: "neon-pink-marker",
+        html: createUserMarkerHtml(addressLabel || "TU UBICACIÓN"),
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+
+      if (!userMarker) {
+        userMarker = L.marker([lat, lng], {
+          icon: userIcon,
+          draggable: true,
+        }).addTo(mapInstance);
+
+        userMarker.on("drag", function (e) {
+          const pos = e.target.getLatLng();
+          updateCoverage(pos.lat, pos.lng, "ARRÁSTRAME A TU PUERTA");
+        });
+      } else {
+        userMarker.setLatLng([lat, lng]);
+        userMarker.setIcon(userIcon);
+      }
+
+      // 2. Línea táctica de conexión entre Búnker y Usuario
+      if (connectionLine) {
+        connectionLine.setLatLngs([BUNKER_COORDS, [lat, lng]]);
+      } else {
+        connectionLine = L.polyline([BUNKER_COORDS, [lat, lng]], {
+          color: "#ec4899",
+          weight: 2,
+          dashArray: "6, 8",
+          opacity: 0.85,
+        }).addTo(mapInstance);
+      }
+
+      // 3. Actualizar UI del Panel de Cobertura
+      const distEl = document.getElementById("stat-distance");
+      const timeEl = document.getElementById("stat-time");
+      const badgeEl = document.getElementById("coverage-badge");
+      const noteEl = document.getElementById("coverage-note");
+      const boxEl = document.getElementById("coverage-status-box");
+      const waBtn = document.getElementById("btn-whatsapp-delivery");
+      const waLabel = document.getElementById("btn-whatsapp-label");
+
+      if (distEl) distEl.innerText = `${distanceKm} KM`;
+
+      let estimatedMinutes = "15 - 25 MIN";
+      let badgeText = "ZONA FLASH ⚡";
+      let badgeClass = "text-teal-400 border-teal-400/40 bg-teal-400/10";
+      let noteText = "🚀 ¡Ubicación en zona de entrega ultra-rápida desde Central Álamos!";
+
+      if (distanceMeters <= FLASH_RADIUS_METERS) {
+        estimatedMinutes = "15 - 25 MIN";
+        badgeText = "ZONA FLASH ⚡";
+        badgeClass = "text-teal-400 border-teal-400/40 bg-teal-400/10";
+        noteText = "🚀 ¡Ubicación en zona de entrega ultra-rápida desde Central Álamos!";
+        if (boxEl) boxEl.className = "p-3 rounded-2xl border border-teal-400/30 bg-teal-400/5 transition-all duration-300";
+      } else if (distanceMeters <= EXTENDED_RADIUS_METERS) {
+        estimatedMinutes = "30 - 45 MIN";
+        badgeText = "ZONA EXTENDIDA 🛵";
+        badgeClass = "text-amber-400 border-amber-400/40 bg-amber-400/10";
+        noteText = "🛵 Cobertura extendida disponible (Engativá / Fontibón / Modelia).";
+        if (boxEl) boxEl.className = "p-3 rounded-2xl border border-amber-400/30 bg-amber-400/5 transition-all duration-300";
+      } else {
+        estimatedMinutes = "CONSULTAR";
+        badgeText = "FUERA DE COBERTURA ⚠️";
+        badgeClass = "text-rose-400 border-rose-400/40 bg-rose-400/10";
+        noteText = "⚠️ Estás fuera del radio habitual. Contáctanos por WhatsApp para validar envío especial.";
+        if (boxEl) boxEl.className = "p-3 rounded-2xl border border-rose-400/30 bg-rose-400/5 transition-all duration-300";
+      }
+
+      if (timeEl) timeEl.innerText = estimatedMinutes;
+      if (badgeEl) {
+        badgeEl.innerText = badgeText;
+        badgeEl.className = `text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${badgeClass}`;
+      }
+      if (noteEl) noteEl.innerText = noteText;
+
+      // 4. Actualizar link de WhatsApp con las coordenadas exactas
+      if (waBtn) {
+        const mapsLink = `https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
+        const message = `Hola Diverpremier, verifiqué mi ubicación en el mapa: Distancia: ${distanceKm} km. Mi punto exacto de entrega es: ${mapsLink}. ¿Tienen despacho disponible?`;
+        waBtn.setAttribute("href", `https://wa.me/573000000000?text=${encodeURIComponent(message)}`);
+      }
+      if (waLabel) waLabel.innerText = "Pedir a esta ubicación";
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // GEOCODIFICADOR CON SESGO BOGOTÁ (NOMINATIM / OSM)
+    // ─────────────────────────────────────────────────────────────
+    async function searchAddress(query) {
+      if (!query || query.trim().length < 3) return;
+
+      const normalized = normalizeColombianAddress(query);
+      const feedbackEl = document.getElementById("search-feedback");
+      const normTextEl = document.getElementById("normalized-text");
+      const btnSearch = document.getElementById("btn-search");
+
+      if (feedbackEl) feedbackEl.classList.remove("hidden");
+      if (normTextEl) normTextEl.innerText = `🔍 Buscando: "${normalized}"`;
+      if (btnSearch) btnSearch.innerText = "...";
+
+      try {
+        const searchQuery = `${normalized}, Bogotá, Colombia`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchQuery
+        )}&viewbox=-74.25,4.85,-74.00,4.45&bounded=1&countrycodes=co&limit=1`;
+
+        const res = await fetch(url, { headers: { "Accept-Language": "es" } });
+        const results = await res.json();
+
+        if (results && results.length > 0) {
+          const item = results[0];
+          const lat = parseFloat(item.lat);
+          const lng = parseFloat(item.lon);
+
+          if (normTextEl) normTextEl.innerText = `📍 Ubicado: ${normalized}`;
+          updateCoverage(lat, lng, normalized.toUpperCase());
+
+          mapInstance.flyTo([lat, lng], 15.5, {
+            duration: 1.2,
+          });
+        } else {
+          if (normTextEl) normTextEl.innerText = `⚠️ No exacto. Toca el mapa para fijar tu pin.`;
+        }
+      } catch (err) {
+        console.error("Geocoding error:", err);
+        if (normTextEl) normTextEl.innerText = `⚠️ Error de red. Puedes tocar el mapa manualmente.`;
+      } finally {
+        if (btnSearch) btnSearch.innerText = "Buscar";
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // INICIALIZACIÓN DEL MAPA
+    // ─────────────────────────────────────────────────────────────
     function initMap() {
       const container = document.getElementById("tactical-map");
       if (!container) return;
 
-      // ── Cleanup: Prevent double-init on View Transitions ──
       if (mapInstance) {
         themeObserver?.disconnect();
         mapInstance.remove();
         mapInstance = null;
         currentTileLayer = null;
+        userMarker = null;
+        connectionLine = null;
       }
 
-      // Clear any stale Leaflet ID from a previous lifecycle
       if (container._leaflet_id) {
         container._leaflet_id = null;
         container.innerHTML = "";
       }
 
-      // ── Create Map ──
+      // Crear mapa centrado en el Búnker
       mapInstance = L.map("tactical-map", {
         zoomControl: false,
         attributionControl: false,
-      }).setView(BUNKER_COORDS, 14.5);
+        maxZoom: 19,
+        minZoom: 11,
+      }).setView(BUNKER_COORDS, 15);
 
-      // ── Initial Tile Layer ──
       currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
-        maxZoom: 20,
+        maxNativeZoom: 19,
+        maxZoom: 19,
         attribution: "",
       }).addTo(mapInstance);
 
-      // ── Bunker Marker ──
+      // Marcador del Búnker Central
       const bunkerIcon = L.divIcon({
         className: "neon-teal-marker",
-        html: createMarkerHtml(),
+        html: createBunkerMarkerHtml(),
         iconSize: [48, 48],
         iconAnchor: [24, 24],
       });
-
       L.marker(BUNKER_COORDS, { icon: bunkerIcon }).addTo(mapInstance);
 
-      // ── Coverage Radius ──
+      // Círculo de Zona Flash (2.5 km)
       L.circle(BUNKER_COORDS, {
         color: "#2dd4bf",
         fillColor: "#2dd4bf",
-        fillOpacity: 0.05,
-        weight: 1,
+        fillOpacity: 0.06,
+        weight: 1.5,
         dashArray: "5, 10",
-        radius: 2500,
+        radius: FLASH_RADIUS_METERS,
       }).addTo(mapInstance);
 
-      // ═══════════════════════════════════════════
-      // THEME OBSERVER — MutationObserver Strategy
-      // ═══════════════════════════════════════════
+      // Círculo de Zona Extendida (6 km)
+      L.circle(BUNKER_COORDS, {
+        color: "#f59e0b",
+        fillColor: "#f59e0b",
+        fillOpacity: 0.02,
+        weight: 1,
+        dashArray: "4, 8",
+        radius: EXTENDED_RADIUS_METERS,
+      }).addTo(mapInstance);
+
+      // ── Evento Click en el mapa para posicionar el Pin ──
+      mapInstance.on("click", function (e) {
+        updateCoverage(e.latlng.lat, e.latlng.lng, "TU PIN CONFIRMADO");
+      });
+
+      // ── Eventos del Buscador de Direcciones ──
+      const addressForm = document.getElementById("address-form");
+      const addressInput = document.getElementById("address-input");
+      const btnGps = document.getElementById("btn-gps");
+      const btnReset = document.getElementById("btn-reset-map");
+
+      if (addressForm && addressInput) {
+        addressForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          searchAddress(addressInput.value);
+        });
+      }
+
+      // ── GPS Geolocation ──
+      if (btnGps) {
+        btnGps.addEventListener("click", function () {
+          if (!navigator.geolocation) {
+            alert("Tu navegador no soporta geolocalización GPS.");
+            return;
+          }
+          btnGps.classList.add("animate-spin");
+          navigator.geolocation.getCurrentPosition(
+            function (pos) {
+              btnGps.classList.remove("animate-spin");
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              updateCoverage(lat, lng, "MI POSICIÓN GPS");
+              mapInstance.flyTo([lat, lng], 16, { duration: 1.2 });
+            },
+            function (err) {
+              btnGps.classList.remove("animate-spin");
+              alert("No pudimos acceder a tu GPS. Por favor escribe tu dirección o toca el mapa.");
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        });
+      }
+
+      // ── Botón Reset / Centrar Búnker ──
+      if (btnReset) {
+        btnReset.addEventListener("click", function () {
+          mapInstance.flyTo(BUNKER_COORDS, 14.5, { duration: 1 });
+        });
+      }
+
+      // ── Theme Observer ──
       themeObserver = new MutationObserver(function (mutations) {
         for (const mutation of mutations) {
           if (mutation.attributeName === "class") {
@@ -402,14 +692,12 @@ import { Clock, MapPin, MessageCircle, Navigation } from "lucide-astro";
           }
         }
       });
-
       themeObserver.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ["class"],
       });
     }
 
-    // ── Boot on Astro page-load (View Transitions safe) ──
     document.addEventListener("astro:page-load", initMap);
   })();
 </script>
