@@ -13,16 +13,22 @@ export interface Database {
         Row: {
           id: string
           name: string
+          slug?: string | null
+          icon?: string | null
           created_at: string
         }
         Insert: {
           id?: string
           name: string
+          slug?: string | null
+          icon?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           name?: string
+          slug?: string | null
+          icon?: string | null
           created_at?: string
         }
       }
@@ -33,6 +39,9 @@ export interface Database {
           category_id: string | null
           price: number
           stock_quantity: number
+          image_url: string | null
+          is_active: boolean
+          description: string | null
           created_at: string
         }
         Insert: {
@@ -41,6 +50,9 @@ export interface Database {
           category_id?: string | null
           price?: number
           stock_quantity?: number
+          image_url?: string | null
+          is_active?: boolean
+          description?: string | null
           created_at?: string
         }
         Update: {
@@ -49,14 +61,36 @@ export interface Database {
           category_id?: string | null
           price?: number
           stock_quantity?: number
+          image_url?: string | null
+          is_active?: boolean
+          description?: string | null
           created_at?: string
         }
       }
       orders: {
         Row: {
           id: string
+          ticket_id?: string | null
+          items?: Json
+          total_price?: number
           status: string
           created_at: string
+        }
+        Insert: {
+          id?: string
+          ticket_id?: string | null
+          items?: Json
+          total_price?: number
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          ticket_id?: string | null
+          items?: Json
+          total_price?: number
+          status?: string
+          created_at?: string
         }
       }
       order_items: {
@@ -65,6 +99,21 @@ export interface Database {
           order_id: string
           product_id: string
           quantity: number
+          unit_price?: number
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          product_id: string
+          quantity?: number
+          unit_price?: number
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          unit_price?: number
         }
       }
       cocktails: {
