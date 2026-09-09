@@ -87,6 +87,7 @@ export interface CatalogProduct {
   price: number | string;
   stock_quantity: number;
   category_id?: string;
+  image_url?: string | null;
 }
 
 export interface CatalogCategory {
@@ -101,7 +102,7 @@ export async function getCachedCategoriesWithProducts(): Promise<CatalogCategory
   return fetchWithSWR<CatalogCategory[]>('catalog:categories_products', async () => {
     const { data, error } = await supabase
       .from('categories')
-      .select('name, products(id, name, price, stock_quantity, category_id)')
+      .select('name, products(id, name, price, stock_quantity, category_id, image_url)')
       .order('name');
 
     if (error) {

@@ -14,7 +14,7 @@ export const PATCH: APIRoute = async ({ request }) => {
     const data = await request.json();
     console.log("📦 Incoming update request for búnker:", data);
     
-    const { id, name, price, stock_quantity, category_id } = data;
+    const { id, name, price, stock_quantity, category_id, image_url } = data;
 
     if (!id) {
       return new Response(JSON.stringify({ error: "Product ID is required for búnker sync." }), {
@@ -23,16 +23,21 @@ export const PATCH: APIRoute = async ({ request }) => {
       });
     }
 
+    const updatePayload: Record<string, any> = {
+      name,
+      price: Number(price),
+      stock_quantity: Number(stock_quantity),
+      category_id,
+    };
+
+    if (image_url !== undefined && image_url !== null) {
+      updatePayload.image_url = image_url;
+    }
+
     // 💣 Operación Segura: Sin updated_at y con Service Role
     const { data: updatedProduct, error } = await supabase
       .from("products")
-      .update({
-        name,
-        price: Number(price),
-        stock_quantity: Number(stock_quantity),
-        category_id,
-        // Eliminado updated_at según reporte de esquema
-      })
+      .update(updatePayload)
       .eq("id", id)
       .select()
       .single();

@@ -11,5 +11,6 @@ export interface Product {
     stock_quantity: number;
     category_id?: string;
     category_name?: string;
+    image_url?: string | null;
     is_active?: boolean;
 }

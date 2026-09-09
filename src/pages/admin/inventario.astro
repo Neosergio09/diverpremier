@@ -30,6 +30,7 @@ const catalog = productsRaw?.map(p => ({
   stock_quantity: p.stock_quantity,
   category_name: (p.categories as any)?.name || "Sin Categoría",
   category_id: p.category_id,
+  image_url: p.image_url,
   stock_status: p.stock_quantity > 10 ? "IN STOCK" : p.stock_quantity > 0 ? "LOW STOCK" : "OUT OF STOCK"
 }));
 
@@ -157,13 +158,23 @@ const pageTitle = "Gestión de Inventario";
                     {products.map((item) => (
                       <tr class="group hover:bg-white/[0.02] transition-colors">
                         <td class="py-5 pl-6">
-                          <div class="flex flex-col">
-                            <span class="text-sm font-bold text-white group-hover:text-teal-400 transition-colors">
-                              {item.product_name}
-                            </span>
-                            <span class="text-[9px] font-mono text-neutral-600 uppercase mt-0.5 hidden sm:inline">
-                              ID: {item.uuid.split("-")[0]}
-                            </span>
+                          <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-neutral-900/80 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                              <img 
+                                src={item.image_url || '/images/products/cerveza.png'} 
+                                alt={item.product_name} 
+                                class="w-full h-full object-contain p-1" 
+                                loading="lazy" 
+                              />
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                              <span class="text-sm font-bold text-white group-hover:text-teal-400 transition-colors truncate">
+                                {item.product_name}
+                              </span>
+                              <span class="text-[9px] font-mono text-neutral-600 uppercase mt-0.5 hidden sm:inline">
+                                ID: {item.uuid.split("-")[0]}
+                              </span>
+                            </div>
                           </div>
                         </td>
                         <td class="py-5 text-[10px] font-mono text-neutral-500 uppercase whitespace-nowrap hidden md:table-cell">
@@ -196,7 +207,8 @@ const pageTitle = "Gestión de Inventario";
                               name: item.product_name,
                               price: item.price,
                               stock: (item as any).stock_quantity ?? 0,
-                              category_id: item.category_id || (categories?.find(c => c.name === item.category_name)?.id)
+                              category_id: item.category_id || (categories?.find(c => c.name === item.category_name)?.id),
+                              image_url: item.image_url
                             })}
                           >
                             Editar
@@ -244,6 +256,34 @@ const pageTitle = "Gestión de Inventario";
           <div class="space-y-2">
             <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Stock Actual</label>
             <input type="number" id="edit-stock" name="stock_quantity" class="input-bunker font-mono" required />
+          </div>
+        </div>
+
+        <!-- 📸 GESTIÓN DE IMAGEN (.WEBP AUTOMÁTICO) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Fotografía del Producto</label>
+            <span class="text-[9px] font-mono text-teal-400 uppercase tracking-wider bg-teal-500/10 px-2 py-0.5 rounded-md border border-teal-500/20">Pipeline .WEBP Activo</span>
+          </div>
+
+          <input type="hidden" id="edit-image-url" name="image_url" />
+
+          <div class="flex items-center gap-4 p-3 rounded-2xl bg-white/[0.03] border border-white/10">
+            <div class="relative w-16 h-16 rounded-xl bg-black/40 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
+              <img id="edit-image-preview" src="/images/products/cerveza.png" alt="Preview" class="w-full h-full object-contain p-1" />
+              <div id="image-upload-spinner" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center">
+                <svg class="animate-spin h-5 w-5 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+              </div>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <input type="file" id="edit-image-file" accept="image/*" class="hidden" />
+              <button type="button" id="btn-trigger-image-upload" class="btn-secondary text-xs py-2 px-3 w-full flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
+                <span>Cargar Nueva Foto</span>
+              </button>
+              <p class="text-[9px] text-neutral-500 font-mono mt-1 truncate">Se convertirá y optimizará automáticamente a .webp</p>
+            </div>
           </div>
         </div>
 
@@ -416,16 +456,63 @@ const pageTitle = "Gestión de Inventario";
     const editPrice = document.getElementById("edit-price") as HTMLInputElement | null;
     const editStock = document.getElementById("edit-stock") as HTMLInputElement | null;
     const editCategory = document.getElementById("edit-category") as HTMLSelectElement | null;
+    const editImageUrl = document.getElementById("edit-image-url") as HTMLInputElement | null;
+    const editImagePreview = document.getElementById("edit-image-preview") as HTMLImageElement | null;
 
     if (editId) editId.value = product.id;
     if (editName) editName.value = product.name;
     if (editPrice) editPrice.value = formatCOP(product.price);
     if (editStock) editStock.value = product.stock;
     if (editCategory) editCategory.value = product.category_id;
+    if (editImageUrl) editImageUrl.value = product.image_url || "";
+    if (editImagePreview) editImagePreview.src = product.image_url || "/images/products/cerveza.png";
 
     modal?.classList.remove("opacity-0", "pointer-events-none");
     modalContent?.classList.remove("scale-95");
   };
+
+  // 📸 Lógica de Subida y Procesamiento a WebP
+  const imageFileInput = document.getElementById("edit-image-file") as HTMLInputElement | null;
+  const triggerImageBtn = document.getElementById("btn-trigger-image-upload");
+  const editImagePreview = document.getElementById("edit-image-preview") as HTMLImageElement | null;
+  const editImageUrl = document.getElementById("edit-image-url") as HTMLInputElement | null;
+  const imageSpinner = document.getElementById("image-upload-spinner");
+
+  triggerImageBtn?.addEventListener("click", () => imageFileInput?.click());
+
+  imageFileInput?.addEventListener("change", async () => {
+    const file = imageFileInput.files?.[0];
+    if (!file) return;
+
+    const localUrl = URL.createObjectURL(file);
+    if (editImagePreview) editImagePreview.src = localUrl;
+    imageSpinner?.classList.remove("hidden");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const prodName = (document.getElementById("edit-name") as HTMLInputElement)?.value || "product";
+      formData.append("name", prodName);
+
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.imageUrl) {
+        if (editImageUrl) editImageUrl.value = data.imageUrl;
+        if (editImagePreview) editImagePreview.src = data.imageUrl;
+      } else {
+        alert("Error al procesar la imagen a .webp: " + (data.error || ""));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión al procesar la imagen.");
+    } finally {
+      imageSpinner?.classList.add("hidden");
+    }
+  });
 
   const closeModal = () => {
     modal?.classList.add("opacity-0", "pointer-events-none");
@@ -492,6 +579,12 @@ const pageTitle = "Gestión de Inventario";
             const nameSpan = row.querySelector(".text-sm.font-bold") as HTMLElement | null;
             if (nameSpan) nameSpan.innerText = String(updates.name ?? "");
 
+            // Actualizar Imagen Thumbnail
+            if (updates.image_url) {
+              const imgEl = row.querySelector("td img") as HTMLImageElement | null;
+              if (imgEl) imgEl.src = updates.image_url;
+            }
+
             // Actualizar Precio
             const priceTd = row.querySelectorAll("td")[2] as HTMLElement | undefined;
             if (priceTd) priceTd.innerText = `$${Number(updates.price).toLocaleString("es-CO")}`;
@@ -528,7 +621,8 @@ const pageTitle = "Gestión de Inventario";
                 price: updates.price,
                 stock: updates.stock_quantity,
                 category_id: updates.category_id,
-                category_name: categoryText
+                category_name: categoryText,
+                image_url: updates.image_url || currentData.image_url
               }));
             }
           }
