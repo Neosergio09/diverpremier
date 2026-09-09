@@ -1,8 +1,9 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import MainLayout from "../layouts/MainLayout.astro";
 import { formatCOP } from "@lib/formatters";
+import { getCachedCategoriesWithProducts } from "@lib/cache";
 import {
     Phone,
     Truck,
@@ -13,6 +14,54 @@ import {
     ShieldCheck,
     Clock,
 } from "lucide-astro";
+
+let aguardienteProducts: Array<{
+    id?: string;
+    name: string;
+    price: number;
+    formattedPrice: string;
+    image_url: string;
+}> = [];
+
+try {
+    const dbCategories = await getCachedCategoriesWithProducts();
+    const agCategory = dbCategories.find((c) =>
+        c.name.toLowerCase().includes("aguardiente")
+    );
+    if (agCategory && agCategory.products) {
+        aguardienteProducts = agCategory.products
+            .filter((p) => p.image_url)
+            .map((p) => {
+                const numPrice =
+                    typeof p.price === "number"
+                        ? p.price
+                        : parseFloat(p.price as string) || 0;
+                return {
+                    id: p.id,
+                    name: p.name,
+                    price: numPrice,
+                    formattedPrice: formatCOP(numPrice),
+                    image_url: p.image_url as string,
+                };
+            });
+    }
+} catch (err) {
+    console.error("Error al cargar productos de aguardiente para el arsenal:", err);
+}
+
+if (aguardienteProducts.length === 0) {
+    aguardienteProducts = [
+        {
+            name: "Aguardiente Antioqueño Sin Azúcar",
+            price: 45000,
+            formattedPrice: "$ 45.000",
+            image_url:
+                "https://upload.wikimedia.org/wikipedia/commons/b/b5/Botella_de_Aguardiente_Antioque%C3%B1o.jpg",
+        },
+    ];
+}
+
+const firstAguardiente = aguardienteProducts[0];
 
 const categories = [
     {
@@ -178,32 +227,120 @@ const featuredProducts = [
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {
-                    categories.map((cat) => (
-                        <a
-                            href={`/productos?cat=${cat.name}`}
-                            class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900"
-                        >
-                            <img
-                                width="800"
-                                height="1000"
-                                loading="lazy"
-                                decoding="async"
-                                src={cat.image}
-                                alt={cat.name}
-                                class="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-1000 scale-105 group-hover:scale-110"
-                            />
-                            <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
+                    categories.map((cat) => {
+                        const isAguardiente = cat.name.toLowerCase().includes("aguardiente");
 
-                            <div class="absolute inset-0 p-10 flex flex-col justify-end">
-                                <h3 class="text-4xl font-black text-white uppercase italic tracking-tighter mb-1 transform group-hover:-translate-y-2 transition-transform">
-                                    {cat.name}
-                                </h3>
-                                <p class="text-[10px] font-bold text-teal-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
-                                    {cat.tagline}
-                                </p>
-                            </div>
-                        </a>
-                    ))
+                        if (isAguardiente) {
+                            return (
+                                <a
+                                    id="arsenal-aguardiente-card"
+                                    href={`/productos?cat=${cat.name}`}
+                                    class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-teal-500/40 hover:border-teal-400 transition-all duration-700 bg-neutral-950 flex flex-col justify-between p-6 sm:p-7 shadow-[0_0_35px_rgba(20,184,166,0.15)] hover:shadow-[0_0_55px_rgba(20,184,166,0.3)] block select-none"
+                                >
+                                    {/* Barra de progreso de 5 segundos */}
+                                    <div class="absolute top-0 left-0 right-0 h-1 bg-white/5 overflow-hidden z-20">
+                                        <div
+                                            id="arsenal-progress-bar"
+                                            class="h-full bg-gradient-to-r from-teal-500 via-teal-400 to-emerald-400 w-0"
+                                        />
+                                    </div>
+
+                                    {/* Fondo cyber neón con brillo */}
+                                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-950/40 via-neutral-950/80 to-neutral-950 -z-10" />
+                                    <div class="absolute inset-0 bg-[url('/noise.svg')] opacity-15 pointer-events-none -z-10" />
+
+                                    {/* Cabecera superior de la tarjeta: Badge En Vivo + Contador */}
+                                    <div class="relative z-10 flex items-center justify-between w-full">
+                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-[9px] font-black uppercase tracking-widest backdrop-blur-md">
+                                            <span class="relative flex h-1.5 w-1.5">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
+                                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-teal-400" />
+                                            </span>
+                                            <span>En Vivo • 5s</span>
+                                        </div>
+
+                                        <span
+                                            id="arsenal-product-counter"
+                                            class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/10"
+                                        >
+                                            1 / {aguardienteProducts.length}
+                                        </span>
+                                    </div>
+
+                                    {/* Botella de producto con resplandor ambiental */}
+                                    <div class="relative z-10 flex-1 flex items-center justify-center my-2 overflow-hidden">
+                                        <div class="absolute w-36 h-36 sm:w-44 sm:h-44 bg-teal-500/15 rounded-full blur-2xl pointer-events-none transition-all duration-700 group-hover:scale-125 group-hover:bg-teal-500/25" />
+                                        <img
+                                            id="arsenal-product-img"
+                                            src={firstAguardiente.image_url}
+                                            alt={firstAguardiente.name}
+                                            width="400"
+                                            height="600"
+                                            loading="eager"
+                                            decoding="async"
+                                            class="relative z-10 max-h-[160px] sm:max-h-[190px] w-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transition-all duration-500 ease-out transform group-hover:scale-105"
+                                        />
+                                    </div>
+
+                                    {/* Información inferior: Categoría, Precio, Nombre y CTA */}
+                                    <div class="relative z-10 space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-widest">
+                                                {cat.name}
+                                            </span>
+                                            <span
+                                                id="arsenal-product-price"
+                                                class="text-xs font-black text-white italic tracking-tight font-mono bg-teal-500/20 px-2 py-0.5 rounded border border-teal-500/30 transition-opacity duration-300"
+                                            >
+                                                {firstAguardiente.formattedPrice}
+                                            </span>
+                                        </div>
+
+                                        <h3
+                                            id="arsenal-product-name"
+                                            class="text-base sm:text-lg font-black text-white uppercase italic tracking-tight line-clamp-2 min-h-[3rem] flex items-center transition-opacity duration-300"
+                                        >
+                                            {firstAguardiente.name}
+                                        </h3>
+
+                                        <div class="flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-neutral-400 group-hover:text-teal-300 transition-colors">
+                                            <span>Ver arsenal ({aguardienteProducts.length})</span>
+                                            <span class="group-hover:translate-x-1 transition-transform">
+                                                →
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            );
+                        }
+
+                        return (
+                            <a
+                                href={`/productos?cat=${cat.name}`}
+                                class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900"
+                            >
+                                <img
+                                    width="800"
+                                    height="1000"
+                                    loading="lazy"
+                                    decoding="async"
+                                    src={cat.image}
+                                    alt={cat.name}
+                                    class="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-1000 scale-105 group-hover:scale-110"
+                                />
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
+
+                                <div class="absolute inset-0 p-10 flex flex-col justify-end">
+                                    <h3 class="text-4xl font-black text-white uppercase italic tracking-tighter mb-1 transform group-hover:-translate-y-2 transition-transform">
+                                        {cat.name}
+                                    </h3>
+                                    <p class="text-[10px] font-bold text-teal-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
+                                        {cat.tagline}
+                                    </p>
+                                </div>
+                            </a>
+                        );
+                    })
                 }
             </div>
         </section>
@@ -330,4 +467,139 @@ const featuredProducts = [
             </div>
         </section>
     </div>
+
+    {/* Datos para el carrusel dinámico de aguardientes en el arsenal */}
+    <script
+        type="application/json"
+        id="arsenal-aguardientes-json"
+        set:html={JSON.stringify(aguardienteProducts)}
+    />
+
+    <script is:inline>
+        (function () {
+            let timer = null;
+
+            function setupArsenalRotator() {
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+
+                const dataEl = document.getElementById("arsenal-aguardientes-json");
+                if (!dataEl) return;
+
+                let products = [];
+                try {
+                    products = JSON.parse(dataEl.textContent || "[]");
+                } catch (e) {
+                    console.error("Error al parsear aguardientes:", e);
+                    return;
+                }
+
+                if (!Array.isArray(products) || products.length <= 1) return;
+
+                const imgEl = document.getElementById("arsenal-product-img");
+                const nameEl = document.getElementById("arsenal-product-name");
+                const priceEl = document.getElementById("arsenal-product-price");
+                const counterEl = document.getElementById("arsenal-product-counter");
+                const progressBar = document.getElementById("arsenal-progress-bar");
+                const cardContainer = document.getElementById("arsenal-aguardiente-card");
+
+                let currentIndex = 0;
+                const total = products.length;
+                const INTERVAL_MS = 5000;
+                const FADE_MS = 250;
+
+                function preload(url) {
+                    if (!url) return;
+                    const img = new Image();
+                    img.src = url;
+                }
+
+                // Pre-cargar las siguientes imágenes en caché del navegador
+                for (let i = 1; i < Math.min(6, total); i++) {
+                    preload(products[i].image_url);
+                }
+
+                function resetProgressBar() {
+                    if (!progressBar) return;
+                    progressBar.style.transition = "none";
+                    progressBar.style.width = "0%";
+                    void progressBar.offsetWidth;
+                    progressBar.style.transition = `width ${INTERVAL_MS}ms linear`;
+                    progressBar.style.width = "100%";
+                }
+
+                function rotateProduct() {
+                    currentIndex = (currentIndex + 1) % total;
+                    const nextProd = products[currentIndex];
+
+                    // Pre-cargar el siguiente por delante
+                    const lookaheadIndex = (currentIndex + 1) % total;
+                    preload(products[lookaheadIndex].image_url);
+
+                    // Desvanecer suavemente
+                    if (imgEl) {
+                        imgEl.style.opacity = "0";
+                        imgEl.style.transform = "scale(0.92) translateY(6px)";
+                    }
+                    if (nameEl) nameEl.style.opacity = "0";
+                    if (priceEl) priceEl.style.opacity = "0";
+
+                    setTimeout(() => {
+                        if (imgEl && nextProd.image_url) {
+                            imgEl.src = nextProd.image_url;
+                            imgEl.alt = nextProd.name;
+                        }
+                        if (nameEl) {
+                            nameEl.textContent = nextProd.name;
+                        }
+                        if (priceEl) {
+                            priceEl.textContent = nextProd.formattedPrice;
+                        }
+                        if (counterEl) {
+                            counterEl.textContent = `${currentIndex + 1} / ${total}`;
+                        }
+
+                        // Reaparecer suavemente
+                        if (imgEl) {
+                            imgEl.style.opacity = "1";
+                            imgEl.style.transform = "scale(1) translateY(0)";
+                        }
+                        if (nameEl) nameEl.style.opacity = "1";
+                        if (priceEl) priceEl.style.opacity = "1";
+
+                        resetProgressBar();
+                    }, FADE_MS);
+                }
+
+                resetProgressBar();
+                timer = setInterval(rotateProduct, INTERVAL_MS);
+
+                // Pausar en hover para poder leer y ver bien el producto
+                if (cardContainer) {
+                    cardContainer.addEventListener("mouseenter", () => {
+                        if (timer) clearInterval(timer);
+                        if (progressBar) {
+                            const computedWidth = window.getComputedStyle(progressBar).width;
+                            progressBar.style.transition = "none";
+                            progressBar.style.width = computedWidth;
+                        }
+                    });
+                    cardContainer.addEventListener("mouseleave", () => {
+                        resetProgressBar();
+                        if (timer) clearInterval(timer);
+                        timer = setInterval(rotateProduct, INTERVAL_MS);
+                    });
+                }
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", setupArsenalRotator);
+            } else {
+                setupArsenalRotator();
+            }
+            document.addEventListener("astro:page-load", setupArsenalRotator);
+        })();
+    </script>
 </MainLayout>
