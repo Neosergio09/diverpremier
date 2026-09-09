@@ -1,10 +1,11 @@
 ---
+export const prerender = false;
+
 import MainLayout from "../layouts/MainLayout.astro";
-import { Image } from 'astro:assets';
 import { getCachedCategoriesWithProducts, type CatalogCategory, type CatalogProduct } from '../lib/cache';
 import { formatCOP } from '../lib/formatters';
+import { Search, Sparkles, X, Plus } from 'lucide-astro';
 
-type Product = CatalogProduct;
 type Category = CatalogCategory;
 
 let categories: Category[] = [];
@@ -15,11 +16,14 @@ try {
 } catch (e: any) {
   fetchError = e.message || "Error al conectar con la base de datos";
 }
+
+const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length || 0), 0);
 ---
 
-<MainLayout title="Productos" containerClass="max-w-7xl" isProse={false}>
-  <div class="space-y-16 pb-20">
-    <header class="text-center space-y-6 pt-10">
+<MainLayout title="Catálogo de Productos" containerClass="max-w-7xl" isProse={false}>
+  <div class="space-y-12 pb-24">
+    <!-- Header -->
+    <header class="text-center space-y-5 pt-8">
       <div
         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-blue/10 border border-neon-blue/30 text-neon-blue text-[10px] font-black uppercase tracking-[0.3em] animate-pulse"
       >
@@ -30,8 +34,9 @@ try {
           <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"
           ></span>
         </span>
-        Abierto 24/7 en Engativá
+        Búnker Álamos Norte • Domicilios 24/7
       </div>
+
       <h1
         class="text-4xl sm:text-6xl md:text-8xl font-black italic tracking-tighter uppercase leading-none text-white"
       >
@@ -42,11 +47,34 @@ try {
           >Premium</span
         >
       </h1>
-      <p class="text-slate-300 text-lg md:text-xl max-w-xl mx-auto font-medium">
-        Tus marcas favoritas con entrega en <span
+
+      <p class="text-slate-300 text-base md:text-xl max-w-xl mx-auto font-medium">
+        Tus marcas favoritas 100% originales con entrega en <span
           class="text-white border-b border-neon-blue/50">menos de 30 min</span
         >.
       </p>
+
+      <!-- Buscador en tiempo real -->
+      <div class="max-w-xl mx-auto pt-2 px-2">
+        <div class="relative flex items-center">
+          <Search size={18} class="absolute left-4 text-slate-400 pointer-events-none" />
+          <input
+            id="catalog-search"
+            type="search"
+            placeholder="Buscar por marca, presentación (ej. Néctar, Corona, Buchanans, Litro)..."
+            class="w-full pl-12 pr-12 py-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-neon-blue focus:ring-1 focus:ring-neon-blue transition-all"
+            autocomplete="off"
+          />
+          <button
+            id="clear-search"
+            type="button"
+            class="hidden absolute right-3 p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors"
+            title="Limpiar búsqueda"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      </div>
     </header>
 
     {fetchError ? (
@@ -56,96 +84,143 @@ try {
       </div>
     ) : (
       <>
-        <nav
-          class="flex overflow-x-auto py-2 gap-3 sm:gap-4 no-scrollbar sticky top-20 md:top-24 z-30 bg-dark-bg/80 backdrop-blur-md -mx-6 px-6"
-        >
-          {categories.map((cat, index) => (
+        <!-- Menú de Categorías (Tabs Interactivas) -->
+        <div class="sticky top-20 md:top-24 z-30 bg-dark-bg/85 backdrop-blur-xl -mx-6 px-6 py-3 border-y border-white/5 shadow-lg">
+          <nav
+            id="category-nav"
+            class="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1"
+          >
+            <!-- Botón Todos -->
             <button
-              class:list={[
-                 "px-5 sm:px-8 py-3 min-h-[44px] min-w-[44px] rounded-2xl glass-neon border transition-all duration-300 font-bold uppercase text-xs tracking-widest whitespace-nowrap flex items-center justify-center",
-                index === 0
-                  ? "border-neon-blue text-neon-blue bg-neon-blue/10 shadow-[0_0_15px_rgba(0,209,255,0.2)]"
-                  : "border-white/10 text-slate-400 hover:border-white/30 hover:text-white",
-              ]}
+              type="button"
+              data-filter="all"
+              class="cat-filter-btn px-5 sm:px-6 py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[11px] tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer border-neon-blue text-neon-blue bg-neon-blue/10 shadow-[0_0_15px_rgba(0,209,255,0.2)]"
             >
-              {cat.name}
+              <span>Todos</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-neon-blue/20 font-mono font-black">
+                {totalProducts}
+              </span>
             </button>
-          ))}
-        </nav>
 
-        <div class="space-y-20 pt-8">
+            <!-- Botones por Categoría -->
+            {categories.map((cat) => (
+              <button
+                type="button"
+                data-filter={cat.name}
+                class="cat-filter-btn px-5 sm:px-6 py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[11px] tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer border-white/10 text-slate-400 hover:border-white/30 hover:text-white bg-white/[0.02]"
+              >
+                <span>{cat.name}</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-white/5 font-mono text-slate-400">
+                  {cat.products ? cat.products.length : 0}
+                </span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <!-- Mensaje de Cero Resultados de Búsqueda -->
+        <div id="no-search-results" class="hidden text-center py-20 px-6 glass-neon rounded-3xl border border-white/10 space-y-4">
+          <div class="w-16 h-16 mx-auto rounded-full bg-neon-pink/10 border border-neon-pink/30 flex items-center justify-center text-neon-pink">
+            <Search size={28} />
+          </div>
+          <h3 class="text-xl font-bold text-white uppercase tracking-wider">No se encontraron productos</h3>
+          <p class="text-slate-400 text-sm max-w-md mx-auto">
+            No encontramos coincidencias para tu búsqueda. Intenta con otra palabra clave o selecciona otra categoría.
+          </p>
+          <button
+            type="button"
+            id="reset-search-btn"
+            class="px-6 py-2.5 rounded-xl bg-neon-blue/20 border border-neon-blue/40 text-neon-blue text-xs font-bold uppercase tracking-wider hover:bg-neon-blue hover:text-dark-bg transition-all"
+          >
+            Ver Todo el Arsenal
+          </button>
+        </div>
+
+        <!-- Listado de Secciones de Categorías y Productos -->
+        <div id="catalog-container" class="space-y-20 pt-4">
           {categories.map((category) => (
-            <section class="space-y-8 relative">
-              <h2 class="sticky top-32 md:top-36 z-20 py-4 bg-dark-bg/90 backdrop-blur-md text-2xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-widest text-white border-b border-white/10">
-                {category.name}
-              </h2>
+            <section
+              class="category-section space-y-8 relative transition-all duration-300"
+              data-cat-name={category.name}
+            >
+              <!-- Cabecera de Categoría Sticky -->
+              <div class="sticky top-36 md:top-40 z-20 py-3.5 bg-dark-bg/95 backdrop-blur-md flex items-center justify-between border-b border-white/10">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-widest text-white">
+                  {category.name}
+                </h2>
+                <span class="text-[11px] font-mono font-bold text-neon-blue/90 bg-neon-blue/10 border border-neon-blue/30 px-3 py-1 rounded-full">
+                  {category.products?.length || 0} referencias
+                </span>
+              </div>
 
               {category.products && category.products.length > 0 ? (
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                  {category.products.map((product, index) => {
+                <div class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                  {category.products.map((product) => {
                     const priceFormatted = formatCOP(product.price);
+                    const isAvailable = product.stock_quantity > 0;
 
                     return (
-                      <article class="group relative flex flex-col h-full animate-reveal" style={`animation-delay: ${(index + 1) * 0.1}s;`}>
-                        <div class="absolute -inset-1 bg-gradient-to-r from-neon-blue to-neon-purple rounded-[2.5rem] blur opacity-0 group-hover:opacity-20 transition duration-500" />
+                      <article
+                        class="product-item group relative flex flex-col h-full"
+                        data-name={product.name.toLowerCase()}
+                        data-cat={category.name.toLowerCase()}
+                      >
+                        <div class="absolute -inset-1 bg-gradient-to-r from-teal-500 to-neon-purple rounded-[2.5rem] blur opacity-0 group-hover:opacity-20 transition duration-500" />
 
-                        <div class="relative flex flex-col h-full glass-neon rounded-[2rem] border border-white/5 overflow-hidden transition-transform duration-500 group-hover:-translate-y-2">
-                          <div class="relative aspect-[4/5] overflow-hidden bg-[#0A0F1E]">
-                            <Image width={800} height={800} loading="lazy"
-                              src={product.image_url || 'https://placehold.co/600x800/0A0F1E/white?text=Producto'}
+                        <div class="relative flex flex-col h-full glass-neon rounded-[2rem] border border-white/5 overflow-hidden transition-all duration-500 group-hover:-translate-y-2 group-hover:border-teal-500/30">
+                          <!-- Imagen del Producto Directa desde CDN (WebP) -->
+                          <div class="relative aspect-[4/5] overflow-hidden bg-[#0A0F1E] flex items-center justify-center p-6">
+                            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-950/20 via-transparent to-transparent pointer-events-none" />
+                            
+                            <img
+                              width="600"
+                              height="600"
+                              loading="lazy"
+                              decoding="async"
+                              src={product.image_url || 'https://placehold.co/600x800/0A0F1E/white?text=Diverpremier'}
                               alt={product.name}
-                              class="w-full h-full object-contain p-8 transition-transform duration-700 group-hover:scale-110"
+                              class="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-110"
+                              onerror="this.onerror=null; this.src='https://placehold.co/600x800/0A0F1E/white?text=Diverpremier';"
                             />
                             
+                            <!-- Badge de Disponibilidad -->
                             <div class="absolute top-4 left-4">
                               <span class:list={[
-                                "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter backdrop-blur-md border",
-                                product.stock_quantity > 0 
-                                  ? "bg-neon-blue/20 border-neon-blue/50 text-neon-blue" 
-                                  : "bg-black/60 border-neon-pink/50 text-neon-pink"
+                                "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider backdrop-blur-md border",
+                                isAvailable
+                                  ? "bg-teal-500/20 border-teal-500/50 text-teal-300" 
+                                  : "bg-black/60 border-red-500/50 text-red-400"
                               ]}>
-                                {product.stock_quantity > 0 ? `Stock: ${product.stock_quantity}` : "Agotado"}
+                                {isAvailable ? `En Stock (${product.stock_quantity})` : "Agotado"}
                               </span>
                             </div>
                           </div>
 
+                          <!-- Información y Acción -->
                           <div class="flex flex-col flex-1 p-6 space-y-4">
-                            <h3 class="text-lg font-bold text-white tracking-wide group-hover:text-neon-blue transition-colors line-clamp-2">
+                            <h3 class="text-base font-black text-white uppercase italic tracking-wide group-hover:text-teal-400 transition-colors line-clamp-2 min-h-[2.75rem] flex items-center">
                               {product.name}
                             </h3>
 
                             <div class="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
                               <div class="flex flex-col">
-                                <span class="text-[10px] uppercase font-mono tracking-widest text-slate-400">
+                                <span class="text-[9px] uppercase font-mono tracking-widest text-slate-400">
                                   Precio
                                 </span>
-                                <span class="text-2xl font-black text-white tracking-tighter">
+                                <span class="text-2xl font-black text-white italic tracking-tight font-mono">
                                   {priceFormatted}
                                 </span>
                               </div>
 
                               <button 
-                                class="add-to-cart-btn flex items-center justify-center w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_20px_rgba(255,0,229,0.6)] transition-all duration-300 active:scale-90 group/btn"
+                                class="add-to-cart-btn flex items-center justify-center w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_20px_rgba(255,0,229,0.6)] transition-all duration-300 active:scale-90 group/btn cursor-pointer"
                                 data-id={product.id}
                                 data-name={product.name}
                                 data-price={priceFormatted}
-                                data-image={product.image_url || 'https://placehold.co/600x800/0A0F1E/white?text=Producto'}
+                                data-image={product.image_url || 'https://placehold.co/600x800/0A0F1E/white?text=Diverpremier'}
+                                title="Agregar al carrito"
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="20"
-                                  height="20"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  class="group-hover/btn:scale-110 transition-transform"
-                                >
-                                  <path d="M5 12h14" />
-                                  <path d="m12 5 7 7-7 7" />
-                                </svg>
+                                <Plus size={20} class="group-hover/btn:scale-125 transition-transform" />
                               </button>
                             </div>
                           </div>
@@ -167,18 +242,173 @@ try {
   </div>
 </MainLayout>
 
+<!-- Script Cliente: Carrito y Filtrado Dinámico de Menú de Categorías -->
 <script>
   import { addItem, isCartOpen } from "../store/cartStore";
 
-  const buttons = document.querySelectorAll(".add-to-cart-btn") as NodeListOf<HTMLButtonElement>;
-
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const { id, name, price, image } = btn.dataset;
-      if (name && price && image) {
-        addItem({ id, name, price, image_url: image });
-        isCartOpen.set(true);
-      }
+  function setupCatalog() {
+    // 1. Configurar botones de añadir al carrito
+    const cartButtons = document.querySelectorAll(".add-to-cart-btn") as NodeListOf<HTMLButtonElement>;
+    cartButtons.forEach((btn) => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        const { id, name, price, image } = btn.dataset;
+        if (name && price && image) {
+          addItem({ id, name, price, image_url: image });
+          isCartOpen.set(true);
+        }
+      };
     });
-  });
+
+    // 2. Elementos del Menú de Filtrado
+    const searchInput = document.getElementById("catalog-search") as HTMLInputElement | null;
+    const clearSearchBtn = document.getElementById("clear-search");
+    const resetSearchBtn = document.getElementById("reset-search-btn");
+    const filterBtns = document.querySelectorAll(".cat-filter-btn") as NodeListOf<HTMLButtonElement>;
+    const categorySections = document.querySelectorAll(".category-section") as NodeListOf<HTMLElement>;
+    const noResultsEl = document.getElementById("no-search-results");
+
+    let activeCategory = "all";
+    let searchQuery = "";
+
+    // Leer parámetro ?cat= de la URL (ej. ?cat=Aguardiente o ?cat=Whisky)
+    const urlParams = new URLSearchParams(window.location.search);
+    const catFromUrl = urlParams.get("cat");
+    if (catFromUrl) {
+      const matchBtn = Array.from(filterBtns).find(
+        (b) => b.dataset.filter?.toLowerCase() === catFromUrl.toLowerCase()
+      );
+      if (matchBtn) {
+        activeCategory = matchBtn.dataset.filter || "all";
+      }
+    }
+
+    function applyCatalogFilters() {
+      let totalVisibleProducts = 0;
+
+      categorySections.forEach((section) => {
+        const sectionCat = section.dataset.catName || "";
+        const matchesCategory =
+          activeCategory === "all" ||
+          sectionCat.toLowerCase() === activeCategory.toLowerCase();
+
+        if (!matchesCategory) {
+          section.style.display = "none";
+          return;
+        }
+
+        let sectionVisibleCount = 0;
+        const items = section.querySelectorAll(".product-item") as NodeListOf<HTMLElement>;
+        items.forEach((item) => {
+          const prodName = item.dataset.name || "";
+          const matchesSearch = !searchQuery || prodName.includes(searchQuery);
+
+          if (matchesSearch) {
+            item.style.display = "flex";
+            sectionVisibleCount++;
+            totalVisibleProducts++;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        if (sectionVisibleCount > 0) {
+          section.style.display = "block";
+        } else {
+          section.style.display = "none";
+        }
+      });
+
+      if (noResultsEl) {
+        if (totalVisibleProducts === 0) {
+          noResultsEl.classList.remove("hidden");
+        } else {
+          noResultsEl.classList.add("hidden");
+        }
+      }
+
+      // Actualizar aspecto visual de los botones del menú de categorías
+      filterBtns.forEach((btn) => {
+        const filterVal = btn.dataset.filter;
+        const isActive =
+          filterVal?.toLowerCase() === activeCategory.toLowerCase();
+
+        if (isActive) {
+          btn.className =
+            "cat-filter-btn px-5 sm:px-6 py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[11px] tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer border-neon-blue text-neon-blue bg-neon-blue/15 shadow-[0_0_15px_rgba(0,209,255,0.25)]";
+        } else {
+          btn.className =
+            "cat-filter-btn px-5 sm:px-6 py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[11px] tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer border-white/10 text-slate-400 hover:border-white/30 hover:text-white bg-white/[0.02]";
+        }
+      });
+    }
+
+    // Escuchador de clicks en el menú de categorías
+    filterBtns.forEach((btn) => {
+      btn.onclick = () => {
+        activeCategory = btn.dataset.filter || "all";
+
+        // Sincronizar URL para permitir compartir enlaces directos
+        const newUrl = new URL(window.location.href);
+        if (activeCategory === "all") {
+          newUrl.searchParams.delete("cat");
+        } else {
+          newUrl.searchParams.set("cat", activeCategory);
+        }
+        window.history.replaceState({}, "", newUrl.toString());
+
+        applyCatalogFilters();
+
+        // Scroll suave al inicio de los productos si estamos muy abajo
+        const navEl = document.getElementById("category-nav");
+        if (navEl && window.scrollY > 400) {
+          navEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      };
+    });
+
+    // Escuchador de búsqueda en tiempo real
+    if (searchInput) {
+      searchInput.oninput = (e: any) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        if (clearSearchBtn) {
+          if (searchQuery) clearSearchBtn.classList.remove("hidden");
+          else clearSearchBtn.classList.add("hidden");
+        }
+        applyCatalogFilters();
+      };
+    }
+
+    if (clearSearchBtn) {
+      clearSearchBtn.onclick = () => {
+        if (searchInput) searchInput.value = "";
+        searchQuery = "";
+        clearSearchBtn.classList.add("hidden");
+        applyCatalogFilters();
+      };
+    }
+
+    if (resetSearchBtn) {
+      resetSearchBtn.onclick = () => {
+        if (searchInput) searchInput.value = "";
+        searchQuery = "";
+        activeCategory = "all";
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("cat");
+        window.history.replaceState({}, "", newUrl.toString());
+        applyCatalogFilters();
+      };
+    }
+
+    // Ejecución inicial
+    applyCatalogFilters();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupCatalog);
+  } else {
+    setupCatalog();
+  }
+  document.addEventListener("astro:page-load", setupCatalog);
 </script>
+

@@ -1,0 +1,857 @@
+{
+  "total_products": 52,
+  "official_images_count": 43,
+  "pending_images_count": 9,
+  "categories": [
+    {
+      "id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "name": "Aguardiente",
+      "slug": "aguardiente",
+      "icon": null,
+      "created_at": "2026-04-07T22:35:36.297021+00:00"
+    },
+    {
+      "id": "648f92d5-93fe-4403-8ac0-33cc9a31d75e",
+      "name": "Cervezas",
+      "slug": "cervezas",
+      "icon": "Beer",
+      "created_at": "2026-09-04T16:53:00.668628+00:00"
+    },
+    {
+      "id": "cd3d3a51-6be1-4a78-8695-245cfa53caa5",
+      "name": "Snacks",
+      "slug": "snacks",
+      "icon": "UtensilsCrossed",
+      "created_at": "2026-09-04T16:53:00.668628+00:00"
+    },
+    {
+      "id": "2a63e60e-6cea-4583-a211-105e8ed9d35f",
+      "name": "Whisky",
+      "slug": "whisky",
+      "icon": "Wine",
+      "created_at": "2026-09-04T16:53:00.668628+00:00"
+    }
+  ],
+  "products": [
+    {
+      "id": "58e771af-1b13-4c9f-8572-e5a89fc54404",
+      "name": "Amarillo de manzanares Botella (750ml)",
+      "price": 59500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/amarillo_de_manzanares_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "0f911c00-ca77-455d-b420-e9de00b865c2",
+      "name": "Amarillo de manzanares Litro botella (1000ml)",
+      "price": 75000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/amarillo_de_manzanares_litro_botella_1000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "1594e3e5-753a-420c-96ae-1a54837bdd70",
+      "name": "Amarillo de manzanares Litro caja (1000ml)",
+      "price": 60000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/amarillo_de_manzanares_litro_caja_1000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "8fc6d2b7-1b55-4874-ad34-59c2b2901cea",
+      "name": "Amarillo de manzanares Media (375ml)",
+      "price": 31500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/amarillo_de_manzanares_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "49f8162b-4233-41e0-aafd-e51c4415a088",
+      "name": "Antioqueño azul Botella (750ml)",
+      "price": 59500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "e9d06687-1b10-42d6-8dc9-a687ca2e53db",
+      "name": "Antioqueño azul Cuarto (260ml)",
+      "price": 21500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_cuarto_260ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "44f59803-9e25-4e63-a479-905529213c05",
+      "name": "Antioqueño azul Garrafa (2000ml)",
+      "price": 145500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_garrafa_2000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "1906afe7-fed5-494e-bbf3-5f9cd7558a68",
+      "name": "Antioqueño azul Litro caja (1050ml)",
+      "price": 74500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_litro_caja_1050ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "7cdf8449-4a8d-48b0-8b60-b2298902b7f4",
+      "name": "Antioqueño azul Media (375ml)",
+      "price": 32500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "eb87562e-46c7-4c37-8104-832c62635dc8",
+      "name": "Antioqueño real edición limitada Botella (750ml)",
+      "price": 57500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_real_edicion_limitada_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "240506e4-9753-43f5-896d-676a74906da7",
+      "name": "Antioqueño rojo Botella (750ml)",
+      "price": 59000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_rojo_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "8d2fed18-8e3a-4bc7-abad-03cbf4febeb3",
+      "name": "Antioqueño rojo Cuarto (260ml)",
+      "price": 21500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_rojo_cuarto_260ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "d6a02beb-e51b-4961-abe7-19562b495d60",
+      "name": "Antioqueño rojo Garrafa (2000ml)",
+      "price": 146000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_rojo_garrafa_2000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "d136f622-4877-4800-b9da-69e250fde401",
+      "name": "Antioqueño rojo Litro caja (1050 ml)",
+      "price": 74500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_rojo_litro_caja_1050_ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "687c4f4a-2f9c-466e-af17-643620e14b49",
+      "name": "Antioqueño rojo Media (375ml)",
+      "price": 32500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_rojo_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "4e2257a5-b5a1-4e9d-88d1-551130ab8812",
+      "name": "Antioqueño verde Botella (750ml)",
+      "price": 53000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_verde_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "30fbbfd2-c767-4cd8-8203-1127139e01bd",
+      "name": "Antioqueño verde Litro caja (1000ml)",
+      "price": 63500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_verde_litro_caja_1000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "d48ea672-2de9-4553-80d4-d644879ca36a",
+      "name": "Antioqueño verde Media (375ml)",
+      "price": 27500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_verde_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "88fa2b6d-dcd5-49d6-ae45-6f864fc29171",
+      "name": "Buchanans Deluxe 12 Años (750ml)",
+      "price": 155000,
+      "stock_quantity": 12,
+      "category_id": "2a63e60e-6cea-4583-a211-105e8ed9d35f",
+      "image_url": "https://images.unsplash.com/photo-1527281405159-35d5b9a1650c?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Whisky",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "e22a38e8-b2d5-433d-8244-5219d121ecdc",
+      "name": "Club Colombia Dorada Lata (330ml)",
+      "price": 5000,
+      "stock_quantity": 60,
+      "category_id": "648f92d5-93fe-4403-8ac0-33cc9a31d75e",
+      "image_url": "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Cervezas",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "1f175c4a-da3b-411c-a980-0821fbb56998",
+      "name": "Corona Extra Botella (355ml)",
+      "price": 7500,
+      "stock_quantity": 48,
+      "category_id": "648f92d5-93fe-4403-8ac0-33cc9a31d75e",
+      "image_url": "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Cervezas",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "6aff564f-0372-4ae7-9633-c7f0a8257581",
+      "name": "Cristal Botella (750ml)",
+      "price": 45500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/cristal_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "8b0753aa-1cd3-471c-aa86-76988d45d6c4",
+      "name": "Cristal Media (375ml)",
+      "price": 24500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/cristal_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "31f62b5e-fa3f-4475-bec6-7af8746c568e",
+      "name": "Desquite Botella (750ml)",
+      "price": 82500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/desquite_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "798ca5ec-4c24-4fb0-a34b-1ba5c2d00d9b",
+      "name": "Desquite Media (350ml)",
+      "price": 42000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/desquite_media_350ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "f11a35d8-af2c-48b3-ba26-3d5d9a847411",
+      "name": "Johnnie Walker Black Label (750ml)",
+      "price": 148000,
+      "stock_quantity": 15,
+      "category_id": "2a63e60e-6cea-4583-a211-105e8ed9d35f",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/21/Johnnie_Walker_Black_Label.jpg",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Whisky",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "8de22830-59d0-4efc-bd50-e1cc0cb961fe",
+      "name": "Llanero sin azúcar Botella (750ml)",
+      "price": 55500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/llanero_sin_azucar_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "c481210d-bd8b-4f1e-af7a-2905c253f987",
+      "name": "Maní Especial La Especial con Sal (180g)",
+      "price": 9800,
+      "stock_quantity": 30,
+      "category_id": "cd3d3a51-6be1-4a78-8695-245cfa53caa5",
+      "image_url": "https://images.unsplash.com/photo-1621996346565-e3d5d628169b?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Snacks",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "9b5d6aa3-67e8-4f70-95ce-976e1fc17a8c",
+      "name": "Nachos Artesanales con Salsa de Queso (200g)",
+      "price": 12500,
+      "stock_quantity": 20,
+      "category_id": "cd3d3a51-6be1-4a78-8695-245cfa53caa5",
+      "image_url": "https://images.unsplash.com/photo-1621996346565-e3d5d628169b?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Snacks",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "c4de6e29-65a2-4cb0-b057-af19e3d8754a",
+      "name": "Néctar azul sin azúcar Botella (750ml)",
+      "price": 52500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_azul_sin_azucar_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "f776da15-a3a2-458a-a7b1-1aafa24e232f",
+      "name": "Néctar azul sin azúcar Media (375ml)",
+      "price": 28500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_azul_sin_azucar_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "9dd18469-ef73-43ce-a20f-331f5f8d5d1f",
+      "name": "Néctar dorado Botella (750ml)",
+      "price": 58000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_dorado_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "db4adc21-cd6e-402f-8a7e-ee3dd4a4dc93",
+      "name": "Néctar dorado Media (375ml)",
+      "price": 29600,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_dorado_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "1ae481ce-6935-4d6c-bc16-f295d26d9381",
+      "name": "Néctar rojo Botella (750ml)",
+      "price": 47500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_rojo_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "1adeef5b-b2ea-4c07-a493-3a251771e020",
+      "name": "Néctar rojo Cuarto (250ml)",
+      "price": 15500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_rojo_cuarto_250ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "21e26b6d-2327-4388-8ed3-02a5e0d2f276",
+      "name": "Néctar rojo Garrafa (2000 ml)",
+      "price": 117500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_rojo_garrafa_2000_ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "a0578a60-ae17-46b9-bf1c-47cbd39d8cfa",
+      "name": "Néctar rojo Litro (1000ml)",
+      "price": 59500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_rojo_litro_1000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "fb7cec04-778e-40dd-9a96-63b75f6dd884",
+      "name": "Néctar rojo Media (375ml)",
+      "price": 25500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_rojo_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "caf2a341-2f4f-4b5c-82a3-7815fc03763b",
+      "name": "Néctar rojo sin azúcar Media (375ml)",
+      "price": 24500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_rojo_sin_azucar_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "e12b2bee-e92f-4a16-87ff-b051132bde21",
+      "name": "Néctar sugar free Botella (375ml)",
+      "price": 52500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_sugar_free_botella_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "4c697348-df92-442f-b49d-d72c0ef793ea",
+      "name": "Néctar sugar free Media (375ml)",
+      "price": 28500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_sugar_free_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "9e43e82b-e2fd-487b-bb30-92faf1754fd5",
+      "name": "Néctar verde Botella (750ml)",
+      "price": 47500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "182cc0b8-7e84-4c30-acb5-4656e6bb71ee",
+      "name": "Néctar verde Cuarto (250ml)",
+      "price": 15500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_cuarto_250ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "f8f77466-5bf2-425f-b170-4a95d510f9f5",
+      "name": "Néctar verde Garrafa (2000ml)",
+      "price": 117500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_garrafa_2000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "54fef250-0545-4c5b-87b6-b2abd3875748",
+      "name": "Néctar verde Litro (1000ml)",
+      "price": 59500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_litro_1000ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "ee92c463-802e-4248-9bf3-901ec104c813",
+      "name": "Néctar verde Litro y medio (1500ml)",
+      "price": 82000,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_litro_y_medio_1500ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "baf503e0-0abe-46fb-9ef2-3e4461b4c857",
+      "name": "Néctar verde Media (375ml)",
+      "price": 25500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_media_375ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "e93150d4-355e-4138-b9ba-5ac3a98d2423",
+      "name": "Néctar verde Medio litro (500ml)",
+      "price": 31500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/nectar_verde_medio_litro_500ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "1a254bb7-7295-42df-a7e6-e1bdf2cfb0bd",
+      "name": "Old Parr 12 Años (750ml)",
+      "price": 149000,
+      "stock_quantity": 10,
+      "category_id": "2a63e60e-6cea-4583-a211-105e8ed9d35f",
+      "image_url": "https://images.unsplash.com/photo-1527281405159-35d5b9a1650c?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Whisky",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "232f6e42-4296-403b-93fa-1653f91fc598",
+      "name": "Papas Pringles Original (124g)",
+      "price": 14500,
+      "stock_quantity": 25,
+      "category_id": "cd3d3a51-6be1-4a78-8695-245cfa53caa5",
+      "image_url": "https://images.unsplash.com/photo-1621996346565-e3d5d628169b?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Snacks",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    },
+    {
+      "id": "abcd845f-332c-47c9-a890-2341f8e95ffd",
+      "name": "Rosado del Tolima Botella (750ml)",
+      "price": 89500,
+      "stock_quantity": 10,
+      "category_id": "0afd9ef4-017c-4530-afae-5617b18c8b76",
+      "image_url": "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/rosado_del_tolima_botella_750ml.webp",
+      "created_at": "2026-04-16T01:06:32.545964+00:00",
+      "category_name": "Aguardiente",
+      "has_official_image": true,
+      "image_status": "OFICIAL_WEBP"
+    },
+    {
+      "id": "0efb3f56-d5ff-4367-8470-e3c6c6b4dc94",
+      "name": "Stella Artois Botella (330ml)",
+      "price": 8000,
+      "stock_quantity": 36,
+      "category_id": "648f92d5-93fe-4403-8ac0-33cc9a31d75e",
+      "image_url": "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=800&auto=format&fit=crop",
+      "created_at": "2026-09-04T16:53:05.202229+00:00",
+      "category_name": "Cervezas",
+      "has_official_image": false,
+      "image_status": "GENERICA_TEMPORAL"
+    }
+  ],
+  "cocktails": [
+    {
+      "id": "a7e2f027-9a5b-43ea-b64c-44a8f33cca06",
+      "name": "Atardecer Guambiano",
+      "glass_type": "Vaso Alto (Collins)",
+      "image_url": "/images/products/aguardiente.png",
+      "ingredients": [
+        {
+          "qty": "2 oz",
+          "item": "Aguardiente Amarillo de Manzanares"
+        },
+        {
+          "qty": "1 1/2 oz",
+          "item": "Zumo de lulo natural (licuado y colado, sin azúcar)"
+        },
+        {
+          "qty": "3/4 oz",
+          "item": "Jarabe simple (agua y azúcar)"
+        },
+        {
+          "qty": "4 o 5 hojas",
+          "item": "Hierbabuena fresca"
+        }
+      ],
+      "history": "El aguardiente amarillo tiene notas endulzadas y de caña que juegan perfecto con elementos cítricos y herbáceos, alejándose del clásico shott.",
+      "instructions": [
+        "MACERAR: En el fondo de la coctelera, presiona suavemente las hojas de hierbabuena con el jarabe simple usando un mortero (sin romperlas para que no amarguen).",
+        "AGITAR: Añade el Aguardiente Amarillo, el zumo de lulo y hielo. Agita con fuerza para emulsionar la densidad del lulo.",
+        "SERVIR: Sirve con colado sencillo en un vaso alto repleto de hielo picado.",
+        "DECORAR: Corona el vaso con un cogollo abundante de hierbabuena (activado con un aplauso entre las manos) y una rodaja deshidratada de limón o lulo en el borde."
+      ],
+      "created_at": "2026-09-04T17:09:05.891176+00:00"
+    },
+    {
+      "id": "2c6b3653-2514-46d8-8a90-33daf0ff0140",
+      "name": "El Patriarca",
+      "glass_type": "Vaso Corto (Old Fashioned)",
+      "image_url": "/images/products/whisky.png",
+      "ingredients": [
+        {
+          "qty": "2 oz",
+          "item": "Ron Viejo de Caldas"
+        },
+        {
+          "qty": "1 oz",
+          "item": "Melao de panela espeso (con toque de canela)"
+        },
+        {
+          "qty": "3/4 oz",
+          "item": "Zumo de limón de castilla fresco"
+        },
+        {
+          "qty": "1 golpe (dash)",
+          "item": "Bitters de café o chocolate"
+        }
+      ],
+      "history": "Un tributo a la complejidad del ron añejo, balanceado con el dulzor profundo de la panela y el amargor del café colombiano.",
+      "instructions": [
+        "AGITAR: En una coctelera con abundante hielo, añade el Ron Viejo de Caldas, el melao de panela, el zumo de limón y el dash de bitters. Agita enérgicamente durante 12-15 segundos hasta que esté bien helada.",
+        "SERVIR: Haz un doble colado (usando el colador de la coctelera y malla fina) sobre un vaso corto con un único cubo de hielo grande para evitar la dilución rápida.",
+        "DECORAR: Decora con una piel (twist) de naranja exprimiendo sus aceites sobre la superficie. Opcional: raspa un grano de café tostado encima."
+      ],
+      "created_at": "2026-09-04T17:09:04.773882+00:00"
+    },
+    {
+      "id": "a5463649-1ea7-40d8-b753-7674ef5a01e6",
+      "name": "Frailejón Frost",
+      "glass_type": "Vaso Corto o Copa Coupé Helada",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Grey_Goose_Bottle.jpg",
+      "ingredients": [
+        {
+          "qty": "2 oz",
+          "item": "Vodka"
+        },
+        {
+          "qty": "1 1/2 oz",
+          "item": "Té verde concentrado (frío)"
+        },
+        {
+          "qty": "3/4 oz",
+          "item": "Zumo de limón común"
+        },
+        {
+          "qty": "3 rodajas",
+          "item": "Pepino cohombro"
+        },
+        {
+          "qty": "3/4 oz",
+          "item": "Jarabe simple"
+        }
+      ],
+      "history": "Aprovechando la neutralidad del vodka, creamos un cóctel sedoso, herbal y de notas andinas usando una infusión de té verde y el frescor del pepino.",
+      "instructions": [
+        "MACERAR: En la coctelera, macera firmemente las rodajas de pepino junto con el jarabe simple y el zumo de limón.",
+        "AGITAR: Agrega el vodka, el té verde concentrado y abundante hielo. Agita vigorosamente durante 12 segundos para integrar la frescura.",
+        "SERVIR: Pasa por doble colado fino y sírvelo en un vaso corto con hielo fresco picado o en copa Coupé helada sin hielo.",
+        "DECORAR: Corta una lámina muy fina y alargada de pepino y adhiérela a la pared interna del vaso antes de servir."
+      ],
+      "created_at": "2026-09-04T17:09:07.616957+00:00"
+    },
+    {
+      "id": "e24f38d3-198a-4e47-af40-0b266cab30c5",
+      "name": "Pacífico Sunset",
+      "glass_type": "Copa Margarita o Coupé",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/32/MargaritaReal.jpg",
+      "ingredients": [
+        {
+          "qty": "2 oz",
+          "item": "Tequila José Cuervo (Blanco o Reposado)"
+        },
+        {
+          "qty": "1 1/2 oz",
+          "item": "Zumo de maracuyá puro (sin diluir en agua)"
+        },
+        {
+          "qty": "3/4 oz",
+          "item": "Licor de naranja (Triple Sec o Controy)"
+        },
+        {
+          "qty": "1/2 oz",
+          "item": "Jarabe de agave o jarabe simple"
+        }
+      ],
+      "history": "Una fusión entre la potencia del agave mexicano y la frescura tropical del maracuyá colombiano, balanceado con un borde picante-salado.",
+      "instructions": [
+        "AGITAR: Introduce todos los ingredientes en la coctelera junto con hielo plano. Agita con fuerza durante unos 10 segundos para integrar y enfriar.",
+        "SERVIR: Sirve en una copa tipo Margarita o copa Coupé previamente enfriada (sin hielo en la copa).",
+        "DECORAR: Antes de servir, escarcha la mitad del borde de la copa con limón, sal marina y Tajín o ají en polvo. Termina flotando una rodaja fina de limón verde."
+      ],
+      "created_at": "2026-09-04T17:09:06.33038+00:00"
+    },
+    {
+      "id": "4ce4ebd9-0bef-4b8d-9927-901392f96dab",
+      "name": "Refajo de Autor",
+      "glass_type": "Vaso Cervecero / Pinta o Copón",
+      "image_url": "/images/products/cerveza.png",
+      "ingredients": [
+        {
+          "qty": "4 oz",
+          "item": "Cerveza Lager nacional o Rubia artesanal ligera"
+        },
+        {
+          "qty": "2 oz",
+          "item": "Gaseosa Colombiana tradicional"
+        },
+        {
+          "qty": "1 oz",
+          "item": "Bitter Rojo (tipo Campari)"
+        },
+        {
+          "qty": "1/2 oz",
+          "item": "Zumo de limón de castilla"
+        }
+      ],
+      "history": "Llevamos el clásico refajo de las celebraciones colombianas a un nivel de coctelería estilizado, utilizando notas amargas y cítricas.",
+      "instructions": [
+        "PREPARAR EN VASO: En un vaso cervecero o jarra helada, añade primero el zumo de limón y el Bitter Rojo.",
+        "SERVIR: Incorpora la gaseosa Colombiana fría y vierte la cerveza inclinando el vaso para controlar la espuma.",
+        "REMOVER: Remueve una sola vez de abajo hacia arriba de forma muy sutil con la cuchara de bar.",
+        "DECORAR: Decora con un borde sutil de sal de gusano o sal marina fina con pimienta, y una rodaja de limón cruzada en el borde del vaso."
+      ],
+      "created_at": "2026-09-04T17:09:07.398631+00:00"
+    },
+    {
+      "id": "f32a2f5d-9988-48e5-9a65-4d7cad6b470c",
+      "name": "Selva Británica",
+      "glass_type": "Copa Balón o Vaso Alto",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Tanqueray_bottle.JPG",
+      "ingredients": [
+        {
+          "qty": "2 oz",
+          "item": "Ginebra Gordon's"
+        },
+        {
+          "qty": "1 oz",
+          "item": "Zumo de limón mandarino fresco"
+        },
+        {
+          "qty": "3/4 oz",
+          "item": "Jarabe simple"
+        },
+        {
+          "qty": "Completar con",
+          "item": "Agua tónica premium"
+        }
+      ],
+      "history": "Un perfil botánico y ultra refrescante que aprovecha la acidez limpia del limón mandarino para cortar las notas de enebro de la ginebra.",
+      "instructions": [
+        "PREPARAR EN VASO: Llena una copa de balón o vaso alto con cubos de hielo grandes. Añade la ginebra, el zumo de limón mandarino y el jarabe simple.",
+        "REMOVER: Remueve suavemente con la cuchara de bar para enfriar la base.",
+        "SERVIR: Añade el agua tónica lentamente para no perder la burbuja.",
+        "DECORAR: Agrega una rodaja gruesa de limón mandarino en el interior y una ramita de romero fresco ligeramente quemada en la punta con encendedor para aportar aroma ahumado."
+      ],
+      "created_at": "2026-09-04T17:09:06.745321+00:00"
+    }
+  ]
+}
