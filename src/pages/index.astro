@@ -15,112 +15,179 @@ import {
     Clock,
 } from "lucide-astro";
 
-let aguardienteProducts: Array<{
+interface RotatingProduct {
     id?: string;
     name: string;
     price: number;
     formattedPrice: string;
     image_url: string;
-}> = [];
-
-try {
-    const dbCategories = await getCachedCategoriesWithProducts();
-    const agCategory = dbCategories.find((c) =>
-        c.name.toLowerCase().includes("aguardiente")
-    );
-    if (agCategory && agCategory.products) {
-        aguardienteProducts = agCategory.products
-            .filter((p) => p.image_url)
-            .map((p) => {
-                const numPrice =
-                    typeof p.price === "number"
-                        ? p.price
-                        : parseFloat(p.price as string) || 0;
-                return {
-                    id: p.id,
-                    name: p.name,
-                    price: numPrice,
-                    formattedPrice: formatCOP(numPrice),
-                    image_url: p.image_url as string,
-                };
-            });
-    }
-} catch (err) {
-    console.error("Error al cargar productos de aguardiente para el arsenal:", err);
 }
 
-if (aguardienteProducts.length === 0) {
-    aguardienteProducts = [
-        {
+const categoryConfigs = [
+    {
+        name: "Aguardiente",
+        slug: "aguardiente",
+        tagline: "El alma de la rumba",
+        theme: {
+            border: "border-teal-500/40 hover:border-teal-400",
+            shadow: "shadow-[0_0_35px_rgba(20,184,166,0.15)] hover:shadow-[0_0_55px_rgba(20,184,166,0.3)]",
+            progress: "from-teal-500 via-teal-400 to-emerald-400",
+            bgRadial: "from-teal-950/40 via-neutral-950/80 to-neutral-950",
+            ambientGlow: "bg-teal-500/15 group-hover:bg-teal-500/25",
+            badgeBg: "bg-teal-500/15 border-teal-500/30 text-teal-300",
+            badgeDot: "bg-teal-400",
+            priceBadge: "bg-teal-500/20 border-teal-500/30",
+            categoryText: "text-teal-400",
+            hoverText: "group-hover:text-teal-300",
+        },
+        fallback: {
             name: "Aguardiente Antioqueño Sin Azúcar",
             price: 45000,
             formattedPrice: "$ 45.000",
             image_url:
-                "https://upload.wikimedia.org/wikipedia/commons/b/b5/Botella_de_Aguardiente_Antioque%C3%B1o.jpg",
+                "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_botella_750ml.webp",
         },
-    ];
-}
-
-const firstAguardiente = aguardienteProducts[0];
-
-const categories = [
-    {
-        name: "Aguardiente",
-        tagline: "El alma de la rumba",
-        image: "https://images.unsplash.com/photo-1516997121675-4c2d04fe116e?q=80&w=800&auto=format&fit=crop",
-        icon: Wine,
-        color: "teal", // Coherente con tu Admin
     },
     {
         name: "Whisky",
+        slug: "whisky",
         tagline: "Carácter & Legado",
-        image: "https://images.unsplash.com/photo-1527281405159-35d5b9a1650c?q=80&w=800&auto=format&fit=crop",
-        icon: Wine,
-        color: "purple",
+        theme: {
+            border: "border-amber-500/40 hover:border-amber-400",
+            shadow: "shadow-[0_0_35px_rgba(245,158,11,0.15)] hover:shadow-[0_0_55px_rgba(245,158,11,0.3)]",
+            progress: "from-amber-500 via-amber-400 to-yellow-300",
+            bgRadial: "from-amber-950/40 via-neutral-950/80 to-neutral-950",
+            ambientGlow: "bg-amber-500/15 group-hover:bg-amber-500/25",
+            badgeBg: "bg-amber-500/15 border-amber-500/30 text-amber-300",
+            badgeDot: "bg-amber-400",
+            priceBadge: "bg-amber-500/20 border-amber-500/30",
+            categoryText: "text-amber-400",
+            hoverText: "group-hover:text-amber-300",
+        },
+        fallback: {
+            name: "Buchanans Deluxe 12 Años (750ml)",
+            price: 155000,
+            formattedPrice: "$ 155.000",
+            image_url:
+                "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/buchanans_deluxe_12_anos_750ml.webp",
+        },
     },
     {
         name: "Cervezas",
+        slug: "cervezas",
         tagline: "Frías como el búnker",
-        image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=800&auto=format&fit=crop",
-        icon: Beer,
-        color: "pink",
+        theme: {
+            border: "border-rose-500/40 hover:border-rose-400",
+            shadow: "shadow-[0_0_35px_rgba(244,63,94,0.15)] hover:shadow-[0_0_55px_rgba(244,63,94,0.3)]",
+            progress: "from-rose-500 via-pink-400 to-orange-400",
+            bgRadial: "from-rose-950/40 via-neutral-950/80 to-neutral-950",
+            ambientGlow: "bg-rose-500/15 group-hover:bg-rose-500/25",
+            badgeBg: "bg-rose-500/15 border-rose-500/30 text-rose-300",
+            badgeDot: "bg-rose-400",
+            priceBadge: "bg-rose-500/20 border-rose-500/30",
+            categoryText: "text-rose-400",
+            hoverText: "group-hover:text-rose-300",
+        },
+        fallback: {
+            name: "Club Colombia Dorada Lata (330ml)",
+            price: 5000,
+            formattedPrice: "$ 5.000",
+            image_url:
+                "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/club_colombia_dorada_lata_330ml.webp",
+        },
     },
     {
         name: "Snacks",
+        slug: "snacks",
         tagline: "El complemento ideal",
-        image: "https://images.unsplash.com/photo-1599490659213-e2b9527bb087?q=80&w=800&auto=format&fit=crop",
-        icon: UtensilsCrossed,
-        color: "blue",
+        theme: {
+            border: "border-sky-500/40 hover:border-sky-400",
+            shadow: "shadow-[0_0_35px_rgba(14,165,233,0.15)] hover:shadow-[0_0_55px_rgba(14,165,233,0.3)]",
+            progress: "from-sky-500 via-cyan-400 to-blue-400",
+            bgRadial: "from-sky-950/40 via-neutral-950/80 to-neutral-950",
+            ambientGlow: "bg-sky-500/15 group-hover:bg-sky-500/25",
+            badgeBg: "bg-sky-500/15 border-sky-500/30 text-sky-300",
+            badgeDot: "bg-sky-400",
+            priceBadge: "bg-sky-500/20 border-sky-500/30",
+            categoryText: "text-sky-400",
+            hoverText: "group-hover:text-sky-300",
+        },
+        fallback: {
+            name: "Papas Pringles Original (124g)",
+            price: 14500,
+            formattedPrice: "$ 14.500",
+            image_url:
+                "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/papas_pringles_original_124g.webp",
+        },
     },
 ];
 
+let categoryProductsMap: Record<string, RotatingProduct[]> = {};
+
+try {
+    const dbCategories = await getCachedCategoriesWithProducts();
+    for (const conf of categoryConfigs) {
+        const cat = dbCategories.find((c) =>
+            c.name.toLowerCase().includes(conf.slug)
+        );
+        if (cat && cat.products && cat.products.length > 0) {
+            categoryProductsMap[conf.slug] = cat.products
+                .filter((p) => p.image_url)
+                .map((p) => {
+                    const numPrice =
+                        typeof p.price === "number"
+                            ? p.price
+                            : parseFloat(p.price as string) || 0;
+                    return {
+                        id: p.id,
+                        name: p.name,
+                        price: numPrice,
+                        formattedPrice: formatCOP(numPrice),
+                        image_url: p.image_url as string,
+                    };
+                });
+        }
+        if (
+            !categoryProductsMap[conf.slug] ||
+            categoryProductsMap[conf.slug].length === 0
+        ) {
+            categoryProductsMap[conf.slug] = [conf.fallback];
+        }
+    }
+} catch (err) {
+    console.error("Error al cargar productos del arsenal:", err);
+    for (const conf of categoryConfigs) {
+        categoryProductsMap[conf.slug] = [conf.fallback];
+    }
+}
+
 const featuredProducts = [
     {
-        name: "Aguardiente Antioqueño Sin Azúcar",
+        name: "Antioqueño Azul Sin Azúcar",
         presentation: "750ml • 29% Vol",
         price: 45000,
-        image: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Botella_de_Aguardiente_Antioque%C3%B1o.jpg",
+        image: "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/antioqueno_azul_botella_750ml.webp",
         isHot: true,
     },
     {
         name: "Johnnie Walker Black Label",
         presentation: "750ml • 12 Años",
-        price: 125000,
-        image: "https://upload.wikimedia.org/wikipedia/commons/2/21/Johnnie_Walker_Black_Label.jpg",
+        price: 148000,
+        image: "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/johnnie_walker_black_label_750ml.webp",
         isHot: false,
     },
     {
-        name: "Club Colombia Dorada 6-Pack",
-        presentation: "Lata 330ml • Edición Especial",
-        price: 24000,
-        image: "https://upload.wikimedia.org/wikipedia/commons/b/b7/Club_Colombia_Roja_%287143313185%29.jpg",
+        name: "Club Colombia Dorada",
+        presentation: "Lata 330ml • Original",
+        price: 5000,
+        image: "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/club_colombia_dorada_lata_330ml.webp",
         isHot: false,
     },
     {
-        name: "Papas Margarita Familiar",
-        presentation: "110g • Sabor Natural",
-        price: 8500,
-        image: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Lays_Classic_Potato_Chips_Bag.jpg",
+        name: "Papas Pringles Original",
+        presentation: "124g • Sabor Clásico",
+        price: 14500,
+        image: "https://kzzpbxgsffmeyvckdmhs.supabase.co/storage/v1/object/public/diverpremier-assets/products/papas_pringles_original_124g.webp",
         isHot: false,
     },
 ];
@@ -227,116 +294,131 @@ const featuredProducts = [
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {
-                    categories.map((cat) => {
-                        const isAguardiente = cat.name.toLowerCase().includes("aguardiente");
-
-                        if (isAguardiente) {
-                            return (
-                                <a
-                                    id="arsenal-aguardiente-card"
-                                    href={`/productos?cat=${cat.name}`}
-                                    class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-teal-500/40 hover:border-teal-400 transition-all duration-700 bg-neutral-950 flex flex-col justify-between p-6 sm:p-7 shadow-[0_0_35px_rgba(20,184,166,0.15)] hover:shadow-[0_0_55px_rgba(20,184,166,0.3)] block select-none"
-                                >
-                                    {/* Barra de progreso de 5 segundos */}
-                                    <div class="absolute top-0 left-0 right-0 h-1 bg-white/5 overflow-hidden z-20">
-                                        <div
-                                            id="arsenal-progress-bar"
-                                            class="h-full bg-gradient-to-r from-teal-500 via-teal-400 to-emerald-400 w-0"
-                                        />
-                                    </div>
-
-                                    {/* Fondo cyber neón con brillo */}
-                                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-950/40 via-neutral-950/80 to-neutral-950 -z-10" />
-                                    <div class="absolute inset-0 bg-[url('/noise.svg')] opacity-15 pointer-events-none -z-10" />
-
-                                    {/* Cabecera superior de la tarjeta: Badge En Vivo + Contador */}
-                                    <div class="relative z-10 flex items-center justify-between w-full">
-                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-[9px] font-black uppercase tracking-widest backdrop-blur-md">
-                                            <span class="relative flex h-1.5 w-1.5">
-                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
-                                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-teal-400" />
-                                            </span>
-                                            <span>En Vivo • 5s</span>
-                                        </div>
-
-                                        <span
-                                            id="arsenal-product-counter"
-                                            class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/10"
-                                        >
-                                            1 / {aguardienteProducts.length}
-                                        </span>
-                                    </div>
-
-                                    {/* Botella de producto con resplandor ambiental */}
-                                    <div class="relative z-10 flex-1 flex items-center justify-center my-2 overflow-hidden">
-                                        <div class="absolute w-36 h-36 sm:w-44 sm:h-44 bg-teal-500/15 rounded-full blur-2xl pointer-events-none transition-all duration-700 group-hover:scale-125 group-hover:bg-teal-500/25" />
-                                        <img
-                                            id="arsenal-product-img"
-                                            src={firstAguardiente.image_url}
-                                            alt={firstAguardiente.name}
-                                            width="400"
-                                            height="600"
-                                            loading="eager"
-                                            decoding="async"
-                                            class="relative z-10 max-h-[160px] sm:max-h-[190px] w-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transition-all duration-500 ease-out transform group-hover:scale-105"
-                                        />
-                                    </div>
-
-                                    {/* Información inferior: Categoría, Precio, Nombre y CTA */}
-                                    <div class="relative z-10 space-y-2">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-widest">
-                                                {cat.name}
-                                            </span>
-                                            <span
-                                                id="arsenal-product-price"
-                                                class="text-xs font-black text-white italic tracking-tight font-mono bg-teal-500/20 px-2 py-0.5 rounded border border-teal-500/30 transition-opacity duration-300"
-                                            >
-                                                {firstAguardiente.formattedPrice}
-                                            </span>
-                                        </div>
-
-                                        <h3
-                                            id="arsenal-product-name"
-                                            class="text-base sm:text-lg font-black text-white uppercase italic tracking-tight line-clamp-2 min-h-[3rem] flex items-center transition-opacity duration-300"
-                                        >
-                                            {firstAguardiente.name}
-                                        </h3>
-
-                                        <div class="flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-neutral-400 group-hover:text-teal-300 transition-colors">
-                                            <span>Ver arsenal ({aguardienteProducts.length})</span>
-                                            <span class="group-hover:translate-x-1 transition-transform">
-                                                →
-                                            </span>
-                                        </div>
-                                    </div>
-                                </a>
-                            );
-                        }
+                    categoryConfigs.map((cat) => {
+                        const prods = categoryProductsMap[cat.slug] || [cat.fallback];
+                        const firstProd = prods[0];
 
                         return (
                             <a
+                                id={`arsenal-card-${cat.slug}`}
                                 href={`/productos?cat=${cat.name}`}
-                                class="group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border border-white/5 hover:border-teal-500/30 transition-all duration-700 bg-neutral-900"
+                                class:list={[
+                                    "group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border transition-all duration-700 bg-neutral-950 flex flex-col justify-between p-6 sm:p-7 block select-none cursor-pointer",
+                                    cat.theme.border,
+                                    cat.theme.shadow,
+                                ]}
                             >
-                                <img
-                                    width="800"
-                                    height="1000"
-                                    loading="lazy"
-                                    decoding="async"
-                                    src={cat.image}
-                                    alt={cat.name}
-                                    class="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-1000 scale-105 group-hover:scale-110"
-                                />
-                                <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
+                                {/* Barra de progreso de 5 segundos */}
+                                <div class="absolute top-0 left-0 right-0 h-1 bg-white/5 overflow-hidden z-20">
+                                    <div
+                                        id={`arsenal-progress-${cat.slug}`}
+                                        class:list={["h-full bg-gradient-to-r w-0", cat.theme.progress]}
+                                    />
+                                </div>
 
-                                <div class="absolute inset-0 p-10 flex flex-col justify-end">
-                                    <h3 class="text-4xl font-black text-white uppercase italic tracking-tighter mb-1 transform group-hover:-translate-y-2 transition-transform">
-                                        {cat.name}
+                                {/* Fondo cyber neón con brillo */}
+                                <div
+                                    class:list={[
+                                        "absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] -z-10",
+                                        cat.theme.bgRadial,
+                                    ]}
+                                />
+                                <div class="absolute inset-0 bg-[url('/noise.svg')] opacity-15 pointer-events-none -z-10" />
+
+                                {/* Cabecera superior de la tarjeta: Badge En Vivo + Contador */}
+                                <div class="relative z-10 flex items-center justify-between w-full">
+                                    <div
+                                        class:list={[
+                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest backdrop-blur-md border",
+                                            cat.theme.badgeBg,
+                                        ]}
+                                    >
+                                        <span class="relative flex h-1.5 w-1.5">
+                                            <span
+                                                class:list={[
+                                                    "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                                                    cat.theme.badgeDot,
+                                                ]}
+                                            />
+                                            <span
+                                                class:list={[
+                                                    "relative inline-flex rounded-full h-1.5 w-1.5",
+                                                    cat.theme.badgeDot,
+                                                ]}
+                                            />
+                                        </span>
+                                        <span>En Vivo • 5s</span>
+                                    </div>
+
+                                    <span
+                                        id={`arsenal-counter-${cat.slug}`}
+                                        class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/10"
+                                    >
+                                        1 / {prods.length}
+                                    </span>
+                                </div>
+
+                                {/* Botella/Producto con resplandor ambiental */}
+                                <div class="relative z-10 flex-1 flex items-center justify-center my-2 overflow-hidden">
+                                    <div
+                                        class:list={[
+                                            "absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-2xl pointer-events-none transition-all duration-700 group-hover:scale-125",
+                                            cat.theme.ambientGlow,
+                                        ]}
+                                    />
+                                    <img
+                                        id={`arsenal-img-${cat.slug}`}
+                                        src={firstProd.image_url}
+                                        alt={firstProd.name}
+                                        width="400"
+                                        height="600"
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="relative z-10 max-h-[160px] sm:max-h-[190px] w-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transition-all duration-500 ease-out transform group-hover:scale-105"
+                                        onerror="this.onerror=null; this.src='https://placehold.co/600x800/0A0F1E/white?text=Diverpremier';"
+                                    />
+                                </div>
+
+                                {/* Información inferior: Categoría, Precio, Nombre y CTA */}
+                                <div class="relative z-10 space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span
+                                            class:list={[
+                                                "text-[10px] font-bold uppercase tracking-widest",
+                                                cat.theme.categoryText,
+                                            ]}
+                                        >
+                                            {cat.name}
+                                        </span>
+                                        <span
+                                            id={`arsenal-price-${cat.slug}`}
+                                            class:list={[
+                                                "text-xs font-black text-white italic tracking-tight font-mono px-2 py-0.5 rounded border transition-opacity duration-300",
+                                                cat.theme.priceBadge,
+                                            ]}
+                                        >
+                                            {firstProd.formattedPrice}
+                                        </span>
+                                    </div>
+
+                                    <h3
+                                        id={`arsenal-name-${cat.slug}`}
+                                        class="text-base sm:text-lg font-black text-white uppercase italic tracking-tight line-clamp-2 min-h-[3rem] flex items-center transition-opacity duration-300"
+                                    >
+                                        {firstProd.name}
                                     </h3>
-                                    <p class="text-[10px] font-bold text-teal-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
-                                        {cat.tagline}
-                                    </p>
+
+                                    <div
+                                        class:list={[
+                                            "flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-neutral-400 transition-colors",
+                                            cat.theme.hoverText,
+                                        ]}
+                                    >
+                                        <span>Ver {cat.name.toLowerCase()} ({prods.length})</span>
+                                        <span class="group-hover:translate-x-1 transition-transform">
+                                            →
+                                        </span>
+                                    </div>
                                 </div>
                             </a>
                         );
@@ -468,138 +550,187 @@ const featuredProducts = [
         </section>
     </div>
 
-    {/* Datos para el carrusel dinámico de aguardientes en el arsenal */}
+    {/* Datos para el carrusel dinámico multi-categoría en el arsenal */}
     <script
         type="application/json"
-        id="arsenal-aguardientes-json"
-        set:html={JSON.stringify(aguardienteProducts)}
+        id="arsenal-categories-json"
+        set:html={JSON.stringify(categoryProductsMap)}
     />
 
     <script is:inline>
         (function () {
-            let timer = null;
+            window._arsenalRotators = window._arsenalRotators || [];
 
-            function setupArsenalRotator() {
-                if (timer) {
-                    clearInterval(timer);
-                    timer = null;
+            function cleanupArsenalRotators() {
+                if (window._arsenalRotators && window._arsenalRotators.length > 0) {
+                    window._arsenalRotators.forEach((rotator) => {
+                        if (typeof rotator.destroy === "function") rotator.destroy();
+                    });
+                    window._arsenalRotators = [];
                 }
+            }
 
-                const dataEl = document.getElementById("arsenal-aguardientes-json");
+            function setupArsenalRotators() {
+                cleanupArsenalRotators();
+
+                const dataEl = document.getElementById("arsenal-categories-json");
                 if (!dataEl) return;
 
-                let products = [];
+                let categoriesMap = {};
                 try {
-                    products = JSON.parse(dataEl.textContent || "[]");
+                    categoriesMap = JSON.parse(dataEl.textContent || "{}");
                 } catch (e) {
-                    console.error("Error al parsear aguardientes:", e);
+                    console.error("Error al parsear categorías del arsenal:", e);
                     return;
                 }
 
-                if (!Array.isArray(products) || products.length <= 1) return;
-
-                const imgEl = document.getElementById("arsenal-product-img");
-                const nameEl = document.getElementById("arsenal-product-name");
-                const priceEl = document.getElementById("arsenal-product-price");
-                const counterEl = document.getElementById("arsenal-product-counter");
-                const progressBar = document.getElementById("arsenal-progress-bar");
-                const cardContainer = document.getElementById("arsenal-aguardiente-card");
-
-                let currentIndex = 0;
-                const total = products.length;
                 const INTERVAL_MS = 5000;
                 const FADE_MS = 250;
+                const STAGGER_MS = 750;
 
-                function preload(url) {
-                    if (!url) return;
-                    const img = new Image();
-                    img.src = url;
-                }
+                const slugs = Object.keys(categoriesMap);
 
-                // Pre-cargar las siguientes imágenes en caché del navegador
-                for (let i = 1; i < Math.min(6, total); i++) {
-                    preload(products[i].image_url);
-                }
+                slugs.forEach((slug, catIndex) => {
+                    const products = categoriesMap[slug];
+                    if (!Array.isArray(products) || products.length <= 1) return;
 
-                function resetProgressBar() {
-                    if (!progressBar) return;
-                    progressBar.style.transition = "none";
-                    progressBar.style.width = "0%";
-                    void progressBar.offsetWidth;
-                    progressBar.style.transition = `width ${INTERVAL_MS}ms linear`;
-                    progressBar.style.width = "100%";
-                }
+                    const cardEl = document.getElementById(`arsenal-card-${slug}`);
+                    const imgEl = document.getElementById(`arsenal-img-${slug}`);
+                    const nameEl = document.getElementById(`arsenal-name-${slug}`);
+                    const priceEl = document.getElementById(`arsenal-price-${slug}`);
+                    const counterEl = document.getElementById(`arsenal-counter-${slug}`);
+                    const progressEl = document.getElementById(`arsenal-progress-${slug}`);
 
-                function rotateProduct() {
-                    currentIndex = (currentIndex + 1) % total;
-                    const nextProd = products[currentIndex];
+                    if (!cardEl || !imgEl) return;
 
-                    // Pre-cargar el siguiente por delante
-                    const lookaheadIndex = (currentIndex + 1) % total;
-                    preload(products[lookaheadIndex].image_url);
+                    let currentIndex = 0;
+                    const total = products.length;
+                    let timer = null;
+                    let initialTimeout = null;
+                    let isPaused = false;
 
-                    // Desvanecer suavemente
-                    if (imgEl) {
-                        imgEl.style.opacity = "0";
-                        imgEl.style.transform = "scale(0.92) translateY(6px)";
+                    function preload(url) {
+                        if (!url) return;
+                        const img = new Image();
+                        img.src = url;
                     }
-                    if (nameEl) nameEl.style.opacity = "0";
-                    if (priceEl) priceEl.style.opacity = "0";
 
-                    setTimeout(() => {
-                        if (imgEl && nextProd.image_url) {
-                            imgEl.src = nextProd.image_url;
-                            imgEl.alt = nextProd.name;
-                        }
-                        if (nameEl) {
-                            nameEl.textContent = nextProd.name;
-                        }
-                        if (priceEl) {
-                            priceEl.textContent = nextProd.formattedPrice;
-                        }
-                        if (counterEl) {
-                            counterEl.textContent = `${currentIndex + 1} / ${total}`;
-                        }
+                    // Pre-cargar imágenes subsiguientes
+                    for (let i = 1; i < Math.min(6, total); i++) {
+                        preload(products[i].image_url);
+                    }
 
-                        // Reaparecer suavemente
+                    function startProgressBar(duration) {
+                        if (!progressEl) return;
+                        const d = duration || INTERVAL_MS;
+                        progressEl.style.transition = "none";
+                        progressEl.style.width = "0%";
+                        void progressEl.offsetWidth; // Forzar reflow del navegador
+                        progressEl.style.transition = `width ${d}ms linear`;
+                        progressEl.style.width = "100%";
+                    }
+
+                    function rotateProduct() {
+                        if (isPaused) return;
+
+                        currentIndex = (currentIndex + 1) % total;
+                        const nextProd = products[currentIndex];
+
+                        // Pre-cargar la siguiente imagen
+                        const lookaheadIdx = (currentIndex + 1) % total;
+                        preload(products[lookaheadIdx].image_url);
+
+                        // Transición suave de salida
                         if (imgEl) {
-                            imgEl.style.opacity = "1";
-                            imgEl.style.transform = "scale(1) translateY(0)";
+                            imgEl.style.opacity = "0";
+                            imgEl.style.transform = "scale(0.92) translateY(6px)";
                         }
-                        if (nameEl) nameEl.style.opacity = "1";
-                        if (priceEl) priceEl.style.opacity = "1";
+                        if (nameEl) nameEl.style.opacity = "0";
+                        if (priceEl) priceEl.style.opacity = "0";
 
-                        resetProgressBar();
-                    }, FADE_MS);
-                }
+                        setTimeout(() => {
+                            if (imgEl && nextProd.image_url) {
+                                imgEl.src = nextProd.image_url;
+                                imgEl.alt = nextProd.name;
+                            }
+                            if (nameEl) {
+                                nameEl.textContent = nextProd.name;
+                            }
+                            if (priceEl) {
+                                priceEl.textContent = nextProd.formattedPrice;
+                            }
+                            if (counterEl) {
+                                counterEl.textContent = `${currentIndex + 1} / ${total}`;
+                            }
 
-                resetProgressBar();
-                timer = setInterval(rotateProduct, INTERVAL_MS);
+                            // Transición suave de entrada
+                            if (imgEl) {
+                                imgEl.style.opacity = "1";
+                                imgEl.style.transform = "scale(1) translateY(0)";
+                            }
+                            if (nameEl) nameEl.style.opacity = "1";
+                            if (priceEl) priceEl.style.opacity = "1";
 
-                // Pausar en hover para poder leer y ver bien el producto
-                if (cardContainer) {
-                    cardContainer.addEventListener("mouseenter", () => {
-                        if (timer) clearInterval(timer);
-                        if (progressBar) {
-                            const computedWidth = window.getComputedStyle(progressBar).width;
-                            progressBar.style.transition = "none";
-                            progressBar.style.width = computedWidth;
+                            startProgressBar(INTERVAL_MS);
+                        }, FADE_MS);
+                    }
+
+                    function onMouseEnter() {
+                        isPaused = true;
+                        if (initialTimeout) {
+                            clearTimeout(initialTimeout);
+                            initialTimeout = null;
                         }
-                    });
-                    cardContainer.addEventListener("mouseleave", () => {
-                        resetProgressBar();
+                        if (timer) {
+                            clearInterval(timer);
+                            timer = null;
+                        }
+                        if (progressEl) {
+                            const computedWidth = window.getComputedStyle(progressEl).width;
+                            progressEl.style.transition = "none";
+                            progressEl.style.width = computedWidth;
+                        }
+                    }
+
+                    function onMouseLeave() {
+                        isPaused = false;
+                        startProgressBar(INTERVAL_MS);
                         if (timer) clearInterval(timer);
                         timer = setInterval(rotateProduct, INTERVAL_MS);
+                    }
+
+                    cardEl.addEventListener("mouseenter", onMouseEnter);
+                    cardEl.addEventListener("mouseleave", onMouseLeave);
+
+                    // Escalonamiento inicial suave para una animación dinámica y fluida
+                    const initialDelay = catIndex * STAGGER_MS;
+                    startProgressBar(INTERVAL_MS + initialDelay);
+
+                    initialTimeout = setTimeout(() => {
+                        initialTimeout = null;
+                        if (!isPaused) {
+                            rotateProduct();
+                            timer = setInterval(rotateProduct, INTERVAL_MS);
+                        }
+                    }, INTERVAL_MS + initialDelay);
+
+                    window._arsenalRotators.push({
+                        destroy: () => {
+                            if (initialTimeout) clearTimeout(initialTimeout);
+                            if (timer) clearInterval(timer);
+                            cardEl.removeEventListener("mouseenter", onMouseEnter);
+                            cardEl.removeEventListener("mouseleave", onMouseLeave);
+                        }
                     });
-                }
+                });
             }
 
             if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", setupArsenalRotator);
+                document.addEventListener("DOMContentLoaded", setupArsenalRotators);
             } else {
-                setupArsenalRotator();
+                setupArsenalRotators();
             }
-            document.addEventListener("astro:page-load", setupArsenalRotator);
+            document.addEventListener("astro:page-load", setupArsenalRotators);
         })();
     </script>
 </MainLayout>
