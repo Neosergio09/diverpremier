@@ -1,13 +1,8 @@
 import type { APIRoute } from "astro";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@lib/supabase";
 import { invalidateCatalogCache } from "@lib/cache";
 
 export const prerender = false;
-
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export const PATCH: APIRoute = async ({ request }) => {
   try {
@@ -35,7 +30,7 @@ export const PATCH: APIRoute = async ({ request }) => {
     }
 
     // 💣 Operación Segura: Sin updated_at y con Service Role
-    const { data: updatedProduct, error } = await supabase
+    const { data: updatedProduct, error } = await supabaseAdmin
       .from("products")
       .update(updatePayload)
       .eq("id", id)

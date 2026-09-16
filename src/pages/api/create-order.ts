@@ -41,7 +41,9 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // 2. Insert into relational order_items table
-    const rawItemsList = Array.isArray(items) ? items : Object.values(items);
+    const rawItemsList = (Array.isArray(items) ? items : Object.values(items)).filter(
+      (item: any) => item && item.name && (item.quantity !== undefined || item.price !== undefined)
+    );
     if (rawItemsList.length > 0) {
       // Find missing product UUIDs by looking up names in products table
       const namesToQuery = rawItemsList

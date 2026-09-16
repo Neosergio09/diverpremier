@@ -1,10 +1,10 @@
 ---
-import { Home, Package, Map, Wine, Users, Sun, Moon } from "lucide-astro";
+import { House, Package, Map, Wine, Users, Sun, Moon } from "@lucide/astro";
 
 const pathname = Astro.url.pathname;
 
 const navItems = [
-    { href: "/", icon: Home, label: "Inicio" },
+    { href: "/", icon: House, label: "Inicio" },
     { href: "/productos", icon: Package, label: "Tienda" },
     { href: "/mapa", icon: Map, label: "Mapa" },
     { href: "/nosotros", icon: Users, label: "Nosotros" },
@@ -60,7 +60,7 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                                 <span class="icon relative block text-white/30 transition-all duration-500 will-change-transform group-[.active]:text-white group-[.active]:scale-110 group-[.active]:-translate-y-[34.5px]">
                                     <item.icon
                                         size={20}
-                                        strokeWidth={
+                                        stroke-width={
                                             index === currentIndex ? 2.5 : 2
                                         }
                                     />
@@ -87,13 +87,13 @@ const currentIndex = activeIndex === -1 ? 2 : activeIndex;
                         <span
                             class="theme-icon-sun absolute transition-all duration-500 will-change-transform text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
                         >
-                            <Sun size={20} strokeWidth={2} />
+                            <Sun size={20} stroke-width={2} />
                         </span>
                         <!-- Moon Icon (visible in light mode) -->
                         <span
                             class="theme-icon-moon absolute transition-all duration-500 will-change-transform text-slate-600 drop-shadow-[0_0_8px_rgba(100,116,139,0.4)] rotate-90 opacity-0 scale-50"
                         >
-                            <Moon size={20} strokeWidth={2} />
+                            <Moon size={20} stroke-width={2} />
                         </span>
                     </button>
                 </li>

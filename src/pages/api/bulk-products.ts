@@ -1,6 +1,6 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@lib/supabase';
 import { invalidateCatalogCache } from '@lib/cache';
 
 const slugify = (text: string) => 
@@ -12,11 +12,6 @@ const slugify = (text: string) =>
 
 export const POST: APIRoute = async ({ request }) => {
     try {
-        const supabaseAdmin = createClient(
-            import.meta.env.PUBLIC_SUPABASE_URL,
-            import.meta.env.SUPABASE_SERVICE_ROLE_KEY
-        );
-
         const products = await request.json();
 
         if (!Array.isArray(products) || products.length === 0) {

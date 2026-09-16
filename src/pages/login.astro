@@ -99,35 +99,143 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     </div>
 
     <div
-      class="w-full max-w-md backdrop-blur-3xl bg-white/[0.03] ring-1 ring-white/20 border border-white/10 rounded-[3rem] p-12 shadow-2xl relative overflow-hidden group z-10"
+      class="w-full max-w-md backdrop-blur-3xl bg-white/[0.03] ring-1 ring-white/20 border border-white/10 rounded-[3rem] p-10 md:p-12 shadow-2xl relative overflow-hidden group z-10"
     >
       <div
-        class="absolute -top-32 -right-32 w-64 h-64 bg-neon-blue/15 blur-[100px] rounded-full"
+        class="absolute -top-32 -right-32 w-64 h-64 bg-neon-blue/15 blur-[100px] rounded-full pointer-events-none"
       >
       </div>
+
+      <!-- Barra superior: Enlace volver a la tienda & badge -->
+      <div class="flex items-center justify-between mb-8 relative z-10">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-400 hover:text-neon-blue transition-colors duration-300 group/back py-1.5 px-3.5 rounded-full bg-white/[0.03] border border-white/10 hover:border-neon-blue/40"
+          title="Volver a la tienda principal"
+        >
+          <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover/back:-translate-x-1 text-neutral-400 group-hover/back:text-neon-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>Tienda</span>
+        </a>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase font-mono tracking-widest bg-white/[0.02] border border-white/5 text-neutral-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-neon-blue animate-pulse"></span>
+          Búnker Admin
+        </span>
+      </div>
+
       <div class="relative z-10 text-center">
         <h1
-          class="text-5xl font-['Bebas_Neue'] text-white tracking-widest uppercase italic mb-12"
+          class="text-5xl font-['Bebas_Neue'] text-white tracking-widest uppercase italic mb-8"
         >
           DIVERPREMIER <span class="text-neon-blue neon-glow-text">GO</span>
         </h1>
-        <form id="login-form" class="space-y-8">
-          <input
-            type="email"
-            id="email-field"
-            placeholder="agente@diverpremier.go"
-            class="input-bunker"
-            required
-          />
-          <input
-            type="password"
-            id="pass-field"
-            placeholder="••••••••"
-            class="input-bunker"
-            required
-          />
-          <p id="auth-error-msg" class="text-red-500 text-xs text-center font-bold tracking-widest uppercase hidden opacity-0 transition-opacity duration-300">Authentication Failed</p>
-          <button type="submit" id="submit-btn" class="btn-bunker">Entrar al Búnker</button>
+
+        <form id="login-form" class="space-y-6">
+          <!-- Campo Email con icono y autofocus -->
+          <div class="space-y-2 text-left">
+            <label for="email-field" class="block text-[11px] font-mono uppercase tracking-widest text-neutral-400">
+              Credencial / Correo
+            </label>
+            <div class="relative group/input">
+              <div class="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within/input:text-neon-blue transition-colors pointer-events-none">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                id="email-field"
+                placeholder="agente@diverpremier.go"
+                class="input-bunker pl-12 pr-6"
+                autocomplete="username"
+                required
+                autofocus
+              />
+            </div>
+          </div>
+
+          <!-- Campo Contraseña con icono y botón Mostrar/Ocultar -->
+          <div class="space-y-2 text-left">
+            <div class="flex items-center justify-between">
+              <label for="pass-field" class="block text-[11px] font-mono uppercase tracking-widest text-neutral-400">
+                Clave de Seguridad
+              </label>
+            </div>
+            <div class="relative group/input">
+              <div class="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within/input:text-neon-blue transition-colors pointer-events-none">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                id="pass-field"
+                placeholder="••••••••••••"
+                class="input-bunker pl-12 pr-12"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                id="toggle-password-btn"
+                class="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 text-neutral-500 hover:text-neon-blue focus:text-neon-blue transition-colors rounded-lg focus:outline-none cursor-pointer"
+                title="Mostrar u ocultar contraseña"
+                aria-label="Alternar visibilidad de contraseña"
+              >
+                <!-- Eye icon (mostrar) -->
+                <svg id="eye-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <!-- Eye-off icon (ocultar) -->
+                <svg id="eye-off-icon" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Caja de Error y Rate Limit con Cuenta Regresiva Activa -->
+          <div
+            id="auth-error-box"
+            class="hidden p-3.5 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-400 text-xs transition-all duration-300"
+            role="alert"
+          >
+            <div class="flex items-start gap-2.5">
+              <div class="text-red-400 shrink-0 mt-0.5" id="auth-error-icon">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div class="flex-1 text-left">
+                <p id="auth-error-title" class="font-bold uppercase tracking-wider text-[10px] text-red-300">Acceso Denegado</p>
+                <p id="auth-error-msg" class="text-neutral-300 text-[11px] leading-relaxed mt-0.5">Credenciales no válidas.</p>
+                <div id="countdown-wrapper" class="hidden mt-2 pt-2 border-t border-red-500/20 flex items-center justify-between text-[11px] font-mono">
+                  <span class="text-neutral-400">Reintento disponible en:</span>
+                  <span id="countdown-timer" class="font-bold text-amber-400">30s</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de Envío con Indicador Spinner -->
+          <button
+            type="submit"
+            id="submit-btn"
+            class="btn-bunker flex items-center justify-center gap-3 relative overflow-hidden"
+          >
+            <svg
+              id="submit-spinner"
+              class="w-5 h-5 animate-spin hidden text-neon-blue"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span id="submit-text">Entrar al Búnker</span>
+          </button>
         </form>
       </div>
     </div>
@@ -151,17 +259,25 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 </MainLayout>
 
 <script>
-  import { supabase } from "../lib/supabase";
-
   const faces = document.querySelectorAll(".character-face");
   const pupils = document.querySelectorAll(".eye-pupil");
   const emailInput = document.getElementById("email-field") as HTMLInputElement;
   const passInput = document.getElementById("pass-field") as HTMLInputElement;
+  const togglePasswordBtn = document.getElementById("toggle-password-btn") as HTMLButtonElement;
+  const eyeIcon = document.getElementById("eye-icon");
+  const eyeOffIcon = document.getElementById("eye-off-icon");
   const loginForm = document.getElementById("login-form") as HTMLFormElement;
-  const errorMsg = document.getElementById("auth-error-msg");
+  const authErrorBox = document.getElementById("auth-error-box");
+  const authErrorTitle = document.getElementById("auth-error-title");
+  const authErrorMsg = document.getElementById("auth-error-msg");
+  const countdownWrapper = document.getElementById("countdown-wrapper");
+  const countdownTimer = document.getElementById("countdown-timer");
   const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+  const submitSpinner = document.getElementById("submit-spinner");
+  const submitText = document.getElementById("submit-text");
 
   let isAnimating = false;
+  let countdownInterval: any = null;
 
   const setMode = (mode: string) => {
     const config =
@@ -172,7 +288,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     pupils.forEach((p) => ((p as any).style.transition = config));
   };
 
-  // 🖱️ Seguimiento Independiente
+  // 🖱️ Seguimiento de mirada independiente con el cursor
   window.addEventListener("mousemove", (e) => {
     if (isAnimating) return;
     const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
@@ -191,7 +307,7 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     });
   });
 
-  // 🕵️ Email Sequence
+  // 🕵️ Secuencia al enfocar Email
   emailInput?.addEventListener("focus", () => {
     if (isAnimating) return;
     isAnimating = true;
@@ -232,8 +348,9 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
     }, 5000);
   });
 
-  // 🔒 Password (Privacidad)
+  // 🔒 Campo Contraseña (Modo Privacidad)
   passInput?.addEventListener("focus", () => {
+    if (passInput.type === "text") return; // Si la clave está visible, no se tapan
     isAnimating = true;
     setMode("anim");
     faces.forEach(
@@ -245,88 +362,169 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
   });
 
   passInput?.addEventListener("blur", () => {
+    if (passInput.type === "text") return;
     isAnimating = false;
     faces.forEach((f) => ((f as any).style.transform = "scaleX(1)"));
     setMode("mouse");
   });
-  // 🔐 Form Submission & Supabase Auth
-  loginForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (isAnimating) return;
-    
-    // Disable form
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Verificando...";
-    submitBtn.classList.add("opacity-50");
-    if (errorMsg) {
-      errorMsg.classList.add("hidden");
-      errorMsg.classList.remove("opacity-100");
+
+  // 👁️ Mostrar / Ocultar Contraseña
+  togglePasswordBtn?.addEventListener("click", () => {
+    const isPassword = passInput.type === "password";
+    passInput.type = isPassword ? "text" : "password";
+
+    if (isPassword) {
+      eyeIcon?.classList.add("hidden");
+      eyeOffIcon?.classList.remove("hidden");
+      togglePasswordBtn.setAttribute("aria-label", "Ocultar contraseña");
+      togglePasswordBtn.setAttribute("title", "Ocultar contraseña");
+
+      // Micro-animación: los personajes abren los ojos y observan la clave descubierta
+      setMode("anim");
+      faces.forEach((f) => ((f as any).style.transform = "translate(15px, 0px) scale(1.04)"));
+      pupils.forEach((p) => ((p as any).style.transform = "translate(5px, 0px) scale(1.1)"));
+    } else {
+      eyeIcon?.classList.remove("hidden");
+      eyeOffIcon?.classList.add("hidden");
+      togglePasswordBtn.setAttribute("aria-label", "Mostrar contraseña");
+      togglePasswordBtn.setAttribute("title", "Mostrar contraseña");
+
+      // Regreso a postura discreta
+      setMode("anim");
+      faces.forEach((f) => ((f as any).style.transform = "translate(-20px, -5px) scaleX(0.9)"));
+      pupils.forEach((p) => ((p as any).style.transform = "translate(-5px, -1px)"));
+    }
+  });
+
+  // ⏱️ Manejo de Cuenta Regresiva de Rate Limit (Fuerza Bruta)
+  const startRateLimitCountdown = (seconds: number) => {
+    if (countdownInterval) clearInterval(countdownInterval);
+    let remaining = seconds;
+
+    if (countdownWrapper && countdownTimer) {
+      countdownWrapper.classList.remove("hidden");
+      countdownTimer.innerText = `${remaining}s`;
     }
 
-    const email = emailInput.value;
+    submitBtn.disabled = true;
+    submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+    if (submitText) submitText.innerText = `Espera (${remaining}s)`;
+
+    countdownInterval = setInterval(() => {
+      remaining--;
+      if (countdownTimer) countdownTimer.innerText = `${remaining}s`;
+      if (submitText) submitText.innerText = `Espera (${remaining}s)`;
+
+      if (remaining <= 0) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        if (countdownWrapper) countdownWrapper.classList.add("hidden");
+        if (authErrorBox) authErrorBox.classList.add("hidden");
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        if (submitText) submitText.innerText = "Entrar al Búnker";
+      }
+    }, 1000);
+  };
+
+  // 🔐 Envío del Formulario & Autenticación Server-Side
+  loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (isAnimating || countdownInterval) return;
+
+    // Estado de carga
+    submitBtn.disabled = true;
+    submitSpinner?.classList.remove("hidden");
+    if (submitText) submitText.innerText = "Verificando...";
+    submitBtn.classList.add("opacity-70", "cursor-wait");
+    if (authErrorBox) authErrorBox.classList.add("hidden");
+
+    const email = emailInput.value.trim();
     const password = passInput.value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (error) {
-      // ❌ Error State (Shake head)
-      isAnimating = true;
-      setMode("anim");
-      
-      if (errorMsg) {
-        errorMsg.classList.remove("hidden");
-        errorMsg.innerText = "ACCESO DENEGADO";
-        // Pequeño delay para la opacidad
-        setTimeout(() => errorMsg.classList.add("opacity-100"), 50);
-      }
+      const result = await response.json();
+      submitSpinner?.classList.add("hidden");
 
-      faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(-10deg)"));
-      pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 5px)"));
+      if (!response.ok) {
+        isAnimating = true;
+        setMode("anim");
 
-      setTimeout(() => {
-        faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(10deg)"));
-      }, 300);
+        if (response.status === 429) {
+          // 🛑 Bloqueo por exceso de intentos fallidos (Fuerza Bruta)
+          const waitSeconds = result.retryAfter || 120;
+          if (authErrorTitle) authErrorTitle.innerText = "LÍMITE DE SEGURIDAD ACTIVADO";
+          if (authErrorMsg) authErrorMsg.innerText = result.error || "Demasiados intentos fallidos.";
+          if (authErrorBox) authErrorBox.classList.remove("hidden");
+          startRateLimitCountdown(waitSeconds);
+        } else {
+          // ❌ Error normal de credenciales
+          if (authErrorTitle) authErrorTitle.innerText = "ACCESO DENEGADO";
+          if (authErrorMsg) authErrorMsg.innerText = result.error || "Credenciales no válidas.";
+          if (countdownWrapper) countdownWrapper.classList.add("hidden");
+          if (authErrorBox) authErrorBox.classList.remove("hidden");
 
-      setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("opacity-70", "cursor-wait");
+          if (submitText) submitText.innerText = "Entrar al Búnker";
+        }
+
+        // Animación de cabeza negando (shake head)
         faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(-10deg)"));
-      }, 600);
+        pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 5px)"));
 
-      setTimeout(() => {
-        isAnimating = false;
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Entrar al Búnker";
-        submitBtn.classList.remove("opacity-50");
-        faces.forEach((f) => ((f as any).style.transform = "rotate(0deg) translate(0px, 0px)"));
-        pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 0px)"));
-        setMode("mouse");
-      }, 1200);
+        setTimeout(() => {
+          faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(10deg)"));
+        }, 300);
 
-    } else {
-      // ✅ Success State (Jump/Scale and stare at user)
-      isAnimating = true;
-      setMode("anim");
+        setTimeout(() => {
+          faces.forEach((f) => ((f as any).style.transform = "translate(0px, 15px) rotate(-10deg)"));
+        }, 600);
 
-      // Save tokens in cookies for SSR admin area
-      document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax; secure`;
-      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; secure`;
+        setTimeout(() => {
+          isAnimating = false;
+          faces.forEach((f) => ((f as any).style.transform = "rotate(0deg) translate(0px, 0px)"));
+          pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 0px)"));
+          setMode("mouse");
+        }, 1200);
 
-      submitBtn.innerText = "ACCESO CONCEDIDO";
-      submitBtn.classList.remove("bg-neon-blue/5", "text-neon-blue", "border-neon-blue/20");
-      submitBtn.classList.add("bg-green-500/20", "text-green-400", "border-green-500/50");
+      } else {
+        // ✅ Éxito en autenticación
+        isAnimating = true;
+        setMode("anim");
 
-      faces.forEach((f) => ((f as any).style.transform = "translate(0px, -20px) scale(1.1)"));
-      pupils.forEach((p) => ((p as any).style.transform = "translate(0px, -5px) scale(1.1)"));
+        if (submitText) submitText.innerText = "ACCESO CONCEDIDO";
+        submitBtn.classList.remove("bg-neon-blue/5", "text-neon-blue", "border-neon-blue/20", "opacity-70", "cursor-wait");
+        submitBtn.classList.add("bg-green-500/20", "text-green-400", "border-green-500/50");
 
-      setTimeout(() => {
-        faces.forEach((f) => ((f as any).style.transform = "translate(0px, -10px) scale(1.05)"));
-      }, 500);
+        faces.forEach((f) => ((f as any).style.transform = "translate(0px, -20px) scale(1.1)"));
+        pupils.forEach((p) => ((p as any).style.transform = "translate(0px, -5px) scale(1.1)"));
 
-      setTimeout(() => {
-        window.location.href = "/admin";
-      }, 1500);
+        setTimeout(() => {
+          faces.forEach((f) => ((f as any).style.transform = "translate(0px, -10px) scale(1.05)"));
+        }, 500);
+
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 1100);
+      }
+    } catch (networkErr) {
+      console.error("Error en petición de autenticación:", networkErr);
+      submitSpinner?.classList.add("hidden");
+      if (authErrorTitle) authErrorTitle.innerText = "ERROR DE CONEXIÓN";
+      if (authErrorMsg) authErrorMsg.innerText = "No fue posible conectar con el búnker. Revisa tu conexión de red.";
+      if (countdownWrapper) countdownWrapper.classList.add("hidden");
+      if (authErrorBox) authErrorBox.classList.remove("hidden");
+
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-70", "cursor-wait");
+      if (submitText) submitText.innerText = "Entrar al Búnker";
     }
   });
 </script>

@@ -10,6 +10,18 @@
       <button id="btn-pickup" class="flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 z-10 transition-colors">Recoger</button>
     </div>
 
+    <!-- Customer Name & Phone -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+      <div class="space-y-2">
+        <label class="text-[9px] uppercase text-neon-blue font-black tracking-[0.2em] ml-2">Nombre Completo</label>
+        <input type="text" id="customer-name" placeholder="Tu nombre" class="w-full bg-[#0A0F1E] border border-white/5 rounded-2xl px-5 py-3.5 text-white text-sm focus:outline-none focus:border-neon-blue/50 focus:bg-neon-blue/5 transition-all shadow-inner" required />
+      </div>
+      <div class="space-y-2">
+        <label class="text-[9px] uppercase text-neon-blue font-black tracking-[0.2em] ml-2">Teléfono / WhatsApp</label>
+        <input type="tel" id="customer-phone" placeholder="Ej: 310 123 4567" class="w-full bg-[#0A0F1E] border border-white/5 rounded-2xl px-5 py-3.5 text-white text-sm focus:outline-none focus:border-neon-blue/50 focus:bg-neon-blue/5 transition-all shadow-inner" required />
+      </div>
+    </div>
+
     <!-- Fields -->
     <div id="address-field" class="space-y-3 animate-in fade-in duration-300">
       <label class="text-[9px] uppercase text-neon-blue font-black tracking-[0.2em] ml-2">Dirección de Entrega</label>
@@ -54,20 +66,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
     
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-neon-blue/10 border border-neon-blue/30 rounded-xl text-neon-blue text-[10px] font-mono font-black tracking-[0.2em] mb-6 shadow-[0_0_15px_rgba(56,189,248,0.2)]">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-neon-blue/10 border border-neon-blue/30 rounded-xl text-neon-blue text-[10px] font-mono font-black tracking-[0.2em] mb-4 shadow-[0_0_15px_rgba(56,189,248,0.2)]">
         <span class="w-1.5 h-1.5 rounded-full bg-neon-blue animate-pulse"></span>
         TICKET <span id="ticket-id" class="text-white ml-1">#DP-0000</span>
       </div>
-      <h3 class="text-2xl font-black text-white uppercase italic tracking-tighter mb-3">Paso Final</h3>
+      <h3 class="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">Paso Final</h3>
       <p class="text-slate-300 text-xs font-medium leading-relaxed mb-4 bg-teal-500/10 border border-teal-500/30 p-3 rounded-xl shadow-inner">
         <strong class="text-teal-400 uppercase tracking-widest text-[10px] block mb-1">Instrucción Crítica:</strong>
         Copia tu Ticket <span id="instruction-ticket" class="text-white font-black bg-white/10 px-1 rounded"></span> y agrégalo en la descripción de tu transferencia (Nequi/Daviplata) para validar tu pedido.
       </p>
     </div>
 
-    <div class="bg-black/40 border border-white/5 rounded-3xl p-6 mb-8 space-y-4 font-mono text-xs">
-      <div class="flex justify-between items-center pb-4 border-b border-white/5">
+    <div class="bg-black/40 border border-white/5 rounded-3xl p-5 mb-5 space-y-3 font-mono text-xs">
+      <div class="flex justify-between items-center pb-3 border-b border-white/5">
         <span class="text-slate-500 uppercase font-bold tracking-widest">Total:</span>
         <span id="modal-total" class="text-neon-blue font-black text-lg">$0</span>
       </div>
@@ -75,13 +87,31 @@
         <span class="text-slate-500 uppercase font-bold tracking-widest">Plataforma:</span>
         <span id="modal-method" class="text-white font-bold bg-white/5 px-3 py-1 rounded-lg">Nequi</span>
       </div>
-      <div class="flex justify-between items-center pt-2">
+      <div class="flex justify-between items-center pt-1">
         <span class="text-slate-500 uppercase font-bold tracking-widest">Cuenta:</span>
         <span class="text-white font-black tracking-[0.2em] text-sm">300 000 0000</span>
       </div>
     </div>
 
-    <div class="space-y-4">
+    <!-- 📸 Adjuntar Comprobante (Opcional) -->
+    <div class="mb-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-left">
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-[9px] uppercase font-black text-teal-400 tracking-widest">Comprobante de Pago</label>
+        <span class="text-[8px] text-slate-500 font-mono uppercase">Opcional</span>
+      </div>
+      <input type="file" id="receipt-upload" accept="image/*" class="hidden" />
+      <button type="button" id="btn-trigger-receipt" class="btn-secondary w-full py-2.5 px-3 text-xs flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
+        <span id="receipt-btn-text">Adjuntar Captura de Transferencia</span>
+      </button>
+      <div id="receipt-preview-box" class="hidden mt-2 flex items-center gap-3 p-2 rounded-xl bg-black/40 border border-teal-500/20">
+        <img id="receipt-preview-img" src="" alt="Comprobante" class="w-10 h-10 object-cover rounded-lg" />
+        <span class="text-[10px] text-teal-300 truncate flex-1" id="receipt-filename">comprobante.jpg</span>
+        <button type="button" id="btn-remove-receipt" class="text-xs text-red-400 hover:text-red-300 p-1 font-bold">✕</button>
+      </div>
+    </div>
+
+    <div class="space-y-3">
       <a id="link-pay" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary w-full py-4 text-center block !text-dark-bg font-black tracking-[0.2em] uppercase rounded-2xl shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:scale-[1.02] transition-transform">
         Ir a la App
       </a>
@@ -108,6 +138,8 @@
     const addressField = document.getElementById("address-field");
     const pickupInfo = document.getElementById("pickup-info");
     const addressInput = document.getElementById("delivery-address") as HTMLInputElement;
+    const customerNameInput = document.getElementById("customer-name") as HTMLInputElement;
+    const customerPhoneInput = document.getElementById("customer-phone") as HTMLInputElement;
     const confirmBtn = document.getElementById("btn-confirm-order") as HTMLButtonElement;
     
     const paymentBtns = document.querySelectorAll(".payment-btn");
@@ -115,6 +147,33 @@
     const modal = document.getElementById("payment-modal");
     const modalContent = document.getElementById("payment-modal-content");
     const closeModal = document.getElementById("close-modal");
+
+    // Receipt upload elements
+    let selectedReceiptFile: File | null = null;
+    const receiptInput = document.getElementById("receipt-upload") as HTMLInputElement | null;
+    const btnTriggerReceipt = document.getElementById("btn-trigger-receipt");
+    const receiptPreviewBox = document.getElementById("receipt-preview-box");
+    const receiptPreviewImg = document.getElementById("receipt-preview-img") as HTMLImageElement | null;
+    const receiptFilename = document.getElementById("receipt-filename");
+    const btnRemoveReceipt = document.getElementById("btn-remove-receipt");
+
+    btnTriggerReceipt?.addEventListener("click", () => receiptInput?.click());
+
+    receiptInput?.addEventListener("change", () => {
+      const file = receiptInput.files?.[0];
+      if (file) {
+        selectedReceiptFile = file;
+        if (receiptPreviewImg) receiptPreviewImg.src = URL.createObjectURL(file);
+        if (receiptFilename) receiptFilename.innerText = file.name;
+        receiptPreviewBox?.classList.remove("hidden");
+      }
+    });
+
+    btnRemoveReceipt?.addEventListener("click", () => {
+      selectedReceiptFile = null;
+      if (receiptInput) receiptInput.value = "";
+      receiptPreviewBox?.classList.add("hidden");
+    });
 
     // Toggle Logic
     const setDelivery = (isDelivery: boolean) => {
@@ -142,6 +201,8 @@
     btnDelivery?.addEventListener("click", () => setDelivery(true));
     btnPickup?.addEventListener("click", () => setDelivery(false));
     addressInput?.addEventListener("input", checkValidity);
+    customerNameInput?.addEventListener("input", checkValidity);
+    customerPhoneInput?.addEventListener("input", checkValidity);
 
     // Payment Logic
     paymentBtns.forEach(btn => {
@@ -155,8 +216,11 @@
 
     function checkValidity() {
       if (!confirmBtn) return;
-      const isAddressValid = deliveryMethod === "Recoger en Búnker" || (addressInput?.value.trim().length > 3);
-      if (paymentMethod && isAddressValid) {
+      const isNameValid = (customerNameInput?.value.trim().length || 0) >= 2;
+      const isPhoneValid = (customerPhoneInput?.value.trim().length || 0) >= 7;
+      const isAddressValid = deliveryMethod === "Recoger en Búnker" || ((addressInput?.value.trim().length || 0) > 3);
+
+      if (paymentMethod && isAddressValid && isNameValid && isPhoneValid) {
         confirmBtn.disabled = false;
       } else {
         confirmBtn.disabled = true;
@@ -179,6 +243,14 @@
       lastOrderItems = Object.values(cartItems.get());
       lastOrderTotal = cartTotal.get();
 
+      const deliveryMeta = {
+        method: deliveryMethod,
+        address: deliveryMethod === "Domicilio" ? addressInput?.value.trim() : "Recoger en Búnker: Cl. 71B # 100-38, Álamos Norte",
+        payment_method: paymentMethod,
+        customer_name: customerNameInput?.value.trim(),
+        customer_phone: customerPhoneInput?.value.trim(),
+      };
+
       try {
         const response = await fetch("/api/create-order", {
           method: "POST",
@@ -186,7 +258,10 @@
           body: JSON.stringify({
             ticket_id: currentTicket,
             total_price: lastOrderTotal,
-            items: cartItems.get()
+            items: {
+              ...cartItems.get(),
+              _delivery: deliveryMeta
+            }
           })
         });
 
@@ -224,31 +299,75 @@
       modalContent?.classList.add("scale-95");
     });
 
-    // WhatsApp Integration
+    // WhatsApp Integration + Payment Confirmation
     document.getElementById("btn-whatsapp")?.addEventListener("click", async () => {
       const btnWhatsapp = document.getElementById("btn-whatsapp");
-      if (btnWhatsapp) btnWhatsapp.style.opacity = "0.5";
+      if (btnWhatsapp) {
+        btnWhatsapp.style.opacity = "0.5";
+        btnWhatsapp.setAttribute("disabled", "true");
+      }
 
+      let receiptUrl: string | null = null;
+
+      // 1. Si adjuntó foto de comprobante, procesarla a WebP y subir
+      if (selectedReceiptFile) {
+        try {
+          const formData = new FormData();
+          formData.append("file", selectedReceiptFile);
+          formData.append("name", `comprobante_${currentTicket}`);
+
+          const uploadRes = await fetch("/api/upload-image", {
+            method: "POST",
+            body: formData,
+          });
+
+          const uploadData = await uploadRes.json();
+          if (uploadRes.ok && uploadData.imageUrl) {
+            receiptUrl = uploadData.imageUrl;
+          }
+        } catch (uploadErr) {
+          console.error("Error al subir comprobante:", uploadErr);
+        }
+      }
+
+      // 2. Reportar el pago al servidor del búnker
       try {
-        await fetch("/api/update-order", {
-          method: "PATCH",
+        await fetch("/api/report-payment", {
+          method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ticket_id: currentTicket,
-            status: "verification_pending"
+            receipt_url: receiptUrl,
+            customer_name: customerNameInput?.value.trim(),
+            customer_phone: customerPhoneInput?.value.trim(),
           })
         });
       } catch (err) {
-        console.error("No se pudo actualizar estado de orden", err);
+        console.error("No se pudo reportar el pago al búnker:", err);
       }
       
-      if (btnWhatsapp) btnWhatsapp.style.opacity = "1";
+      if (btnWhatsapp) {
+        btnWhatsapp.style.opacity = "1";
+        btnWhatsapp.removeAttribute("disabled");
+      }
 
       const itemsText = lastOrderItems.map(i => `${i.quantity}x ${i.name}`).join('%0A');
       const total = formatCOP(lastOrderTotal);
-      const address = deliveryMethod === "Domicilio" ? addressInput?.value : "Recoger en Búnker";
+      const address = deliveryMethod === "Domicilio" ? (addressInput?.value || "Sin dirección") : "Recoger en Búnker";
+      const custName = customerNameInput?.value.trim() || "Cliente";
+      const custPhone = customerPhoneInput?.value.trim() || "";
 
-      const message = `🚨 *NUEVO PEDIDO CONFIRMADO - TICKET: ${currentTicket}* - El usuario reporta pago realizado. Total: ${total}. Revisar Central Álamos.%0A%0A*Detalle:*%0A${itemsText}%0A%0A*Método:* ${paymentMethod}%0A*Entrega:* ${address}`;
+      let message = `🚨 *PAGO REPORTADO - TICKET: ${currentTicket}*%0A` +
+        `👤 *Cliente:* ${custName} (${custPhone})%0A` +
+        `💰 *Total:* ${total}%0A` +
+        `💳 *Método:* ${paymentMethod}%0A` +
+        `📍 *Entrega:* ${address}%0A`;
+
+      if (receiptUrl) {
+        message += `📸 *Comprobante:* ${receiptUrl}%0A`;
+      }
+
+      message += `%0A*Detalle del Pedido:*%0A${itemsText}`;
       
       const adminPhone = "573153201363";
       window.open(`https://wa.me/${adminPhone}?text=${message}`, '_blank');

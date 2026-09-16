@@ -1,15 +1,16 @@
 import type { APIRoute } from "astro";
 import { supabaseAdmin } from "../../lib/supabase";
+import { invalidateCatalogCache } from "../../lib/cache";
 
 export const prerender = false;
 
 export const PATCH: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
-    const { ticket_id, status } = data;
+    const { ticket_id, status, delivery_driver, driver_phone, notes } = data;
 
-    if (!ticket_id || !status) {
-      return new Response(JSON.stringify({ error: "Faltan datos para actualizar el pedido." }), {
+    if (!ticket_id) {
+      return new Response(JSON.stringify({ error: "Ticket ID es requerido para actualizar el pedido." }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -34,11 +35,36 @@ export const PATCH: APIRoute = async ({ request }) => {
     }
 
     const previousStatus = currentOrder.status;
+    const targetStatus = status || previousStatus;
 
-    // 2. Update order status
+    // Prepare updated items._delivery
+    const existingItems = (typeof currentOrder.items === "object" && currentOrder.items) || {};
+    const existingDelivery = existingItems._delivery || {};
+
+    const updatedDelivery = {
+      ...existingDelivery,
+      ...(delivery_driver !== undefined ? { delivery_driver } : {}),
+      ...(driver_phone !== undefined ? { driver_phone } : {}),
+      ...(notes !== undefined ? { notes } : {}),
+    };
+
+    const updatedItems = {
+      ...existingItems,
+      _delivery: updatedDelivery,
+    };
+
+    const updatePayload: Record<string, any> = {
+      items: updatedItems,
+    };
+
+    if (status) {
+      updatePayload.status = status;
+    }
+
+    // 2. Update order
     const { data: updatedOrder, error } = await supabaseAdmin
       .from("orders")
-      .update({ status })
+      .update(updatePayload)
       .eq("ticket_id", ticket_id)
       .select()
       .single();
@@ -55,7 +81,7 @@ export const PATCH: APIRoute = async ({ request }) => {
     }
 
     // 3. Stock deduction logic when transitioning to 'verified'
-    if (status === "verified" && previousStatus !== "verified") {
+    if (targetStatus === "verified" && previousStatus !== "verified") {
       try {
         const { data: orderItems } = await supabaseAdmin
           .from("order_items")
@@ -103,6 +129,8 @@ export const PATCH: APIRoute = async ({ request }) => {
           }
           console.log(`✅ Stock descontado para orden ${ticket_id} desde fallback items JSON.`);
         }
+
+        invalidateCatalogCache();
       } catch (stockErr) {
         console.error("⚠️ Error descontando stock de productos:", stockErr);
       }

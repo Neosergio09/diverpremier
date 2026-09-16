@@ -7,13 +7,10 @@ import { getCachedCategoriesWithProducts } from "@lib/cache";
 import {
     Phone,
     Truck,
-    Wine,
-    Beer,
-    UtensilsCrossed,
     ChevronRight,
     ShieldCheck,
     Clock,
-} from "lucide-astro";
+} from "@lucide/astro";
 
 interface RotatingProduct {
     id?: string;
@@ -552,6 +549,7 @@ const featuredProducts = [
 
     {/* Datos para el carrusel dinámico multi-categoría en el arsenal */}
     <script
+        is:inline
         type="application/json"
         id="arsenal-categories-json"
         set:html={JSON.stringify(categoryProductsMap)}

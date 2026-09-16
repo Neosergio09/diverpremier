@@ -111,7 +111,7 @@ const pageTitle = "Gestión de Inventario";
           Fotos Masivas (.WebP)
         </button>
 
-        <button class="btn-primary text-xs md:text-sm py-2 px-4 md:py-3 md:px-6">Añadir Producto</button>
+        <button id="btn-add-product" class="btn-primary text-xs md:text-sm py-2 px-4 md:py-3 md:px-6">Añadir Producto</button>
       </div>
     </header>
 
@@ -321,6 +321,87 @@ const pageTitle = "Gestión de Inventario";
         <div class="flex gap-4 pt-4">
           <button type="button" id="cancel-edit" class="btn-secondary flex-1">Cancelar</button>
           <button type="submit" class="btn-primary flex-1">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ➕ MODAL DE CREAR PRODUCTO (BUNKER STYLE) -->
+  <div id="add-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+    <div class="glass-neon w-full h-full md:h-auto md:max-w-lg rounded-none md:rounded-[2.5rem] p-6 md:p-10 border-white/10 relative transform scale-95 transition-all duration-300 overflow-y-auto" id="add-modal-content">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h3 class="text-2xl font-black text-white tracking-tight">Añadir Nuevo Producto</h3>
+          <p class="text-xs text-teal-400 font-mono mt-1 uppercase tracking-widest">Alta en Catálogo del Búnker</p>
+        </div>
+        <button id="close-add-modal" class="p-2 rounded-xl hover:bg-white/5 text-neutral-500 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="add-form" class="space-y-6">
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Nombre del Producto</label>
+          <input type="text" id="add-name" name="name" placeholder="Ej: Ginebra Bulldog 750ml" class="input-bunker" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Precio (COP)</label>
+            <input type="text" id="add-price" name="price" class="input-bunker font-mono" placeholder="$ 0" required />
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Stock Inicial</label>
+            <input type="number" id="add-stock" name="stock_quantity" class="input-bunker font-mono" placeholder="0" min="0" required />
+          </div>
+        </div>
+
+        <!-- 📸 GESTIÓN DE IMAGEN (.WEBP AUTOMÁTICO) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Fotografía del Producto</label>
+            <span class="text-[9px] font-mono text-teal-400 uppercase tracking-wider bg-teal-500/10 px-2 py-0.5 rounded-md border border-teal-500/20">Pipeline .WEBP Activo</span>
+          </div>
+
+          <input type="hidden" id="add-image-url" name="image_url" />
+
+          <div class="flex items-center gap-4 p-3 rounded-2xl bg-white/[0.03] border border-white/10">
+            <div class="relative w-16 h-16 rounded-xl bg-black/40 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
+              <img id="add-image-preview" src="/images/products/cerveza.png" alt="Preview" class="w-full h-full object-contain p-1" />
+              <div id="add-image-spinner" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center">
+                <svg class="animate-spin h-5 w-5 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+              </div>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <input type="file" id="add-image-file" accept="image/*" class="hidden" />
+              <button type="button" id="btn-trigger-add-image" class="btn-secondary text-xs py-2 px-3 w-full flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
+                <span>Cargar Foto</span>
+              </button>
+              <p class="text-[9px] text-neutral-500 font-mono mt-1 truncate">Se convertirá automáticamente a .webp</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Categoría de Búnker</label>
+          <select id="add-category" name="category_id" class="input-bunker appearance-none cursor-pointer" required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+            {categories?.map(cat => (
+              <option value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Descripción / Presentación (Opcional)</label>
+          <input type="text" id="add-description" name="description" placeholder="Ej: Botella de vidrio 750ml" class="input-bunker" />
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button type="button" id="cancel-add" class="btn-secondary flex-1">Cancelar</button>
+          <button type="submit" id="submit-add-btn" class="btn-primary flex-1">Crear Producto</button>
         </div>
       </form>
     </div>
@@ -713,6 +794,125 @@ const pageTitle = "Gestión de Inventario";
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.innerText = "Guardar Cambios";
+      }
+    }
+  });
+
+  // --- LÓGICA DEL MODAL DE CREACIÓN (AÑADIR PRODUCTO) ---
+  const addModal = document.getElementById("add-modal");
+  const addModalContent = document.getElementById("add-modal-content");
+  const addForm = document.getElementById("add-form") as HTMLFormElement | null;
+  const btnAddProduct = document.getElementById("btn-add-product");
+  const closeAddBtn = document.getElementById("close-add-modal");
+  const cancelAddBtn = document.getElementById("cancel-add");
+
+  const openAddModal = () => {
+    addForm?.reset();
+    const preview = document.getElementById("add-image-preview") as HTMLImageElement | null;
+    const urlInput = document.getElementById("add-image-url") as HTMLInputElement | null;
+    if (preview) preview.src = "/images/products/cerveza.png";
+    if (urlInput) urlInput.value = "";
+    addModal?.classList.remove("opacity-0", "pointer-events-none");
+    addModalContent?.classList.remove("scale-95");
+  };
+
+  const closeAddModal = () => {
+    addModal?.classList.add("opacity-0", "pointer-events-none");
+    addModalContent?.classList.add("scale-95");
+  };
+
+  btnAddProduct?.addEventListener("click", openAddModal);
+  closeAddBtn?.addEventListener("click", closeAddModal);
+  cancelAddBtn?.addEventListener("click", closeAddModal);
+  addModal?.addEventListener("click", (e) => {
+    if (e.target === addModal) closeAddModal();
+  });
+
+  const addPriceInput = document.getElementById("add-price") as HTMLInputElement | null;
+  addPriceInput?.addEventListener("input", (e) => {
+    const target = e.target as HTMLInputElement;
+    target.value = formatCOP(target.value);
+  });
+
+  // 📸 Subida de imagen en Modal Añadir
+  const addImageFileInput = document.getElementById("add-image-file") as HTMLInputElement | null;
+  const btnTriggerAddImage = document.getElementById("btn-trigger-add-image");
+  const addImagePreview = document.getElementById("add-image-preview") as HTMLImageElement | null;
+  const addImageUrl = document.getElementById("add-image-url") as HTMLInputElement | null;
+  const addImageSpinner = document.getElementById("add-image-spinner");
+
+  btnTriggerAddImage?.addEventListener("click", () => addImageFileInput?.click());
+
+  addImageFileInput?.addEventListener("change", async () => {
+    const file = addImageFileInput.files?.[0];
+    if (!file) return;
+
+    if (addImagePreview) addImagePreview.src = URL.createObjectURL(file);
+    addImageSpinner?.classList.remove("hidden");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const prodName = (document.getElementById("add-name") as HTMLInputElement)?.value || "nuevo_producto";
+      formData.append("name", prodName);
+
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.imageUrl) {
+        if (addImageUrl) addImageUrl.value = data.imageUrl;
+        if (addImagePreview) addImagePreview.src = data.imageUrl;
+      } else {
+        alert("Error al procesar la imagen: " + (data.error || ""));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión al procesar la imagen.");
+    } finally {
+      addImageSpinner?.classList.add("hidden");
+    }
+  });
+
+  // Submit de Crear Producto
+  addForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(addForm);
+    const newProduct: Record<string, any> = Object.fromEntries(formData.entries());
+
+    newProduct.price = extractNumber(newProduct.price as string);
+    newProduct.stock_quantity = extractNumber(newProduct.stock_quantity as string);
+
+    const submitBtn = document.getElementById("submit-add-btn") as HTMLButtonElement | null;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Registrando en búnker...";
+    }
+
+    try {
+      const response = await fetch("/api/create-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProduct),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        closeAddModal();
+        showToast();
+        setTimeout(() => window.location.reload(), 800);
+      } else {
+        alert("Error al crear el producto: " + (result.error || ""));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión al registrar producto.");
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Crear Producto";
       }
     }
   });
