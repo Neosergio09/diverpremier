@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import AdminLayout from "@layouts/AdminLayout.astro";
-import { supabaseAdmin, supabase } from "@lib/supabase";
+import { supabaseAdmin, supabase, getSupabaseServiceKey } from "@lib/supabase";
 
 // 1. Traemos productos y categorías en paralelo para máxima velocidad
 let [
@@ -49,7 +49,11 @@ if (error) {
   if (!fallbackError && fallbackProducts) {
     productsRaw = fallbackProducts;
     categories = fallbackCategories || categories;
-    configWarning = `Atención: Error de conexión con la clave de servicio (${error.message || "Invalid API key"}). El catálogo se cargó en modo lectura. Para editar stock, revisa SUPABASE_SERVICE_ROLE_KEY en Vercel.`;
+    const currentKey = getSupabaseServiceKey();
+    const keyInfo = !currentKey
+      ? "la variable está vacía en Vercel"
+      : `se detectó un valor de ${currentKey.length} caracteres (la clave correcta debe tener 40 caracteres y comenzar con sb_secret_)`;
+    configWarning = `Atención: Error con SUPABASE_SERVICE_ROLE_KEY (${error.message || "Invalid API key"}: ${keyInfo}). El catálogo se cargó en modo lectura. Revisa la variable en Vercel.`;
     error = null;
   }
 }
