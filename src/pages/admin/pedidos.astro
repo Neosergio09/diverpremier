@@ -61,6 +61,13 @@ const stats = [
         </p>
       </div>
       <div class="flex items-center gap-3">
+        <div id="realtime-badge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-[11px] font-mono font-semibold text-teal-400">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+          </span>
+          <span id="realtime-text">Realtime Activo</span>
+        </div>
         <button id="btn-refresh" class="btn-secondary text-xs py-2 px-4 md:py-3 md:px-6 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
           Actualizar
@@ -70,12 +77,22 @@ const stats = [
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {stats.map(stat => (
-        <div class={`rounded-3xl p-5 md:p-6 border ${stat.border} ${stat.bg} backdrop-blur-sm`}>
-          <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">{stat.name}</p>
-          <h2 class={`text-3xl font-black ${stat.color} tracking-tight`}>{stat.value}</h2>
-        </div>
-      ))}
+      <div class="rounded-3xl p-5 md:p-6 border border-white/10 bg-white/5 backdrop-blur-sm">
+        <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Total Pedidos</p>
+        <h2 id="kpi-total" class="text-3xl font-black text-neutral-300 tracking-tight">{total}</h2>
+      </div>
+      <div class="rounded-3xl p-5 md:p-6 border border-amber-500/20 bg-amber-500/10 backdrop-blur-sm">
+        <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Pago Pendiente</p>
+        <h2 id="kpi-pending-payment" class="text-3xl font-black text-amber-400 tracking-tight">{pendingPayment}</h2>
+      </div>
+      <div class="rounded-3xl p-5 md:p-6 border border-orange-500/20 bg-orange-500/10 backdrop-blur-sm">
+        <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Verificando Pago</p>
+        <h2 id="kpi-verification-pending" class="text-3xl font-black text-orange-400 tracking-tight">{verificationPending}</h2>
+      </div>
+      <div class="rounded-3xl p-5 md:p-6 border border-teal-500/20 bg-teal-500/10 backdrop-blur-sm">
+        <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Verificados</p>
+        <h2 id="kpi-verified" class="text-3xl font-black text-teal-400 tracking-tight">{verified}</h2>
+      </div>
     </div>
 
     <!-- Filter Chips -->
@@ -111,6 +128,8 @@ const stats = [
             {orders.map(order => (
               <tr
                 class="order-row group hover:bg-white/[0.02] transition-colors"
+                data-order-id={order.id}
+                data-ticket-id={order.ticket_id ?? ''}
                 data-status={order.status}
                 data-order={JSON.stringify({
                   id:         order.id,
@@ -401,6 +420,7 @@ const stats = [
 
 <script>
   import { formatCOP } from "@lib/formatters";
+  import { subscribeToOrders } from "@lib/realtime";
 
   // ── Helpers ──────────────────────────────────────────────────
   const STATUS_LABEL: Record<string, string> = {
@@ -420,6 +440,13 @@ const stats = [
   };
   const STATUS_BTN_INACTIVE = 'bg-white/5 border-white/10 text-neutral-500 hover:border-white/20 hover:text-neutral-300';
 
+  const getItemCount = (items: any): number => {
+    if (!items || typeof items !== 'object') return 0;
+    return Object.values(items).reduce((acc: number, item: any) => {
+      return acc + (item && item.name && typeof item.quantity === 'number' ? item.quantity : 0);
+    }, 0);
+  };
+
   // ── State ─────────────────────────────────────────────────────
   let activeOrder: any = null;
 
@@ -428,26 +455,54 @@ const stats = [
   const modalContent = document.getElementById('modal-content')!;
   const toast        = document.getElementById('toast')!;
   let toastTimer: ReturnType<typeof setTimeout>;
+  const emptyEl      = document.getElementById('empty-state')!;
+
+  // ── KPI Recalculation ─────────────────────────────────────────
+  const recalcKPIs = () => {
+    const currentRows = document.querySelectorAll<HTMLTableRowElement>('.order-row');
+    let total = currentRows.length;
+    let pendingPayment = 0;
+    let verificationPending = 0;
+    let verified = 0;
+
+    currentRows.forEach(row => {
+      const st = row.dataset.status;
+      if (st === 'pending_payment') pendingPayment++;
+      else if (st === 'verification_pending') verificationPending++;
+      else if (st === 'verified') verified++;
+    });
+
+    const elTotal = document.getElementById('kpi-total');
+    const elPending = document.getElementById('kpi-pending-payment');
+    const elVerif = document.getElementById('kpi-verification-pending');
+    const elVerified = document.getElementById('kpi-verified');
+
+    if (elTotal) elTotal.innerText = total.toString();
+    if (elPending) elPending.innerText = pendingPayment.toString();
+    if (elVerif) elVerif.innerText = verificationPending.toString();
+    if (elVerified) elVerified.innerText = verified.toString();
+  };
 
   // ── Filter chips ─────────────────────────────────────────────
-  const chips     = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
-  const rows      = document.querySelectorAll<HTMLTableRowElement>('.order-row');
-  const emptyEl   = document.getElementById('empty-state')!;
+  const chips = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
+
+  const applyFilter = (filter: string) => {
+    const currentRows = document.querySelectorAll<HTMLTableRowElement>('.order-row');
+    let visible = 0;
+    currentRows.forEach(row => {
+      const show = filter === 'all' || row.dataset.status === filter;
+      row.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    emptyEl.classList.toggle('hidden', visible > 0);
+  };
 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       const filter = chip.dataset.filter!;
       chips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-
-      let visible = 0;
-      rows.forEach(row => {
-        const show = filter === 'all' || row.dataset.status === filter;
-        row.classList.toggle('hidden', !show);
-        if (show) visible++;
-      });
-
-      emptyEl.classList.toggle('hidden', visible > 0);
+      applyFilter(filter);
     });
   });
 
@@ -602,7 +657,7 @@ const stats = [
         activeOrder.items._delivery.notes = notes;
 
         // Actualizar data-order de la fila
-        rows.forEach(row => {
+        document.querySelectorAll<HTMLTableRowElement>('.order-row').forEach(row => {
           const orderData = JSON.parse(row.dataset.order ?? '{}');
           if (orderData.ticket_id === activeOrder.ticket_id) {
             row.dataset.order = JSON.stringify(activeOrder);
@@ -703,7 +758,7 @@ const stats = [
           renderStatusButtons(newStatus);
 
           // Actualizar badge en la tabla — buscar por ticket
-          rows.forEach(row => {
+          document.querySelectorAll<HTMLTableRowElement>('.order-row').forEach(row => {
             const orderData = JSON.parse(row.dataset.order ?? '{}');
             if (orderData.ticket_id === activeOrder.ticket_id) {
               row.dataset.status = newStatus;
@@ -721,6 +776,7 @@ const stats = [
             }
           });
 
+          recalcKPIs();
           showToast('Estado Actualizado', STATUS_LABEL[newStatus]);
         } else {
           showToast('Error al actualizar', 'Revisa la consola', true);
@@ -734,16 +790,223 @@ const stats = [
     });
   });
 
-  // ── Event listeners de apertura ───────────────────────────────
-  document.querySelectorAll<HTMLButtonElement>('.open-detail-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = btn.closest<HTMLTableRowElement>('.order-row');
-      if (!row) return;
+  // ── Helpers de Filas y Realtime ──────────────────────────────
+  const bindRowEvents = (row: HTMLTableRowElement) => {
+    row.querySelector<HTMLButtonElement>('.open-detail-btn')?.addEventListener('click', () => {
       const order = JSON.parse(row.dataset.order ?? '{}');
       openModal(order);
     });
+  };
+
+  document.querySelectorAll<HTMLTableRowElement>('.order-row').forEach(bindRowEvents);
+
+  const updateExistingRow = (row: HTMLTableRowElement, order: any) => {
+    row.dataset.status = order.status;
+    const currentData = JSON.parse(row.dataset.order ?? '{}');
+    const merged = { ...currentData, ...order };
+    row.dataset.order = JSON.stringify(merged);
+    if (order.ticket_id) row.dataset.ticketId = order.ticket_id;
+
+    const badge = row.querySelector<HTMLElement>('.status-badge');
+    if (badge) {
+      badge.textContent = STATUS_LABEL[order.status] ?? order.status;
+      badge.className = `status-badge ${
+        order.status === 'verified'
+          ? 'status-green'
+          : order.status === 'verification_pending'
+          ? 'status-orange'
+          : 'status-yellow'
+      }`;
+    }
+
+    if (order.total_price !== undefined) {
+      const totalTd = row.querySelectorAll('td')[3];
+      if (totalTd) totalTd.textContent = formatCOP(order.total_price);
+    }
+
+    const activeChip = document.querySelector<HTMLButtonElement>('.filter-chip.active');
+    const activeFilter = activeChip?.dataset.filter || 'all';
+    if (activeFilter !== 'all') {
+      row.classList.toggle('hidden', order.status !== activeFilter);
+    }
+
+    row.classList.add('bg-teal-500/10');
+    setTimeout(() => row.classList.remove('bg-teal-500/10'), 2500);
+  };
+
+  const createOrderRowElement = (order: any) => {
+    const tr = document.createElement('tr');
+    tr.className = 'order-row group hover:bg-white/[0.02] transition-colors';
+    tr.dataset.orderId = order.id;
+    tr.dataset.ticketId = order.ticket_id ?? '';
+    tr.dataset.status = order.status;
+    tr.dataset.order = JSON.stringify({
+      id: order.id,
+      ticket_id: order.ticket_id ?? '—',
+      total_price: order.total_price ?? 0,
+      items: order.items ?? {},
+      status: order.status,
+      created_at: order.created_at || new Date().toISOString(),
+    });
+
+    const isPickup = order.items?._delivery?.method === 'Recoger en Búnker';
+    const deliveryMethod = order.items?._delivery?.method || 'Entrega';
+    const customerName = order.items?._delivery?.customer_name || 'Cliente Búnker';
+    const customerPhone = order.items?._delivery?.customer_phone || (order.items?._delivery?.address ? 'Con dirección' : 'Mostrador');
+    const itemsCount = getItemCount(order.items);
+    const totalPrice = formatCOP(order.total_price ?? 0);
+    const dateFormatted = new Date(order.created_at || Date.now()).toLocaleDateString('es-CO', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const statusText = STATUS_LABEL[order.status] ?? order.status;
+    const badgeClass = order.status === 'verified' ? 'status-green' : order.status === 'verification_pending' ? 'status-orange' : 'status-yellow';
+
+    tr.innerHTML = `
+      <td class="py-5 pl-6">
+        <div class="flex flex-col items-start gap-1">
+          <span class="font-mono text-xs font-bold text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2.5 py-1 rounded-lg">
+            #${order.ticket_id ?? (order.id ? order.id.split('-')[0] : '—')}
+          </span>
+          <span class="text-[9px] font-mono px-2 py-0.5 rounded-md border uppercase ${
+            isPickup
+              ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+              : 'bg-teal-500/10 text-teal-400 border-teal-500/20'
+          }">
+            ${deliveryMethod}
+          </span>
+        </div>
+      </td>
+
+      <td class="py-5 text-sm hidden sm:table-cell">
+        <div class="flex flex-col">
+          <span class="font-bold text-white text-xs">
+            ${customerName}
+          </span>
+          <span class="text-[10px] text-neutral-400 font-mono">
+            ${customerPhone}
+          </span>
+        </div>
+      </td>
+
+      <td class="py-5 text-sm text-neutral-300 font-medium hidden md:table-cell">
+        ${itemsCount} unid.
+      </td>
+
+      <td class="py-5 text-sm font-bold text-white">
+        ${totalPrice}
+      </td>
+
+      <td class="py-5 text-sm text-neutral-400 hidden lg:table-cell">
+        ${dateFormatted}
+      </td>
+
+      <td class="py-5">
+        <span class="status-badge ${badgeClass}">
+          ${statusText}
+        </span>
+      </td>
+
+      <td class="py-5 pr-6 text-right">
+        <button class="open-detail-btn text-[10px] font-bold text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-teal-500 hover:text-neutral-950 hover:border-teal-500 transition-all">Ver Detalle</button>
+      </td>
+    `;
+
+    return tr;
+  };
+
+  // ── Conexión Supabase Realtime ────────────────────────────────
+  subscribeToOrders({
+    onStatusChange: (status) => {
+      const badge = document.getElementById('realtime-badge');
+      const text = document.getElementById('realtime-text');
+      if (!badge || !text) return;
+      if (status === 'SUBSCRIBED') {
+        badge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-[11px] font-mono font-semibold text-teal-400';
+        text.innerText = 'Realtime Activo';
+      } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+        badge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[11px] font-mono font-semibold text-amber-400';
+        text.innerText = 'Reconectando...';
+      }
+    },
+    onInsert: (newOrder) => {
+      const tbody = document.getElementById('orders-tbody');
+      if (!tbody) return;
+
+      const existing = tbody.querySelector<HTMLTableRowElement>(
+        `tr[data-order-id="${newOrder.id}"], tr[data-ticket-id="${newOrder.ticket_id}"]`
+      );
+      if (existing) {
+        updateExistingRow(existing, newOrder);
+        return;
+      }
+
+      const emptyRow = tbody.querySelector('td[colspan="6"]')?.parentElement;
+      if (emptyRow) emptyRow.remove();
+
+      const row = createOrderRowElement(newOrder);
+      tbody.prepend(row);
+      bindRowEvents(row);
+
+      const activeChip = document.querySelector<HTMLButtonElement>('.filter-chip.active');
+      const activeFilter = activeChip?.dataset.filter || 'all';
+      if (activeFilter !== 'all' && newOrder.status !== activeFilter) {
+        row.classList.add('hidden');
+      }
+
+      recalcKPIs();
+      showToast(
+        '🚨 ¡Nuevo Pedido!',
+        `#${newOrder.ticket_id ?? newOrder.id?.slice(0, 8)} • ${formatCOP(newOrder.total_price ?? 0)}`
+      );
+
+      row.classList.add('bg-teal-500/20');
+      setTimeout(() => row.classList.remove('bg-teal-500/20'), 4000);
+    },
+    onUpdate: (updatedOrder) => {
+      const tbody = document.getElementById('orders-tbody');
+      if (!tbody) return;
+
+      const row = tbody.querySelector<HTMLTableRowElement>(
+        `tr[data-order-id="${updatedOrder.id}"], tr[data-ticket-id="${updatedOrder.ticket_id}"]`
+      );
+
+      if (row) {
+        updateExistingRow(row, updatedOrder);
+        recalcKPIs();
+
+        if (activeOrder && (activeOrder.id === updatedOrder.id || activeOrder.ticket_id === updatedOrder.ticket_id)) {
+          activeOrder = {
+            ...activeOrder,
+            ...updatedOrder,
+            items: updatedOrder.items || activeOrder.items,
+          };
+          const statusLabelEl = document.getElementById('modal-status-label');
+          if (statusLabelEl) {
+            statusLabelEl.innerText = STATUS_LABEL[updatedOrder.status] ?? updatedOrder.status;
+            statusLabelEl.className = 'text-sm font-bold ' + (STATUS_COLOR[updatedOrder.status] ?? 'text-neutral-300');
+          }
+          renderStatusButtons(updatedOrder.status);
+        }
+
+        showToast(
+          '🔄 Pedido Sincronizado',
+          `#${updatedOrder.ticket_id ?? updatedOrder.id?.slice(0, 8)}: ${STATUS_LABEL[updatedOrder.status] ?? updatedOrder.status}`
+        );
+      }
+    },
+    onDelete: (deletedId) => {
+      const tbody = document.getElementById('orders-tbody');
+      const row = tbody?.querySelector<HTMLTableRowElement>(`tr[data-order-id="${deletedId}"]`);
+      if (row) {
+        row.remove();
+        recalcKPIs();
+        showToast('Pedido Eliminado', `ID: ${deletedId?.slice(0, 8)}`);
+      }
+    }
   });
 
+  // ── Modal Listeners ──────────────────────────────────────────
   document.getElementById('close-modal')?.addEventListener('click', closeModal);
   document.getElementById('close-modal-bottom')?.addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });

@@ -102,7 +102,15 @@ const pageTitle = "Gestión de Inventario";
         </p>
       </div>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <div id="realtime-badge" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs font-mono font-semibold text-teal-400">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+          </span>
+          <span id="realtime-text">Realtime Activo</span>
+        </div>
+
         <input type="file" id="csv-upload" accept=".csv" class="hidden" />
         <button id="btn-bulk-upload" class="btn-secondary text-xs md:text-sm py-2 px-4 md:py-3 md:px-6">
           <svg
@@ -229,7 +237,7 @@ const pageTitle = "Gestión de Inventario";
                   </thead>
                   <tbody class="divide-y divide-white/5">
                     {products.map((item) => (
-                      <tr class="group hover:bg-white/[0.02] transition-colors">
+                      <tr class="group hover:bg-white/[0.02] transition-colors" data-product-id={item.uuid}>
                         <td class="py-5 pl-6">
                           <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-neutral-900/80 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
@@ -465,8 +473,8 @@ const pageTitle = "Gestión de Inventario";
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
       <div>
-        <p class="text-sm font-bold text-white">Inventario Actualizado</p>
-        <p class="text-[10px] text-teal-500/70 font-mono uppercase tracking-wider">Sync Completa con el Búnker</p>
+        <p class="text-sm font-bold text-white" id="toast-title">Inventario Actualizado</p>
+        <p class="text-[10px] text-teal-500/70 font-mono uppercase tracking-wider" id="toast-sub">Sync Completa con el Búnker</p>
       </div>
     </div>
   </div>
@@ -476,6 +484,7 @@ const pageTitle = "Gestión de Inventario";
 
 <script>
   import { formatCOP, extractNumber } from "@lib/formatters";
+  import { subscribeToProducts } from "@lib/realtime";
 
   // --- LÓGICA DE FILTRADO (NITRO STYLE) ---
   const chips = document.querySelectorAll(".filter-chip");
@@ -724,10 +733,95 @@ const pageTitle = "Gestión de Inventario";
     modalContent?.classList.add("scale-95");
   };
 
-  const showToast = () => {
+  const showToast = (title = "Inventario Actualizado", sub = "Sync Completa con el Búnker") => {
     if (!toast) return;
+    const titleEl = document.getElementById("toast-title");
+    const subEl = document.getElementById("toast-sub");
+    if (titleEl) titleEl.innerText = title;
+    if (subEl) subEl.innerText = sub;
     toast.classList.remove("translate-x-[150%]");
     setTimeout(() => toast?.classList.add("translate-x-[150%]"), 3000);
+  };
+
+  const updateProductRow = (
+    productId: string,
+    updates: {
+      name?: string;
+      price?: number;
+      stock_quantity?: number;
+      image_url?: string;
+      category_id?: string;
+      category_name?: string;
+    }
+  ) => {
+    const rows = document.querySelectorAll("tr.group");
+    const targetId = typeof productId === "string" ? productId.split("-")[0] : "";
+
+    rows.forEach(row => {
+      const rowId = row.getAttribute("data-product-id") || "";
+      const idSpan = row.querySelector(".font-mono") as HTMLElement | null;
+      const matches = (rowId && rowId === productId) || (idSpan && targetId && idSpan.innerText.includes(targetId));
+
+      if (matches) {
+        // Actualizar Nombre
+        if (updates.name !== undefined) {
+          const nameSpan = row.querySelector(".text-sm.font-bold") as HTMLElement | null;
+          if (nameSpan) nameSpan.innerText = String(updates.name);
+        }
+
+        // Actualizar Imagen Thumbnail
+        if (updates.image_url) {
+          const imgEl = row.querySelector("td img") as HTMLImageElement | null;
+          if (imgEl) imgEl.src = updates.image_url;
+        }
+
+        // Actualizar Precio
+        if (updates.price !== undefined) {
+          const priceTd = row.querySelectorAll("td")[2] as HTMLElement | undefined;
+          if (priceTd) priceTd.innerText = `$${Number(updates.price).toLocaleString("es-CO")}`;
+        }
+
+        // Actualizar Stock
+        if (updates.stock_quantity !== undefined) {
+          const stockTd = row.querySelectorAll("td")[3] as HTMLElement | undefined;
+          if (stockTd) stockTd.innerText = String(updates.stock_quantity);
+
+          // Actualizar Estado (Badge)
+          const badge = row.querySelector(".status-badge") as HTMLElement | null;
+          if (badge) {
+            const stock = Number(updates.stock_quantity);
+            badge.className = "status-badge " + (stock > 10 ? "status-green" : stock > 0 ? "status-yellow" : "status-red");
+            badge.innerText = stock > 10 ? "Disponible" : stock > 0 ? "Stock Bajo" : "Agotado";
+          }
+        }
+
+        // Actualizar Categoría
+        if (updates.category_name) {
+          const categoryTd = row.querySelectorAll("td")[1] as HTMLElement | undefined;
+          if (categoryTd) categoryTd.innerText = updates.category_name;
+        }
+
+        // Actualizar data-product del botón para futuras ediciones
+        const editBtn = row.querySelector(".edit-product-btn");
+        if (editBtn) {
+          const rawData = editBtn.getAttribute("data-product");
+          const currentData = rawData ? JSON.parse(rawData) : {};
+          editBtn.setAttribute("data-product", JSON.stringify({
+            ...currentData,
+            name: updates.name ?? currentData.name,
+            price: updates.price ?? currentData.price,
+            stock: updates.stock_quantity ?? currentData.stock,
+            category_id: updates.category_id ?? currentData.category_id,
+            category_name: updates.category_name ?? currentData.category_name,
+            image_url: updates.image_url ?? currentData.image_url
+          }));
+        }
+
+        // Pulso visual en la fila
+        row.classList.add("bg-teal-500/10");
+        setTimeout(() => row.classList.remove("bg-teal-500/10"), 2500);
+      }
+    });
   };
 
   // Event Listeners para botones de edición
@@ -775,66 +869,20 @@ const pageTitle = "Gestión de Inventario";
 
       if (response.ok) {
         // 🚀 ACTUALIZACIÓN OPTIMISTA DEL DOM
-        const rows = document.querySelectorAll("tr.group");
-        rows.forEach(row => {
-          const idSpan = row.querySelector(".font-mono") as HTMLElement | null;
-          const targetId = typeof updates.id === "string" ? updates.id.split("-")[0] : "";
-          if (idSpan && targetId && idSpan.innerText.includes(targetId)) {
-            // Actualizar Nombre
-            const nameSpan = row.querySelector(".text-sm.font-bold") as HTMLElement | null;
-            if (nameSpan) nameSpan.innerText = String(updates.name ?? "");
+        const categorySelect = document.getElementById("edit-category") as HTMLSelectElement | null;
+        const categoryText = categorySelect && categorySelect.selectedIndex >= 0 ? categorySelect.options[categorySelect.selectedIndex]?.text || "" : "";
 
-            // Actualizar Imagen Thumbnail
-            if (updates.image_url) {
-              const imgEl = row.querySelector("td img") as HTMLImageElement | null;
-              if (imgEl) imgEl.src = updates.image_url;
-            }
-
-            // Actualizar Precio
-            const priceTd = row.querySelectorAll("td")[2] as HTMLElement | undefined;
-            if (priceTd) priceTd.innerText = `$${Number(updates.price).toLocaleString("es-CO")}`;
-
-            // Actualizar Stock
-            const stockTd = row.querySelectorAll("td")[3] as HTMLElement | undefined;
-            if (stockTd) stockTd.innerText = String(updates.stock_quantity ?? "");
-
-            // Actualizar Categoría
-            const categoryTd = row.querySelectorAll("td")[1] as HTMLElement | undefined;
-            const categorySelect = document.getElementById("edit-category") as HTMLSelectElement | null;
-            const categoryText = categorySelect && categorySelect.selectedIndex >= 0 ? categorySelect.options[categorySelect.selectedIndex]?.text || "" : "";
-            
-            if (categoryTd) {
-              categoryTd.innerText = categoryText;
-            }
-
-            // Actualizar Estado (Badge)
-            const badge = row.querySelector(".status-badge") as HTMLElement | null;
-            if (badge) {
-              const stock = Number(updates.stock_quantity);
-              badge.className = "status-badge " + (stock > 10 ? "status-green" : stock > 0 ? "status-yellow" : "status-red");
-              badge.innerText = stock > 10 ? "IN STOCK" : stock > 0 ? "LOW STOCK" : "OUT OF STOCK";
-            }
-
-            // Actualizar data-product del botón para futuras ediciones
-            const editBtn = row.querySelector(".edit-product-btn");
-            if (editBtn) {
-              const rawData = editBtn.getAttribute("data-product");
-              const currentData = rawData ? JSON.parse(rawData) : {};
-              editBtn.setAttribute("data-product", JSON.stringify({
-                ...currentData,
-                name: updates.name,
-                price: updates.price,
-                stock: updates.stock_quantity,
-                category_id: updates.category_id,
-                category_name: categoryText,
-                image_url: updates.image_url || currentData.image_url
-              }));
-            }
-          }
+        updateProductRow(String(updates.id), {
+          name: updates.name,
+          price: updates.price,
+          stock_quantity: updates.stock_quantity,
+          image_url: updates.image_url,
+          category_id: updates.category_id,
+          category_name: categoryText,
         });
 
         closeModal();
-        showToast();
+        showToast("Inventario Actualizado", `${updates.name}: ${updates.stock_quantity} unidades`);
       } else {
         const errJson = await response.json().catch(() => ({}));
         alert(`❌ Error al actualizar producto:\n\n${errJson.details || errJson.error || "Error desconocido en el servidor."}`);
@@ -966,6 +1014,57 @@ const pageTitle = "Gestión de Inventario";
         submitBtn.disabled = false;
         submitBtn.innerText = "Crear Producto";
       }
+    }
+  });
+
+  // --- CONEXIÓN SUPABASE REALTIME (PRODUCTOS & STOCK) ---
+  subscribeToProducts({
+    onStatusChange: (status) => {
+      const badge = document.getElementById("realtime-badge");
+      const text = document.getElementById("realtime-text");
+      if (!badge || !text) return;
+      if (status === "SUBSCRIBED") {
+        badge.className = "flex items-center gap-2 px-3 py-2 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs font-mono font-semibold text-teal-400";
+        text.innerText = "Realtime Activo";
+      } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
+        badge.className = "flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-mono font-semibold text-amber-400";
+        text.innerText = "Reconectando...";
+      }
+    },
+    onUpdate: (product) => {
+      updateProductRow(product.id, {
+        name: product.name,
+        price: product.price,
+        stock_quantity: product.stock_quantity,
+        image_url: product.image_url,
+        category_id: product.category_id,
+      });
+
+      // Si el modal de edición está abierto con este mismo producto, sincronizar el input de stock
+      const currentModalId = (document.getElementById("edit-id") as HTMLInputElement)?.value;
+      if (currentModalId === product.id) {
+        const editStock = document.getElementById("edit-stock") as HTMLInputElement | null;
+        if (editStock && document.activeElement !== editStock) {
+          editStock.value = String(product.stock_quantity);
+        }
+      }
+
+      showToast("📦 Stock en Vivo Sincronizado", `${product.name}: ${product.stock_quantity} unidades`);
+    },
+    onInsert: (product) => {
+      showToast("✨ Nuevo Producto Creado", `${product.name} registrado en catálogo`);
+    },
+    onDelete: (productId) => {
+      const rows = document.querySelectorAll("tr.group");
+      const targetId = typeof productId === "string" ? productId.split("-")[0] : "";
+      rows.forEach(row => {
+        const rowId = row.getAttribute("data-product-id") || "";
+        const idSpan = row.querySelector(".font-mono") as HTMLElement | null;
+        if ((rowId && rowId === productId) || (idSpan && targetId && idSpan.innerText.includes(targetId))) {
+          row.remove();
+        }
+      });
+      showToast("Producto Eliminado", `ID: ${targetId}`);
     }
   });
 </script>
