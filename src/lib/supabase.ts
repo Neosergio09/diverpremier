@@ -1,13 +1,18 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
+function cleanEnv(val: string | undefined | null): string {
+  if (!val) return '';
+  return val.trim().replace(/^["']|["']$/g, '').trim();
+}
+
 export function getEnvVar(key: string): string {
+  let val = '';
   if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key] as string;
+    val = process.env[key] as string;
+  } else if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
+    val = import.meta.env[key] as string;
   }
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-    return import.meta.env[key] as string;
-  }
-  return '';
+  return cleanEnv(val);
 }
 
 export const getSupabaseUrl = () =>

@@ -1,10 +1,10 @@
 ---
 export const prerender = false;
 import AdminLayout from "@layouts/AdminLayout.astro";
-import { supabaseAdmin } from "@lib/supabase";
+import { supabaseAdmin, supabase } from "@lib/supabase";
 
 // 1. Traemos productos y categorías en paralelo para máxima velocidad
-const [
+let [
   { data: productsRaw, error },
   { data: categories }
 ] = await Promise.all([
@@ -21,6 +21,38 @@ const [
     .from("categories")
     .select("id, name")
 ]);
+
+let configWarning = "";
+
+// 🛡️ Fallback de Resiliencia: Si supabaseAdmin falla (por ejemplo, clave de servicio con error en Vercel),
+// intentamos cargar el catálogo con el cliente estándar para no bloquear la visualización:
+if (error) {
+  console.warn("⚠️ Error con supabaseAdmin en inventario:", error);
+  const [
+    { data: fallbackProducts, error: fallbackError },
+    { data: fallbackCategories }
+  ] = await Promise.all([
+    supabase
+      .from("products")
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `)
+      .order("name", { ascending: true }),
+    supabase
+      .from("categories")
+      .select("id, name")
+  ]);
+
+  if (!fallbackError && fallbackProducts) {
+    productsRaw = fallbackProducts;
+    categories = fallbackCategories || categories;
+    configWarning = `Atención: Error de conexión con la clave de servicio (${error.message || "Invalid API key"}). El catálogo se cargó en modo lectura. Para editar stock, revisa SUPABASE_SERVICE_ROLE_KEY en Vercel.`;
+    error = null;
+  }
+}
 
 // 2. Mapeamos al formato que ya usa el template (Compatibilidad)
 const catalog = productsRaw?.map(p => ({
@@ -140,9 +172,24 @@ const pageTitle = "Gestión de Inventario";
 
       <div class="space-y-16">
       {
+        configWarning && (
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3">
+            <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div class="flex-1">
+              <p class="font-bold uppercase tracking-wider text-[11px]">Aviso de Configuración</p>
+              <p class="text-neutral-300 mt-0.5">{configWarning}</p>
+            </div>
+          </div>
+        )
+      }
+
+      {
         error && (
-          <div class="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-400 text-center">
-            Error al conectar con el búnker.
+          <div class="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-400 text-center space-y-2">
+            <p class="font-bold text-base">Error al conectar con el búnker.</p>
+            <p class="text-xs font-mono text-neutral-400">{error.message || JSON.stringify(error)}</p>
           </div>
         )
       }
