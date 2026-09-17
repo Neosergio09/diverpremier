@@ -785,7 +785,8 @@ const pageTitle = "Gestión de Inventario";
         closeModal();
         showToast();
       } else {
-        alert("Error al actualizar el búnker. Revisa la consola.");
+        const errJson = await response.json().catch(() => ({}));
+        alert(`❌ Error al actualizar producto:\n\n${errJson.details || errJson.error || "Error desconocido en el servidor."}`);
       }
     } catch (err) {
       console.error(err);
