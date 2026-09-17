@@ -24,7 +24,8 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
         viewBox="0 0 500 500"
         class="w-full h-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-visible"
       >
-        <g>
+        <!-- 1. NEGRO: Rectángulo esbelto oscuro con borde cyan -->
+        <g id="group-black" class="character-group idle-breathe-2">
           <rect
             x="240"
             y="220"
@@ -36,12 +37,11 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
             stroke-width="0.5"></rect>
           <g id="char-black" class="character-face" data-speed="0.08">
             <circle cx="265" cy="250" r="8" fill="white"></circle>
-            <circle cx="265" cy="250" r="4" fill="black" class="eye-pupil"
-            ></circle>
+            <circle cx="265" cy="250" r="4" fill="black" class="eye-pupil pupil-black"></circle>
             <circle cx="285" cy="250" r="8" fill="white"></circle>
-            <circle cx="285" cy="250" r="4" fill="black" class="eye-pupil"
-            ></circle>
+            <circle cx="285" cy="250" r="4" fill="black" class="eye-pupil pupil-black"></circle>
             <line
+              id="mouth-black"
               x1="265"
               y1="285"
               x2="285"
@@ -51,17 +51,17 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
               stroke-linecap="round"></line>
           </g>
         </g>
-        <g>
-          <rect x="130" y="100" width="110" height="300" rx="20" fill="#D052FF"
-          ></rect>
+
+        <!-- 2. MORADO: Rectángulo alto violeta -->
+        <g id="group-purple" class="character-group idle-breathe-1">
+          <rect x="130" y="100" width="110" height="300" rx="20" fill="#D052FF"></rect>
           <g id="char-purple" class="character-face" data-speed="0.12">
             <ellipse cx="165" cy="150" rx="12" ry="15" fill="white"></ellipse>
-            <circle cx="165" cy="150" r="6" fill="black" class="eye-pupil"
-            ></circle>
+            <circle cx="165" cy="150" r="6" fill="black" class="eye-pupil pupil-purple"></circle>
             <ellipse cx="205" cy="150" rx="12" ry="15" fill="white"></ellipse>
-            <circle cx="205" cy="150" r="6" fill="black" class="eye-pupil"
-            ></circle>
+            <circle cx="205" cy="150" r="6" fill="black" class="eye-pupil pupil-purple"></circle>
             <path
+              id="mouth-purple"
               d="M170,210 Q185,230 200,210"
               fill="none"
               stroke="black"
@@ -69,25 +69,27 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
               stroke-linecap="round"></path>
           </g>
         </g>
-        <g>
+
+        <!-- 3. VERDE LIMA: Arco medio verde -->
+        <g id="group-lime" class="character-group idle-breathe-3">
           <path
             d="M260,400 L260,320 C260,280 300,280 340,280 C380,280 380,320 380,400 Z"
             fill="#BEF264"></path>
           <g id="char-lime" class="character-face" data-speed="0.1">
             <circle cx="320" cy="315" r="10" fill="white"></circle>
-            <circle cx="320" cy="315" r="5" fill="black" class="eye-pupil"
-            ></circle>
-            <circle cx="320" cy="345" r="4" fill="black"></circle>
+            <circle cx="320" cy="315" r="5" fill="black" class="eye-pupil pupil-lime"></circle>
+            <circle id="mouth-lime" cx="320" cy="345" r="4" fill="black"></circle>
           </g>
         </g>
-        <g>
+
+        <!-- 4. LA REDONDA (NARANJA): Semicírculo inferior -->
+        <g id="group-orange" class="character-group idle-breathe-4">
           <path d="M40,400 A100,100 0 0,1 240,400 Z" fill="#FB923C"></path>
           <g id="char-orange" class="character-face" data-speed="0.15">
-            <circle cx="160" cy="330" r="7" fill="black" class="eye-pupil"
-            ></circle>
-            <circle cx="190" cy="330" r="7" fill="black" class="eye-pupil"
-            ></circle>
+            <circle cx="160" cy="330" r="7" fill="black" class="eye-pupil pupil-orange"></circle>
+            <circle cx="190" cy="330" r="7" fill="black" class="eye-pupil pupil-orange"></circle>
             <path
+              id="mouth-orange"
               d="M165,360 Q175,370 185,360"
               fill="none"
               stroke="black"
@@ -259,8 +261,30 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
 </MainLayout>
 
 <script>
+  // 🎭 Elementos de los personajes
   const faces = document.querySelectorAll(".character-face");
   const pupils = document.querySelectorAll(".eye-pupil");
+
+  const charBlack = document.getElementById("char-black");
+  const charPurple = document.getElementById("char-purple");
+  const charLime = document.getElementById("char-lime");
+  const charOrange = document.getElementById("char-orange");
+
+  const groupBlack = document.getElementById("group-black");
+  const groupPurple = document.getElementById("group-purple");
+  const groupLime = document.getElementById("group-lime");
+  const groupOrange = document.getElementById("group-orange");
+
+  const mouthOrange = document.getElementById("mouth-orange");
+  const mouthPurple = document.getElementById("mouth-purple");
+  const mouthLime = document.getElementById("mouth-lime");
+
+  const pupilsBlack = document.querySelectorAll(".pupil-black");
+  const pupilsPurple = document.querySelectorAll(".pupil-purple");
+  const pupilsLime = document.querySelectorAll(".pupil-lime");
+  const pupilsOrange = document.querySelectorAll(".pupil-orange");
+
+  // 📋 Elementos del formulario y UI
   const emailInput = document.getElementById("email-field") as HTMLInputElement;
   const passInput = document.getElementById("pass-field") as HTMLInputElement;
   const togglePasswordBtn = document.getElementById("toggle-password-btn") as HTMLButtonElement;
@@ -276,76 +300,217 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
   const submitSpinner = document.getElementById("submit-spinner");
   const submitText = document.getElementById("submit-text");
 
+  // ⚙️ Estados de animación
   let isAnimating = false;
+  let isAffirming = false;
+  let hasAffirmed = false;
+  let typingLookIndex = 0;
+  let isEmailFocused = false;
   let countdownInterval: any = null;
+  let affirmationTimeout: any = null;
 
-  const setMode = (mode: string) => {
+  // 🎛️ Modos de suavizado
+  const setMode = (mode: "mouse" | "anim" | "snappy") => {
     const config =
       mode === "anim"
-        ? "transform 1s cubic-bezier(0.4, 0, 0.2, 1)"
+        ? "transform 0.45s cubic-bezier(0.34, 1.25, 0.64, 1)"
+        : mode === "snappy"
+        ? "transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)"
         : "transform 0.15s ease-out";
+
     faces.forEach((f) => ((f as any).style.transition = config));
     pupils.forEach((p) => ((p as any).style.transition = config));
   };
 
-  // 🖱️ Seguimiento de mirada independiente con el cursor
+  // ✉️ Validador de formato de correo
+  const isValidEmail = (val: string) => {
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val.trim());
+  };
+
+  // 🖱️ Seguimiento de mirada independiente con el cursor (cuando no hay interacción activa en inputs)
   window.addEventListener("mousemove", (e) => {
-    if (isAnimating) return;
+    if (isAnimating || isAffirming || isEmailFocused) return;
     const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
     const y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
 
     faces.forEach((f) => {
       const s = parseFloat(f.getAttribute("data-speed") || "0.1");
-      (f as any).style.transform = `translate(${x * (s * 40)}px, ${
-        y * (s * 30)
-      }px)`;
+      (f as any).style.transform = `translate(${x * (s * 38)}px, ${
+        y * (s * 28)
+      }px) rotate(${x * 1.8}deg)`;
     });
 
     pupils.forEach((p) => {
-      // Las pupilas se mueven un poco más que la cara para dar profundidad
-      (p as any).style.transform = `translate(${x * 6}px, ${y * 4}px)`;
+      (p as any).style.transform = `translate(${x * 5.5}px, ${y * 3.5}px)`;
     });
   });
 
-  // 🕵️ Secuencia al enfocar Email
-  emailInput?.addEventListener("focus", () => {
-    if (isAnimating) return;
-    isAnimating = true;
+  // 👀 Miradas cruzadas orgánicas entre las figuras mientras se escribe el correo
+  const lookBetweenFigures = () => {
+    if (isAffirming) return;
+    setMode("anim");
+    typingLookIndex = (typingLookIndex + 1) % 3;
+
+    if (typingLookIndex === 0) {
+      // 💜 Morado mira hacia abajo-derecha a Negro
+      if (charPurple) charPurple.style.transform = "translate(16px, 16px) rotate(2.5deg)";
+      pupilsPurple.forEach((p) => ((p as any).style.transform = "translate(5px, 5px)"));
+
+      // 🖤 Negro mira hacia arriba-izquierda a Morado
+      if (charBlack) charBlack.style.transform = "translate(-16px, -12px) rotate(-3deg)";
+      pupilsBlack.forEach((p) => ((p as any).style.transform = "translate(-5px, -3px)"));
+
+      // 🟠 La Redonda (Naranja) mira hacia la derecha a Lima
+      if (charOrange) charOrange.style.transform = "translate(14px, -4px) rotate(-2deg)";
+      pupilsOrange.forEach((p) => ((p as any).style.transform = "translate(4px, -1px)"));
+
+      // 💚 Lima mira a la izquierda hacia La Redonda
+      if (charLime) charLime.style.transform = "translate(-20px, 0px) rotate(-3deg)";
+      pupilsLime.forEach((p) => ((p as any).style.transform = "translate(-5px, 0px)"));
+
+    } else if (typingLookIndex === 1) {
+      // 💜 Morado mira hacia abajo a La Redonda
+      if (charPurple) charPurple.style.transform = "translate(-12px, 24px) rotate(-2deg)";
+      pupilsPurple.forEach((p) => ((p as any).style.transform = "translate(-3px, 6px)"));
+
+      // 🟠 La Redonda mira hacia arriba a Morado con expectación
+      if (charOrange) charOrange.style.transform = "translate(6px, -18px) rotate(3deg)";
+      pupilsOrange.forEach((p) => ((p as any).style.transform = "translate(2px, -5px)"));
+
+      // 🖤 Negro mira hacia abajo a La Redonda
+      if (charBlack) charBlack.style.transform = "translate(-14px, 14px) rotate(-1deg)";
+      pupilsBlack.forEach((p) => ((p as any).style.transform = "translate(-4px, 4px)"));
+
+      // 💚 Lima mira hacia arriba a Negro
+      if (charLime) charLime.style.transform = "translate(-8px, -16px) rotate(2deg)";
+      pupilsLime.forEach((p) => ((p as any).style.transform = "translate(-2px, -4px)"));
+
+    } else {
+      // 🖤 Negro y 💚 Lima se miran con complicidad
+      if (charBlack) charBlack.style.transform = "translate(10px, 14px) rotate(2deg)";
+      pupilsBlack.forEach((p) => ((p as any).style.transform = "translate(3px, 4px)"));
+
+      if (charLime) charLime.style.transform = "translate(-14px, -14px) rotate(-2deg)";
+      pupilsLime.forEach((p) => ((p as any).style.transform = "translate(-4px, -4px)"));
+
+      // 💜 Morado mira hacia la pantalla / input
+      if (charPurple) charPurple.style.transform = "translate(22px, 8px) rotate(1deg)";
+      pupilsPurple.forEach((p) => ((p as any).style.transform = "translate(6px, 2px)"));
+
+      // 🟠 La Redonda mira hacia arriba-derecha a Negro
+      if (charOrange) charOrange.style.transform = "translate(16px, -14px) rotate(2deg)";
+      pupilsOrange.forEach((p) => ((p as any).style.transform = "translate(5px, -3px)"));
+    }
+  };
+
+  // ✨ Secuencia donde La Redonda afirma enérgicamente a todos que el correo es correcto
+  const triggerAffirmation = () => {
+    if (isAffirming) return;
+    isAffirming = true;
+    hasAffirmed = true;
     setMode("anim");
 
-    const c = {
-      black: document.getElementById("char-black"),
-      purple: document.getElementById("char-purple"),
-      lime: document.getElementById("char-lime"),
-      orange: document.getElementById("char-orange"),
-    };
+    // Paso 1: Todos voltean su mirada expectante hacia La Redonda
+    if (charPurple) charPurple.style.transform = "translate(-16px, 25px) rotate(-3deg)";
+    pupilsPurple.forEach((p) => ((p as any).style.transform = "translate(-5px, 6px)"));
 
-    // Mirada coordinada
-    if (c.black) c.black.style.transform = "translate(-15px, 10px)";
-    if (c.purple) c.purple.style.transform = "translate(10px, 15px)";
-    if (c.lime) c.lime.style.transform = "translate(-20px, 5px)";
-    if (c.orange) c.orange.style.transform = "translate(5px, -5px)";
+    if (charBlack) charBlack.style.transform = "translate(-18px, 16px) rotate(-2deg)";
+    pupilsBlack.forEach((p) => ((p as any).style.transform = "translate(-5px, 5px)"));
 
-    pupils.forEach(
-      (p) => ((p as any).style.transform = "translate(-3px, 2px)")
-    );
+    if (charLime) charLime.style.transform = "translate(-24px, -2px) rotate(-4deg)";
+    pupilsLime.forEach((p) => ((p as any).style.transform = "translate(-6px, 0px)"));
 
-    setTimeout(() => c.orange?.classList.add("nodding"), 1200);
+    // La Redonda se acomoda encarando al grupo
+    if (charOrange) charOrange.style.transform = "translate(16px, -10px) rotate(4deg)";
+    pupilsOrange.forEach((p) => ((p as any).style.transform = "translate(4px, -2px)"));
 
+    // Paso 2: La Redonda asiente afirmativamente con Squash & Stretch
     setTimeout(() => {
-      c.orange?.classList.remove("nodding");
-      faces.forEach(
-        (f) => ((f as any).style.transform = "translate(25px, 5px)")
-      );
-      pupils.forEach(
-        (p) => ((p as any).style.transform = "translate(4px, 0px)")
-      );
-    }, 2500);
+      groupOrange?.classList.remove("idle-breathe-4");
+      groupOrange?.classList.add("orange-affirming");
+      // Sonrisa ancha de felicidad en La Redonda
+      mouthOrange?.setAttribute("d", "M160,358 Q175,376 190,358");
+    }, 180);
 
+    // Paso 3: Al verla afirmar, los compañeros celebran y asienten aliviados
     setTimeout(() => {
-      isAnimating = false;
+      groupPurple?.classList.add("peer-cheer-purple");
+      groupBlack?.classList.add("peer-cheer-black");
+      groupLime?.classList.add("peer-cheer-lime");
+
+      // Sonrisas de los compañeros
+      mouthPurple?.setAttribute("d", "M166,208 Q185,236 204,208");
+      mouthLime?.setAttribute("r", "5.5");
+    }, 450);
+
+    // Paso 4: Cierre triunfal: todos miran hacia el formulario invitando a continuar con la clave
+    clearTimeout(affirmationTimeout);
+    affirmationTimeout = setTimeout(() => {
+      groupOrange?.classList.remove("orange-affirming");
+      groupOrange?.classList.add("idle-breathe-4");
+
+      groupPurple?.classList.remove("peer-cheer-purple");
+      groupBlack?.classList.remove("peer-cheer-black");
+      groupLime?.classList.remove("peer-cheer-lime");
+
+      // Todos dirigen la mirada hacia el formulario de contraseña
+      faces.forEach((f) => ((f as any).style.transform = "translate(22px, 4px) rotate(0deg)"));
+      pupils.forEach((p) => ((p as any).style.transform = "translate(5px, 1px)"));
+
+      isAffirming = false;
+    }, 1600);
+  };
+
+  // 🔄 Restaurar estado si el usuario borra o el correo deja de ser válido
+  const resetAffirmation = () => {
+    if (!hasAffirmed) return;
+    hasAffirmed = false;
+    isAffirming = false;
+    clearTimeout(affirmationTimeout);
+
+    groupOrange?.classList.remove("orange-affirming");
+    groupOrange?.classList.add("idle-breathe-4");
+    groupPurple?.classList.remove("peer-cheer-purple");
+    groupBlack?.classList.remove("peer-cheer-black");
+    groupLime?.classList.remove("peer-cheer-lime");
+
+    // Restaurar bocas normales
+    mouthOrange?.setAttribute("d", "M165,360 Q175,370 185,360");
+    mouthPurple?.setAttribute("d", "M170,210 Q185,230 200,210");
+    mouthLime?.setAttribute("r", "4");
+
+    faces.forEach((f) => ((f as any).style.transform = "translate(0px, 0px) rotate(0deg)"));
+    pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 0px)"));
+  };
+
+  // 🕵️ Eventos en campo Email
+  emailInput?.addEventListener("focus", () => {
+    isEmailFocused = true;
+    if (hasAffirmed) return;
+    lookBetweenFigures();
+  });
+
+  emailInput?.addEventListener("input", () => {
+    const val = emailInput.value;
+    if (isValidEmail(val)) {
+      if (!hasAffirmed) {
+        triggerAffirmation();
+      }
+    } else {
+      if (hasAffirmed) {
+        resetAffirmation();
+      }
+      lookBetweenFigures();
+    }
+  });
+
+  emailInput?.addEventListener("blur", () => {
+    isEmailFocused = false;
+    if (!hasAffirmed && !emailInput.value.trim()) {
       setMode("mouse");
-    }, 5000);
+      faces.forEach((f) => ((f as any).style.transform = "translate(0px, 0px) rotate(0deg)"));
+      pupils.forEach((p) => ((p as any).style.transform = "translate(0px, 0px)"));
+    }
   });
 
   // 🔒 Campo Contraseña (Modo Privacidad)
@@ -503,8 +668,9 @@ import LiquidBackground from "@components/ui/LiquidBackground.astro";
         submitBtn.classList.remove("bg-neon-blue/5", "text-neon-blue", "border-neon-blue/20", "opacity-70", "cursor-wait");
         submitBtn.classList.add("bg-green-500/20", "text-green-400", "border-green-500/50");
 
-        faces.forEach((f) => ((f as any).style.transform = "translate(0px, -20px) scale(1.1)"));
-        pupils.forEach((p) => ((p as any).style.transform = "translate(0px, -5px) scale(1.1)"));
+        // Todos celebran con salto alegre
+        faces.forEach((f) => ((f as any).style.transform = "translate(0px, -22px) scale(1.1)"));
+        pupils.forEach((p) => ((p as any).style.transform = "translate(0px, -6px) scale(1.1)"));
 
         setTimeout(() => {
           faces.forEach((f) => ((f as any).style.transform = "translate(0px, -10px) scale(1.05)"));

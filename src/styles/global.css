@@ -289,15 +289,127 @@ img {
   text-wrap: balance;
 }
 
-/* 🎭 Login Character Animations */
-.character-face,
-.eye-pupil {
-  transition: transform 0.15s ease-out;
+/* 🎭 Login Character Organic Animations */
+.character-group {
+  transition: transform 0.45s cubic-bezier(0.34, 1.25, 0.64, 1);
+  transform-box: fill-box;
+}
+
+#group-orange {
+  transform-origin: 50% 100%;
+}
+#group-purple {
+  transform-origin: 50% 100%;
+}
+#group-black {
+  transform-origin: 50% 100%;
+}
+#group-lime {
+  transform-origin: 50% 100%;
+}
+
+.character-face {
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   transform-origin: center;
 }
 
-.nodding {
-  animation: var(--animate-nod, nod 0.8s ease-in-out);
+.eye-pupil {
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center;
+}
+
+/* 🟠 Asentimiento y Afirmación de La Redonda (Squash & Stretch) */
+.orange-affirming {
+  animation: orange-affirm 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes orange-affirm {
+  0% {
+    transform: rotate(0deg) scale(1, 1);
+  }
+  15% {
+    /* Anticipación hacia atrás: se inclina y comprime */
+    transform: rotate(6deg) translateY(6px) scale(1.08, 0.92);
+  }
+  30% {
+    /* Asentimiento 1: Cabeceo afirmativo enérgico hacia arriba/adelante */
+    transform: rotate(-10deg) translateY(-22px) scale(0.92, 1.1);
+  }
+  48% {
+    /* Rebote abajo */
+    transform: rotate(4deg) translateY(7px) scale(1.06, 0.94);
+  }
+  64% {
+    /* Asentimiento 2: Segundo cabeceo afirmativo feliz */
+    transform: rotate(-7deg) translateY(-14px) scale(0.95, 1.06);
+  }
+  80% {
+    /* Rebote suave */
+    transform: rotate(2deg) translateY(3px) scale(1.03, 0.98);
+  }
+  92% {
+    transform: rotate(-1deg) translateY(-2px) scale(0.99, 1.01);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0px) scale(1, 1);
+  }
+}
+
+/* 💜 Compañeros celebran y asienten aliviados */
+.peer-cheer-purple {
+  animation: peer-cheer-purple 1.2s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
+}
+@keyframes peer-cheer-purple {
+  0% { transform: rotate(0deg) scale(1, 1); }
+  25% { transform: rotate(2.5deg) translateY(-14px) scale(0.97, 1.05); }
+  55% { transform: rotate(-1.5deg) translateY(-4px) scale(1.02, 0.98); }
+  80% { transform: rotate(1deg) translateY(-1px) scale(0.99, 1.01); }
+  100% { transform: rotate(0deg) translateY(0px) scale(1, 1); }
+}
+
+.peer-cheer-black {
+  animation: peer-cheer-black 1.2s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
+}
+@keyframes peer-cheer-black {
+  0% { transform: rotate(0deg) scale(1, 1); }
+  30% { transform: rotate(-3deg) translateY(-15px) scale(0.95, 1.06); }
+  60% { transform: rotate(1.5deg) translateY(3px) scale(1.02, 0.98); }
+  85% { transform: rotate(-0.5deg) translateY(-1px) scale(0.99, 1.01); }
+  100% { transform: rotate(0deg) translateY(0px) scale(1, 1); }
+}
+
+.peer-cheer-lime {
+  animation: peer-cheer-lime 1.2s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
+}
+@keyframes peer-cheer-lime {
+  0% { transform: rotate(0deg) scale(1, 1); }
+  20% { transform: translateY(5px) scale(1.1, 0.9); }
+  45% { transform: translateY(-16px) scale(0.9, 1.12); }
+  70% { transform: translateY(4px) scale(1.04, 0.96); }
+  100% { transform: rotate(0deg) translateY(0px) scale(1, 1); }
+}
+
+/* 🌬️ Respiración sutil en reposo (Idle breathing) */
+.idle-breathe-1 {
+  animation: idle-breathe 4.2s ease-in-out infinite;
+}
+.idle-breathe-2 {
+  animation: idle-breathe 4.7s ease-in-out infinite 0.8s;
+}
+.idle-breathe-3 {
+  animation: idle-breathe 3.9s ease-in-out infinite 1.5s;
+}
+.idle-breathe-4 {
+  animation: idle-breathe 4.4s ease-in-out infinite 2.2s;
+}
+
+@keyframes idle-breathe {
+  0%, 100% {
+    transform: translateY(0px) scale(1, 1);
+  }
+  50% {
+    transform: translateY(2.5px) scale(1.012, 0.988);
+  }
 }
 
 /* 🖼️ Animations & Transitions Helper Classes */
