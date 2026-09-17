@@ -28,3 +28,7 @@ pnpm-debug.log*
 __pycache__/
 *.py[cod]
 *$py.class
+
+# pnpm exclusion (project uses npm)
+pnpm-lock.yaml
+pnpm-workspace.yaml
