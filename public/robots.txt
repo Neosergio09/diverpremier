@@ -1,0 +1,18 @@
+# https://www.robotstxt.org/robotstxt.html
+# Diverpremier Go - Robots.txt
+
+User-agent: *
+Allow: /
+Allow: /productos
+Allow: /mapa
+Allow: /nosotros
+Allow: /cocteleria
+
+# Rutas privadas, panel administrativo y endpoints de API
+Disallow: /admin/
+Disallow: /admin
+Disallow: /api/
+Disallow: /login
+
+# Ubicación del Sitemap oficial para Googlebot y otros rastreadores
+Sitemap: https://diverpremier.com/sitemap.xml

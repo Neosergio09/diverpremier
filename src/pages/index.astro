@@ -197,10 +197,10 @@ const featuredProducts = [
     isProse={false}
 >
     <section
-        class="relative min-h-[95vh] flex items-center justify-center overflow-hidden px-4 mb-24 mt-4"
+        class="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center overflow-hidden px-4 mb-12 sm:mb-24 mt-2 sm:mt-4"
     >
         <div
-            class="absolute inset-0 z-0 bg-dark-bg rounded-[3rem] md:rounded-[5rem] border border-white/5 mx-2 md:mx-6 overflow-hidden"
+            class="absolute inset-0 z-0 bg-dark-bg rounded-3xl sm:rounded-[3rem] md:rounded-[5rem] border border-white/5 mx-2 md:mx-6 overflow-hidden"
         >
             <div
                 class="absolute -top-24 -right-24 w-[600px] h-[600px] bg-teal-500/10 blur-[180px] rounded-full animate-pulse"
@@ -216,11 +216,11 @@ const featuredProducts = [
             </div>
         </div>
 
-        <div class="relative z-10 text-center max-w-6xl mx-auto pt-10">
+        <div class="relative z-10 text-center max-w-6xl mx-auto pt-6 sm:pt-10 w-full px-2">
             <div
-                class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[11px] font-black uppercase tracking-[0.5em] text-teal-400 mb-12 animate-in fade-in slide-in-from-top-4 duration-700"
+                class="inline-flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/5 border border-white/10 text-[8.5px] sm:text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.5em] text-teal-400 mb-8 sm:mb-12 animate-in fade-in slide-in-from-top-4 duration-700 max-w-full truncate"
             >
-                <span class="relative flex h-2 w-2">
+                <span class="relative flex h-2 w-2 flex-shrink-0">
                     <span
                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"
                     ></span>
@@ -228,17 +228,17 @@ const featuredProducts = [
                         class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"
                     ></span>
                 </span>
-                Búnkers Operativos • Álamos Norte & Bachué
+                <span class="truncate">Búnkers Operativos • Álamos Norte & Bachué</span>
             </div>
 
             <h1
-                class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-black mb-10 leading-[0.95] sm:leading-[0.9] md:leading-[0.85] lg:leading-[0.8] tracking-tighter uppercase italic text-white mix-blend-normal md:mix-blend-difference [text-shadow:0_4px_30px_rgba(0,0,0,0.8)] md:[text-shadow:none] break-words max-w-full"
+                class="text-4xl sm:text-6xl md:text-8xl lg:text-[11rem] font-black mb-6 sm:mb-10 leading-[0.95] sm:leading-[0.9] md:leading-[0.85] lg:leading-[0.8] tracking-tighter uppercase italic text-white mix-blend-normal md:mix-blend-difference [text-shadow:0_4px_30px_rgba(0,0,0,0.8)] md:[text-shadow:none] break-words max-w-full"
             >
                 Diver<wbr /><span class="text-teal-500">premier</span>
             </h1>
 
             <p
-                class="text-lg md:text-2xl mb-14 text-neutral-400 max-w-2xl mx-auto font-medium leading-relaxed balance"
+                class="text-base sm:text-lg md:text-2xl mb-8 sm:mb-14 text-neutral-400 max-w-2xl mx-auto font-medium leading-relaxed balance px-2"
             >
                 Elevamos el estándar de la rumba en <span
                     class="text-white font-bold">Álamos y Bachué</span
@@ -246,21 +246,21 @@ const featuredProducts = [
             </p>
 
             <div
-                class="flex flex-col sm:flex-row items-center justify-center gap-8"
+                class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 w-full max-w-sm sm:max-w-none mx-auto"
             >
                 <a
                     href="https://wa.me/573114940503"
-                    class="btn-primary px-12 py-6 text-xl shadow-[0_0_50px_rgba(20,184,166,0.2)]"
+                    class="btn-primary w-full sm:w-auto justify-center px-8 sm:px-12 py-4 sm:py-6 text-base sm:text-xl shadow-[0_0_50px_rgba(20,184,166,0.2)]"
                 >
-                    <Phone size={24} />
+                    <Phone size={22} />
                     <span>Solicitar Domicilio</span>
                 </a>
                 <a
                     href="/productos"
-                    class="group text-neutral-500 hover:text-white font-black tracking-widest uppercase text-xs flex items-center gap-3 transition-all py-3 min-h-[44px]"
+                    class="group text-neutral-400 hover:text-white font-black tracking-widest uppercase text-xs flex items-center justify-center gap-3 transition-all py-3 min-h-[44px]"
                 >
                     Ver Catálogo Completo <ChevronRight
-                        size={20}
+                        size={18}
                         class="group-hover:translate-x-2 transition-transform"
                     />
                 </a>
@@ -268,12 +268,12 @@ const featuredProducts = [
         </div>
     </section>
 
-    <div class="max-w-7xl mx-auto px-6">
-        <section class="mb-48">
-            <div class="flex items-center justify-between mb-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <section class="mb-20 sm:mb-32 lg:mb-48">
+            <div class="flex items-center justify-between mb-8 sm:mb-16">
                 <div>
                     <h2
-                        class="text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-white"
+                        class="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-white"
                     >
                         El <span class="text-teal-500">arsenal</span>
                     </h2>
@@ -289,7 +289,7 @@ const featuredProducts = [
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 {
                     categoryConfigs.map((cat) => {
                         const prods = categoryProductsMap[cat.slug] || [cat.fallback];
@@ -300,7 +300,7 @@ const featuredProducts = [
                                 id={`arsenal-card-${cat.slug}`}
                                 href={`/productos?cat=${cat.name}`}
                                 class:list={[
-                                    "group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border transition-all duration-700 bg-neutral-950 flex flex-col justify-between p-6 sm:p-7 block select-none cursor-pointer",
+                                    "group relative aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-[3rem] border transition-all duration-700 bg-neutral-950 flex flex-col justify-between p-3.5 sm:p-7 block select-none cursor-pointer",
                                     cat.theme.border,
                                     cat.theme.shadow,
                                 ]}
@@ -326,7 +326,7 @@ const featuredProducts = [
                                 <div class="relative z-10 flex items-center justify-between w-full">
                                     <div
                                         class:list={[
-                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest backdrop-blur-md border",
+                                            "inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[7.5px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest backdrop-blur-md border",
                                             cat.theme.badgeBg,
                                         ]}
                                     >
@@ -344,22 +344,23 @@ const featuredProducts = [
                                                 ]}
                                             />
                                         </span>
-                                        <span>En Vivo • 5s</span>
+                                        <span class="hidden min-[360px]:inline">En Vivo • 5s</span>
+                                        <span class="min-[360px]:hidden">5s</span>
                                     </div>
 
                                     <span
                                         id={`arsenal-counter-${cat.slug}`}
-                                        class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/10"
+                                        class="text-[8px] sm:text-[10px] font-mono text-neutral-400 bg-white/5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/10"
                                     >
                                         1 / {prods.length}
                                     </span>
                                 </div>
 
                                 {/* Botella/Producto con resplandor ambiental */}
-                                <div class="relative z-10 flex-1 flex items-center justify-center my-2 overflow-hidden">
+                                <div class="relative z-10 flex-1 flex items-center justify-center my-1 sm:my-2 overflow-hidden">
                                     <div
                                         class:list={[
-                                            "absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-2xl pointer-events-none transition-all duration-700 group-hover:scale-125",
+                                            "absolute w-24 h-24 sm:w-44 sm:h-44 rounded-full blur-2xl pointer-events-none transition-all duration-700 group-hover:scale-125",
                                             cat.theme.ambientGlow,
                                         ]}
                                     />
@@ -371,17 +372,17 @@ const featuredProducts = [
                                         height="600"
                                         loading="lazy"
                                         decoding="async"
-                                        class="relative z-10 max-h-[160px] sm:max-h-[190px] w-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transition-all duration-500 ease-out transform group-hover:scale-105"
+                                        class="relative z-10 max-h-[110px] sm:max-h-[190px] w-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transition-all duration-500 ease-out transform group-hover:scale-105"
                                         onerror="this.onerror=null; this.src='https://placehold.co/600x800/0A0F1E/white?text=Diverpremier';"
                                     />
                                 </div>
 
                                 {/* Información inferior: Categoría, Precio, Nombre y CTA */}
-                                <div class="relative z-10 space-y-2">
-                                    <div class="flex items-center justify-between">
+                                <div class="relative z-10 space-y-1 sm:space-y-2">
+                                    <div class="flex items-center justify-between gap-1">
                                         <span
                                             class:list={[
-                                                "text-[10px] font-bold uppercase tracking-widest",
+                                                "text-[8px] sm:text-[10px] font-bold uppercase tracking-wider sm:tracking-widest truncate",
                                                 cat.theme.categoryText,
                                             ]}
                                         >
@@ -390,7 +391,7 @@ const featuredProducts = [
                                         <span
                                             id={`arsenal-price-${cat.slug}`}
                                             class:list={[
-                                                "text-xs font-black text-white italic tracking-tight font-mono px-2 py-0.5 rounded border transition-opacity duration-300",
+                                                "text-[10px] sm:text-xs font-black text-white italic tracking-tight font-mono px-1.5 sm:px-2 py-0.5 rounded border transition-opacity duration-300 flex-shrink-0",
                                                 cat.theme.priceBadge,
                                             ]}
                                         >
@@ -400,19 +401,19 @@ const featuredProducts = [
 
                                     <h3
                                         id={`arsenal-name-${cat.slug}`}
-                                        class="text-base sm:text-lg font-black text-white uppercase italic tracking-tight line-clamp-2 min-h-[3rem] flex items-center transition-opacity duration-300"
+                                        class="text-xs sm:text-lg font-black text-white uppercase italic tracking-tight line-clamp-2 min-h-[2.2rem] sm:min-h-[3rem] flex items-center transition-opacity duration-300 leading-tight"
                                     >
                                         {firstProd.name}
                                     </h3>
 
                                     <div
                                         class:list={[
-                                            "flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-neutral-400 transition-colors",
+                                            "flex items-center justify-between pt-1 sm:pt-2 border-t border-white/5 text-[8.5px] sm:text-[10px] font-mono text-neutral-400 transition-colors",
                                             cat.theme.hoverText,
                                         ]}
                                     >
-                                        <span>Ver {cat.name.toLowerCase()} ({prods.length})</span>
-                                        <span class="group-hover:translate-x-1 transition-transform">
+                                        <span class="truncate">Ver ({prods.length})</span>
+                                        <span class="group-hover:translate-x-1 transition-transform ml-1">
                                             →
                                         </span>
                                     </div>
@@ -425,88 +426,88 @@ const featuredProducts = [
         </section>
 
         <section
-            class="grid md:grid-cols-3 gap-10 mb-48 border-y border-white/5 py-24"
+            class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 mb-20 sm:mb-32 lg:mb-48 border-y border-white/5 py-12 sm:py-24"
         >
             <div
-                class="flex flex-col items-center md:items-start text-center md:text-left space-y-6 group"
+                class="flex flex-col items-center md:items-start text-center md:text-left space-y-4 sm:space-y-6 group p-4 sm:p-0"
             >
                 <div
-                    class="w-16 h-16 bg-white/[0.03] rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors"
+                    class="w-14 h-14 sm:w-16 sm:h-16 bg-white/[0.03] rounded-2xl sm:rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors"
                 >
-                    <Truck class="text-teal-500" size={32} />
+                    <Truck class="text-teal-500" size={28} />
                 </div>
                 <h3
-                    class="text-lg font-black uppercase text-white tracking-widest"
+                    class="text-base sm:text-lg font-black uppercase text-white tracking-widest"
                 >
                     Entrega Flash
                 </h3>
-                <p class="text-neutral-500 text-sm leading-relaxed">
-                    Tu pedido en la puerta de tu casa en tiempo récord. Álamos
+                <p class="text-neutral-400 text-xs sm:text-sm leading-relaxed max-w-sm">
+                    Tu pedido en la puerta de tu casa en tiempo récord. Álamos y Bachué
                     es nuestro territorio.
                 </p>
             </div>
 
             <div
-                class="flex flex-col items-center md:items-start text-center md:text-left space-y-6 group"
+                class="flex flex-col items-center md:items-start text-center md:text-left space-y-4 sm:space-y-6 group p-4 sm:p-0"
             >
                 <div
-                    class="w-16 h-16 bg-white/[0.03] rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors"
+                    class="w-14 h-14 sm:w-16 sm:h-16 bg-white/[0.03] rounded-2xl sm:rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors"
                 >
-                    <ShieldCheck class="text-teal-500" size={32} />
+                    <ShieldCheck class="text-teal-500" size={28} />
                 </div>
                 <h3
-                    class="text-lg font-black uppercase text-white tracking-widest"
+                    class="text-base sm:text-lg font-black uppercase text-white tracking-widest"
                 >
                     100% Original
                 </h3>
-                <p class="text-neutral-500 text-sm leading-relaxed">
+                <p class="text-neutral-400 text-xs sm:text-sm leading-relaxed max-w-sm">
                     Sello de garantía en cada botella. Solo trabajamos con
                     distribuidores autorizados.
                 </p>
             </div>
 
             <div
-                class="flex flex-col items-center md:items-start text-center md:text-left space-y-6 group"
+                class="flex flex-col items-center md:items-start text-center md:text-left space-y-4 sm:space-y-6 group p-4 sm:p-0"
             >
                 <div
-                    class="w-16 h-16 bg-white/[0.03] rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors"
+                    class="w-14 h-14 sm:w-16 sm:h-16 bg-white/[0.03] rounded-2xl sm:rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-teal-500/40 transition-colors"
                 >
-                    <Clock class="text-teal-500" size={32} />
+                    <Clock class="text-teal-500" size={28} />
                 </div>
                 <h3
-                    class="text-lg font-black uppercase text-white tracking-widest"
+                    class="text-base sm:text-lg font-black uppercase text-white tracking-widest"
                 >
                     Soporte 24/7
                 </h3>
-                <p class="text-neutral-500 text-sm leading-relaxed">
+                <p class="text-neutral-400 text-xs sm:text-sm leading-relaxed max-w-sm">
                     ¿Dudas? Nuestro equipo VIP está listo por WhatsApp para
                     asesorar tu compra.
                 </p>
             </div>
         </section>
 
-        <section class="pb-48">
+        <section class="pb-24 sm:pb-36 lg:pb-48">
             <div
-                class="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6"
+                class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-16 gap-4 sm:gap-6"
             >
                 <h2
-                    class="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white"
+                    class="text-3xl sm:text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white"
                 >
                     Los <span class="text-teal-500">Favoritos</span>
                 </h2>
-                <p class="text-neutral-500 font-medium max-w-xs md:text-right">
-                    Lo que más se mueve en las noches de Álamos.
+                <p class="text-neutral-400 text-xs sm:text-sm font-medium max-w-xs md:text-right">
+                    Lo que más se mueve en las noches de Álamos y Bachué.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-10">
                 {
                     featuredProducts.map((prod) => (
                         <div class="group relative">
-                            <div class="glass-neon rounded-2xl sm:rounded-[3rem] p-5 sm:p-8 border-white/5 hover:border-teal-500/20 transition-all duration-500 flex flex-col h-full">
-                                <div class="aspect-square rounded-[2rem] overflow-hidden mb-10 bg-white/[0.03] border border-white/5 relative">
+                            <div class="glass-neon rounded-2xl sm:rounded-[3rem] p-4 sm:p-8 border-white/5 hover:border-teal-500/20 transition-all duration-500 flex flex-col h-full">
+                                <div class="aspect-square rounded-2xl sm:rounded-[2rem] overflow-hidden mb-6 sm:mb-10 bg-white/[0.03] border border-white/5 relative">
                                     {prod.isHot && (
-                                        <span class="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-teal-500 text-dark-bg text-[9px] font-black uppercase tracking-widest">
+                                        <span class="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-teal-500 text-dark-bg text-[8px] sm:text-[9px] font-black uppercase tracking-widest">
                                             Más Pedido
                                         </span>
                                     )}
@@ -517,26 +518,27 @@ const featuredProducts = [
                                         decoding="async"
                                         src={prod.image}
                                         alt={prod.name}
-                                        class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                                        class="w-full h-full object-contain p-3 sm:p-4 group-hover:scale-110 transition-transform duration-700"
                                     />
                                 </div>
 
-                                <h3 class="text-xl font-bold mb-2 text-white leading-tight">
+                                <h3 class="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-white leading-tight">
                                     {prod.name}
                                 </h3>
-                                <p class="text-[10px] font-mono text-neutral-600 uppercase tracking-widest mb-8">
+                                <p class="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-4 sm:mb-8">
                                     {prod.presentation}
                                 </p>
 
-                                <div class="flex items-center justify-between mt-auto">
-                                    <span class="text-2xl font-black text-white italic tracking-tighter">
+                                <div class="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
+                                    <span class="text-xl sm:text-2xl font-black text-white italic tracking-tighter">
                                         {formatCOP(prod.price)}
                                     </span>
                                     <a
                                         href="https://wa.me/573114940503"
-                                        class="action-btn p-5 !rounded-2xl bg-teal-500/10 text-teal-500 hover:bg-teal-500 hover:text-dark-bg transition-all"
+                                        class="action-btn p-3 sm:p-5 !rounded-xl sm:!rounded-2xl bg-teal-500/10 text-teal-400 hover:bg-teal-500 hover:text-dark-bg transition-all"
+                                        title="Pedir por WhatsApp"
                                     >
-                                        <Phone size={24} />
+                                        <Phone size={20} />
                                     </a>
                                 </div>
                             </div>

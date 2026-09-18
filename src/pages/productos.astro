@@ -34,7 +34,7 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
           <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"
           ></span>
         </span>
-        Búnker Álamos Norte • Domicilios 24/7
+        Búnkers Álamos & Bachué • Domicilios 24/7
       </div>
 
       <h1
@@ -57,12 +57,12 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
       <!-- Buscador en tiempo real -->
       <div class="max-w-xl mx-auto pt-2 px-2">
         <div class="relative flex items-center">
-          <Search size={18} class="absolute left-4 text-slate-400 pointer-events-none" />
+          <Search size={16} class="absolute left-3.5 sm:left-4 text-slate-400 pointer-events-none" />
           <input
             id="catalog-search"
             type="search"
-            placeholder="Buscar por marca, presentación (ej. Néctar, Corona, Buchanans, Litro)..."
-            class="w-full pl-12 pr-12 py-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-neon-blue focus:ring-1 focus:ring-neon-blue transition-all"
+            placeholder="Buscar por marca o tipo (ej. Néctar, Corona, Whisky)..."
+            class="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-neon-blue focus:ring-1 focus:ring-neon-blue transition-all"
             autocomplete="off"
           />
           <button
@@ -85,19 +85,19 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
     ) : (
       <>
         <!-- Menú de Categorías (Tabs Interactivas) -->
-        <div class="sticky top-20 md:top-24 z-30 bg-dark-bg/85 backdrop-blur-xl -mx-6 px-6 py-3 border-y border-white/5 shadow-lg">
+        <div class="sticky top-14 sm:top-20 md:top-24 z-30 bg-dark-bg/85 backdrop-blur-xl -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 sm:py-3 border-y border-white/5 shadow-lg">
           <nav
             id="category-nav"
-            class="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1"
+            class="flex items-center gap-1.5 sm:gap-3 overflow-x-auto no-scrollbar py-0.5"
           >
             <!-- Botón Todos -->
             <button
               type="button"
               data-filter="all"
-              class="cat-filter-btn px-5 sm:px-6 py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[11px] tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer border-neon-blue text-neon-blue bg-neon-blue/10 shadow-[0_0_15px_rgba(0,209,255,0.2)]"
+              class="cat-filter-btn px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider whitespace-nowrap flex items-center gap-1.5 sm:gap-2 cursor-pointer border-neon-blue text-neon-blue bg-neon-blue/10 shadow-[0_0_15px_rgba(0,209,255,0.2)]"
             >
               <span>Todos</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-neon-blue/20 font-mono font-black">
+              <span class="text-[8.5px] sm:text-[9px] px-1.5 py-0.5 rounded-md bg-neon-blue/20 font-mono font-black">
                 {totalProducts}
               </span>
             </button>
@@ -107,10 +107,10 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
               <button
                 type="button"
                 data-filter={cat.name}
-                class="cat-filter-btn px-5 sm:px-6 py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[11px] tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer border-white/10 text-slate-400 hover:border-white/30 hover:text-white bg-white/[0.02]"
+                class="cat-filter-btn px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider whitespace-nowrap flex items-center gap-1.5 sm:gap-2 cursor-pointer border-white/10 text-slate-400 hover:border-white/30 hover:text-white bg-white/[0.02]"
               >
                 <span>{cat.name}</span>
-                <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-white/5 font-mono text-slate-400">
+                <span class="text-[8.5px] sm:text-[9px] px-1.5 py-0.5 rounded-md bg-white/5 font-mono text-slate-400">
                   {cat.products ? cat.products.length : 0}
                 </span>
               </button>
@@ -119,42 +119,42 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
         </div>
 
         <!-- Mensaje de Cero Resultados de Búsqueda -->
-        <div id="no-search-results" class="hidden text-center py-20 px-6 glass-neon rounded-3xl border border-white/10 space-y-4">
-          <div class="w-16 h-16 mx-auto rounded-full bg-neon-pink/10 border border-neon-pink/30 flex items-center justify-center text-neon-pink">
-            <Search size={28} />
+        <div id="no-search-results" class="hidden text-center py-16 sm:py-20 px-4 sm:px-6 glass-neon rounded-3xl border border-white/10 space-y-4">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-full bg-neon-pink/10 border border-neon-pink/30 flex items-center justify-center text-neon-pink">
+            <Search size={24} />
           </div>
-          <h3 class="text-xl font-bold text-white uppercase tracking-wider">No se encontraron productos</h3>
-          <p class="text-slate-400 text-sm max-w-md mx-auto">
+          <h3 class="text-lg sm:text-xl font-bold text-white uppercase tracking-wider">No se encontraron productos</h3>
+          <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">
             No encontramos coincidencias para tu búsqueda. Intenta con otra palabra clave o selecciona otra categoría.
           </p>
           <button
             type="button"
             id="reset-search-btn"
-            class="px-6 py-2.5 rounded-xl bg-neon-blue/20 border border-neon-blue/40 text-neon-blue text-xs font-bold uppercase tracking-wider hover:bg-neon-blue hover:text-dark-bg transition-all"
+            class="px-5 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-neon-blue/20 border border-neon-blue/40 text-neon-blue text-xs font-bold uppercase tracking-wider hover:bg-neon-blue hover:text-dark-bg transition-all"
           >
             Ver Todo el Arsenal
           </button>
         </div>
 
         <!-- Listado de Secciones de Categorías y Productos -->
-        <div id="catalog-container" class="space-y-20 pt-4">
+        <div id="catalog-container" class="space-y-12 sm:space-y-20 pt-2 sm:pt-4">
           {categories.map((category) => (
             <section
-              class="category-section space-y-8 relative transition-all duration-300"
+              class="category-section space-y-4 sm:space-y-8 relative transition-all duration-300"
               data-cat-name={category.name}
             >
               <!-- Cabecera de Categoría Sticky -->
-              <div class="sticky top-36 md:top-40 z-20 py-3.5 bg-dark-bg/95 backdrop-blur-md flex items-center justify-between border-b border-white/10">
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-widest text-white">
+              <div class="sticky top-[70px] sm:top-36 md:top-40 z-20 py-2.5 sm:py-3.5 bg-dark-bg/95 backdrop-blur-md flex items-center justify-between border-b border-white/10">
+                <h2 class="text-xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-widest text-white">
                   {category.name}
                 </h2>
-                <span class="text-[11px] font-mono font-bold text-neon-blue/90 bg-neon-blue/10 border border-neon-blue/30 px-3 py-1 rounded-full">
-                  {category.products?.length || 0} referencias
+                <span class="text-[9.5px] sm:text-[11px] font-mono font-bold text-neon-blue/90 bg-neon-blue/10 border border-neon-blue/30 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full">
+                  {category.products?.length || 0} refs
                 </span>
               </div>
 
               {category.products && category.products.length > 0 ? (
-                <div class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                <div class="products-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {category.products.map((product) => {
                     const priceFormatted = formatCOP(product.price);
                     const isAvailable = product.stock_quantity > 0;
@@ -165,11 +165,11 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
                         data-name={product.name.toLowerCase()}
                         data-cat={category.name.toLowerCase()}
                       >
-                        <div class="absolute -inset-1 bg-gradient-to-r from-teal-500 to-neon-purple rounded-[2.5rem] blur opacity-0 group-hover:opacity-20 transition duration-500" />
+                        <div class="absolute -inset-1 bg-gradient-to-r from-teal-500 to-neon-purple rounded-2xl sm:rounded-[2.5rem] blur opacity-0 group-hover:opacity-20 transition duration-500" />
 
-                        <div class="relative flex flex-col h-full glass-neon rounded-[2rem] border border-white/5 overflow-hidden transition-all duration-500 group-hover:-translate-y-2 group-hover:border-teal-500/30">
+                        <div class="relative flex flex-col h-full glass-neon rounded-2xl sm:rounded-[2rem] border border-white/5 overflow-hidden transition-all duration-500 group-hover:-translate-y-1.5 group-hover:border-teal-500/30">
                           <!-- Imagen del Producto Directa desde CDN (WebP) -->
-                          <div class="relative aspect-[4/5] overflow-hidden bg-[#0A0F1E] flex items-center justify-center p-6">
+                          <div class="relative aspect-[4/5] overflow-hidden bg-[#0A0F1E] flex items-center justify-center p-3 sm:p-6">
                             <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-950/20 via-transparent to-transparent pointer-events-none" />
                             
                             <img
@@ -184,43 +184,44 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
                             />
                             
                             <!-- Badge de Disponibilidad -->
-                            <div class="absolute top-4 left-4">
+                            <div class="absolute top-2 left-2 sm:top-4 sm:left-4">
                               <span class:list={[
-                                "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider backdrop-blur-md border",
+                                "px-2 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[7.5px] sm:text-[9px] font-black uppercase tracking-wider backdrop-blur-md border",
                                 isAvailable
                                   ? "bg-teal-500/20 border-teal-500/50 text-teal-300" 
                                   : "bg-black/60 border-red-500/50 text-red-400"
                               ]}>
-                                {isAvailable ? `En Stock (${product.stock_quantity})` : "Agotado"}
+                                {isAvailable ? `Stock (${product.stock_quantity})` : "Agotado"}
                               </span>
                             </div>
                           </div>
 
                           <!-- Información y Acción -->
-                          <div class="flex flex-col flex-1 p-6 space-y-4">
-                            <h3 class="text-base font-black text-white uppercase italic tracking-wide group-hover:text-teal-400 transition-colors line-clamp-2 min-h-[2.75rem] flex items-center">
+                          <div class="flex flex-col flex-1 p-3 sm:p-6 space-y-2 sm:space-y-4">
+                            <h3 class="text-xs sm:text-base font-black text-white uppercase italic tracking-wide group-hover:text-teal-400 transition-colors line-clamp-2 min-h-[2.2rem] sm:min-h-[2.75rem] flex items-center leading-tight">
                               {product.name}
                             </h3>
 
-                            <div class="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                            <div class="mt-auto flex items-center justify-between pt-2 sm:pt-4 border-t border-white/5">
                               <div class="flex flex-col">
-                                <span class="text-[9px] uppercase font-mono tracking-widest text-slate-400">
+                                <span class="text-[8px] sm:text-[9px] uppercase font-mono tracking-widest text-slate-400">
                                   Precio
                                 </span>
-                                <span class="text-2xl font-black text-white italic tracking-tight font-mono">
+                                <span class="text-sm sm:text-2xl font-black text-white italic tracking-tight font-mono">
                                   {priceFormatted}
                                 </span>
                               </div>
 
                               <button 
-                                class="add-to-cart-btn flex items-center justify-center w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_20px_rgba(255,0,229,0.6)] transition-all duration-300 active:scale-90 group/btn cursor-pointer"
+                                class="add-to-cart-btn flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-neon-pink/10 border border-neon-pink/40 text-neon-pink hover:bg-neon-pink hover:text-white hover:shadow-[0_0_20px_rgba(255,0,229,0.6)] transition-all duration-300 active:scale-90 group/btn cursor-pointer flex-shrink-0"
                                 data-id={product.id}
                                 data-name={product.name}
                                 data-price={priceFormatted}
                                 data-image={product.image_url || 'https://placehold.co/600x800/0A0F1E/white?text=Diverpremier'}
                                 title="Agregar al carrito"
                               >
-                                <Plus size={20} class="group-hover/btn:scale-125 transition-transform" />
+                                <Plus size={16} class="sm:hidden" />
+                                <Plus size={20} class="hidden sm:block group-hover/btn:scale-125 transition-transform" />
                               </button>
                             </div>
                           </div>
@@ -230,8 +231,8 @@ const totalProducts = categories.reduce((sum, c) => sum + (c.products?.length ||
                   })}
                 </div>
               ) : (
-                <div class="p-8 text-center border-2 border-dashed border-white/10 rounded-2xl glass-neon">
-                  <p class="text-slate-400 font-medium">No hay productos disponibles en esta categoría por el momento.</p>
+                <div class="p-6 sm:p-8 text-center border-2 border-dashed border-white/10 rounded-2xl glass-neon">
+                  <p class="text-slate-400 text-xs sm:text-sm font-medium">No hay productos disponibles en esta categoría por el momento.</p>
                 </div>
               )}
             </section>

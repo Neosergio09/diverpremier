@@ -112,138 +112,152 @@ import {
        ═══════════════════════════════════════════════════════ -->
   <div
     id="info-panel"
-    class="fixed bottom-[95px] md:bottom-auto md:top-28 left-3 right-3 md:left-auto md:right-8 z-[1000] max-h-[62vh] md:max-h-[85vh] overflow-y-auto no-scrollbar"
+    class="fixed bottom-[85px] md:bottom-auto md:top-28 left-2 right-2 sm:left-3 sm:right-3 md:left-auto md:right-8 z-[1000] max-h-[70vh] md:max-h-[85vh] overflow-y-auto no-scrollbar transition-all duration-300"
   >
     <div
-      class="info-card glass-neon p-4 md:p-6 rounded-2xl md:rounded-3xl border border-white/10 w-full md:w-[85vw] max-w-[340px] lg:max-w-[360px] mx-auto md:mx-0 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col gap-3.5 md:gap-4 backdrop-blur-xl"
+      class="info-card glass-neon p-3.5 sm:p-4 md:p-6 rounded-2xl md:rounded-3xl border border-white/10 w-full md:w-[85vw] max-w-[340px] lg:max-w-[360px] mx-auto md:mx-0 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col gap-2.5 sm:gap-3.5 md:gap-4 backdrop-blur-xl"
     >
-      <!-- Mobile Grabber Line -->
-      <div class="flex justify-center md:hidden mb-0.5">
-        <div class="w-10 h-1 rounded-full bg-white/20"></div>
-      </div>
+      <!-- Mobile Grabber Toggle Button -->
+      <button
+        type="button"
+        id="mobile-panel-grabber"
+        class="flex md:hidden flex-col items-center justify-center w-full py-1 -mt-1 cursor-pointer group bg-transparent border-0 outline-none select-none"
+        aria-label="Alternar visibilidad del panel"
+      >
+        <div class="w-10 h-1 rounded-full bg-white/25 group-hover:bg-teal-400/80 transition-colors"></div>
+        <span id="grabber-status-text" class="text-[7.5px] font-mono uppercase tracking-widest text-slate-400 mt-1">
+          Tocar para contraer
+        </span>
+      </button>
 
-      <!-- Selector de Sedes / Búnkers -->
-      <div class="space-y-1.5">
-        <div class="flex items-center justify-between px-1">
-          <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Seleccionar Búnker</span>
-          <span class="text-[8px] font-mono text-teal-400 font-bold uppercase">2 Sedes</span>
-        </div>
-        <div class="flex items-center p-1 bg-white/5 border border-white/10 rounded-2xl gap-1">
-          <button
-            type="button"
-            id="tab-bunker-alamos"
-            class="bunker-tab active flex-1 py-1.5 px-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-white bg-teal-500/20 border border-teal-500/40 shadow-sm cursor-pointer"
-            data-bunker-id="alamos"
-          >
-            Álamos Norte
-          </button>
-          <button
-            type="button"
-            id="tab-bunker-bachue"
-            class="bunker-tab flex-1 py-1.5 px-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 hover:text-white border border-transparent cursor-pointer"
-            data-bunker-id="bachue"
-          >
-            Ciudad Bachué
-          </button>
-        </div>
-      </div>
-
-      <!-- Header Búnker Seleccionado -->
-      <div class="flex justify-between items-start pb-3 border-b border-white/10">
+      <!-- Header Búnker Seleccionado (Siempre visible en móvil) -->
+      <div class="flex justify-between items-start pb-2.5 sm:pb-3 border-b border-white/10">
         <div>
-          <span id="bunker-tag" class="text-[9px] font-black uppercase tracking-[0.25em] text-teal-400">Búnker Central</span>
-          <h2 id="bunker-name" class="info-title font-black uppercase tracking-tight text-lg md:text-xl leading-tight text-white">
+          <div class="flex items-center gap-1.5">
+            <span id="bunker-tag" class="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-teal-400">Búnker Central</span>
+            <span id="stat-mini-pill" class="md:hidden text-[7.5px] font-mono font-bold px-1.5 py-0.5 rounded bg-teal-400/10 text-teal-300 border border-teal-400/20">0.0 KM • 15 MIN</span>
+          </div>
+          <h2 id="bunker-name" class="info-title font-black uppercase tracking-tight text-base sm:text-lg md:text-xl leading-tight text-white mt-0.5">
             Álamos Norte
           </h2>
-          <p class="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
+          <p class="text-[9.5px] sm:text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
             <MapPin size={11} class="text-teal-400 flex-shrink-0" />
-            <span id="bunker-address">Cl. 71B # 100-38, Engativá, Bogotá</span>
+            <span id="bunker-address" class="truncate max-w-[190px] sm:max-w-none">Cl. 71B # 100-38, Engativá, Bogotá</span>
           </p>
         </div>
-        <div class="status-badge-live flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-teal-400/30 bg-teal-400/10">
+        <div class="status-badge-live flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-teal-400/30 bg-teal-400/10 flex-shrink-0">
           <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse shadow-[0_0_8px_#2dd4bf]"></span>
-          <span class="text-teal-400 text-[9px] font-bold uppercase tracking-wider">OPEN</span>
+          <span class="text-teal-400 text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider">OPEN</span>
         </div>
       </div>
 
-      <!-- Botones "Cómo Llegar" al Negocio (Waze / Google Maps) -->
-      <div class="space-y-1.5">
-        <p class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
-          Navegar hacia el Búnker Activo
-        </p>
-        <div class="grid grid-cols-2 gap-2">
-          <a
-            id="link-bunker-gmaps"
-            href="https://www.google.com/maps/dir/?api=1&destination=4.7026601,-74.1174237"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white text-[9px] font-bold tracking-wider uppercase transition-all"
-          >
-            <span>Google Maps</span>
-            <ExternalLink size={11} class="text-teal-400" />
-          </a>
-          <a
-            id="link-bunker-waze"
-            href="https://waze.com/ul?ll=4.7026601,-74.1174237&navigate=yes"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-teal-400/20 bg-teal-400/5 hover:bg-teal-400/15 hover:border-teal-400/40 text-teal-400 text-[9px] font-bold tracking-wider uppercase transition-all"
-          >
-            <span>Waze</span>
-            <Navigation size={11} class="text-teal-400" />
-          </a>
-        </div>
-      </div>
-
-      <!-- Sección de Cobertura Interactiva Dinámica -->
-      <div
-        id="coverage-status-box"
-        class="p-3 rounded-2xl border border-teal-400/20 bg-teal-400/5 transition-all duration-300"
-      >
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
-            Estado de Cobertura
-          </span>
-          <span id="coverage-badge" class="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-teal-400/40 bg-teal-400/10 text-teal-400">
-            ZONA FLASH ⚡
-          </span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 text-center">
-          <div class="p-2 rounded-xl bg-white/5 border border-white/5">
-            <span class="text-[8px] uppercase tracking-wider text-slate-400 block">Distancia</span>
-            <span id="stat-distance" class="text-sm md:text-base font-black text-white">0.0 KM</span>
+      <!-- Contenido Plegable en Móvil -->
+      <div id="panel-expandable-body" class="flex flex-col gap-2.5 sm:gap-3.5 md:gap-4 transition-all duration-300">
+        <!-- Selector de Sedes / Búnkers -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Seleccionar Búnker</span>
+            <span class="text-[8px] font-mono text-teal-400 font-bold uppercase">2 Sedes</span>
           </div>
-          <div class="p-2 rounded-xl bg-white/5 border border-white/5">
-            <span class="text-[8px] uppercase tracking-wider text-slate-400 block">Entrega Estimada</span>
-            <span id="stat-time" class="text-sm md:text-base font-black text-teal-400">15 - 25 MIN</span>
+          <div class="flex items-center p-1 bg-white/5 border border-white/10 rounded-2xl gap-1">
+            <button
+              type="button"
+              id="tab-bunker-alamos"
+              class="bunker-tab active flex-1 py-1.5 px-2 rounded-xl text-[8.5px] sm:text-[9px] font-black uppercase tracking-wider transition-all text-white bg-teal-500/20 border border-teal-500/40 shadow-sm cursor-pointer"
+              data-bunker-id="alamos"
+            >
+              Álamos Norte
+            </button>
+            <button
+              type="button"
+              id="tab-bunker-bachue"
+              class="bunker-tab flex-1 py-1.5 px-2 rounded-xl text-[8.5px] sm:text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 hover:text-white border border-transparent cursor-pointer"
+              data-bunker-id="bachue"
+            >
+              Ciudad Bachué
+            </button>
           </div>
         </div>
 
-        <p id="coverage-note" class="text-[9px] text-slate-400 text-center mt-2 leading-relaxed">
-          📍 Toca cualquier punto del mapa o busca tu dirección para verificar la entrega en tu puerta.
-        </p>
-      </div>
+        <!-- Botones "Cómo Llegar" al Negocio (Waze / Google Maps) -->
+        <div class="space-y-1.5">
+          <p class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
+            Navegar hacia el Búnker Activo
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <a
+              id="link-bunker-gmaps"
+              href="https://www.google.com/maps/dir/?api=1&destination=4.7026601,-74.1174237"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white text-[8.5px] sm:text-[9px] font-bold tracking-wider uppercase transition-all"
+            >
+              <span>Google Maps</span>
+              <ExternalLink size={11} class="text-teal-400" />
+            </a>
+            <a
+              id="link-bunker-waze"
+              href="https://waze.com/ul?ll=4.7026601,-74.1174237&navigate=yes"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border border-teal-400/20 bg-teal-400/5 hover:bg-teal-400/15 hover:border-teal-400/40 text-teal-400 text-[8.5px] sm:text-[9px] font-bold tracking-wider uppercase transition-all"
+            >
+              <span>Waze</span>
+              <Navigation size={11} class="text-teal-400" />
+            </a>
+          </div>
+        </div>
 
-      <!-- Botón Pedir a este punto por WhatsApp -->
-      <a
-        id="btn-whatsapp-delivery"
-        href="https://wa.me/573114940503?text=Hola%20Diverpremier,%20quiero%20hacer%20un%20pedido%20para%20Central%20%C3%81lamos."
-        target="_blank"
-        rel="noopener noreferrer"
-        class="cta-btn group relative w-full py-3.5 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border"
-      >
-        <MessageCircle
-          size={16}
-          class="text-teal-400 group-hover:scale-110 transition-transform"
-        />
-        <span
-          id="btn-whatsapp-label"
-          class="text-teal-400 font-black text-[10px] tracking-[0.18em] uppercase"
+        <!-- Sección de Cobertura Interactiva Dinámica -->
+        <div
+          id="coverage-status-box"
+          class="p-2.5 sm:p-3 rounded-2xl border border-teal-400/20 bg-teal-400/5 transition-all duration-300"
         >
-          Consultar Domicilio
-        </span>
-      </a>
+          <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+            <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
+              Estado de Cobertura
+            </span>
+            <span id="coverage-badge" class="text-[7.5px] sm:text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-teal-400/40 bg-teal-400/10 text-teal-400">
+              ZONA FLASH ⚡
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="p-1.5 sm:p-2 rounded-xl bg-white/5 border border-white/5">
+              <span class="text-[7.5px] sm:text-[8px] uppercase tracking-wider text-slate-400 block">Distancia</span>
+              <span id="stat-distance" class="text-xs sm:text-base font-black text-white">0.0 KM</span>
+            </div>
+            <div class="p-1.5 sm:p-2 rounded-xl bg-white/5 border border-white/5">
+              <span class="text-[7.5px] sm:text-[8px] uppercase tracking-wider text-slate-400 block">Entrega Estimada</span>
+              <span id="stat-time" class="text-xs sm:text-base font-black text-teal-400">15 - 25 MIN</span>
+            </div>
+          </div>
+
+          <p id="coverage-note" class="text-[8.5px] sm:text-[9px] text-slate-400 text-center mt-1.5 sm:mt-2 leading-relaxed">
+            📍 Toca cualquier punto del mapa o busca tu dirección para verificar la entrega en tu puerta.
+          </p>
+        </div>
+
+        <!-- Botón Pedir a este punto por WhatsApp -->
+        <a
+          id="btn-whatsapp-delivery"
+          href="https://wa.me/573114940503?text=Hola%20Diverpremier,%20quiero%20hacer%20un%20pedido%20para%20Central%20%C3%81lamos."
+          target="_blank"
+          rel="noopener noreferrer"
+          class="cta-btn group relative w-full py-3 sm:py-3.5 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border"
+        >
+          <MessageCircle
+            size={15}
+            class="text-teal-400 group-hover:scale-110 transition-transform"
+          />
+          <span
+            id="btn-whatsapp-label"
+            class="text-teal-400 font-black text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase"
+          >
+            Consultar Domicilio
+          </span>
+        </a>
+      </div>
     </div>
   </div>
 </MainLayout>
@@ -355,6 +369,19 @@ import {
   }
   html.light .marker-label span {
     color: #0f766e !important;
+  }
+
+  /* ═══════════════════════════════════════════
+     COLLAPSIBLE MOBILE INFO PANEL
+     ═══════════════════════════════════════════ */
+  @media (max-width: 767px) {
+    #info-panel.is-collapsed #panel-expandable-body {
+      display: none !important;
+    }
+    #info-panel.is-collapsed .info-card {
+      padding-bottom: 0.5rem !important;
+      padding-top: 0.5rem !important;
+    }
   }
 </style>
 
@@ -591,9 +618,13 @@ import {
       }
 
       if (timeEl) timeEl.innerText = estimatedMinutes;
+      const miniPill = document.getElementById("stat-mini-pill");
+      if (miniPill) {
+        miniPill.innerText = `${distanceKm} KM • ${estimatedMinutes}`;
+      }
       if (badgeEl) {
         badgeEl.innerText = badgeText;
-        badgeEl.className = `text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${badgeClass}`;
+        badgeEl.className = `text-[7.5px] sm:text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${badgeClass}`;
       }
       if (noteEl) noteEl.innerText = noteText;
 
@@ -830,6 +861,23 @@ import {
         btnReset.addEventListener("click", function () {
           if (mapInstance && activeBunker) {
             mapInstance.flyTo(activeBunker.coords, 15, { duration: 1 });
+          }
+        });
+      }
+
+      // ── Mobile Grabber Toggle ──
+      const grabberBtn = document.getElementById("mobile-panel-grabber");
+      const infoPanel = document.getElementById("info-panel");
+      const grabberStatusText = document.getElementById("grabber-status-text");
+
+      if (grabberBtn && infoPanel) {
+        grabberBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const isCollapsed = infoPanel.classList.toggle("is-collapsed");
+          if (grabberStatusText) {
+            grabberStatusText.innerText = isCollapsed
+              ? "Tocar para expandir detalles"
+              : "Tocar para contraer";
           }
         });
       }

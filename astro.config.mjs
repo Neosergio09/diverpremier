@@ -5,6 +5,9 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
+  // 🌐 Dominio de producción para SEO, Canonical URLs y Sitemap
+  site: process.env.PUBLIC_SITE_URL || 'https://diverpremier.com',
+
   // 🚀 CRUCIAL: Esto le dice a Astro que el búnker es dinámico
   output: 'server',
 
