@@ -28,10 +28,34 @@
       <input type="text" id="delivery-address" placeholder="Ej: Calle 123 #45-67, Apto 101" class="w-full bg-[#0A0F1E] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-neon-blue/50 focus:bg-neon-blue/5 transition-all shadow-inner" />
     </div>
 
-    <div id="pickup-info" class="hidden mt-2 p-5 bg-teal-400/10 border border-teal-400/30 rounded-2xl animate-in fade-in duration-300">
-      <p class="text-teal-400 text-[9px] uppercase font-black tracking-[0.2em] mb-1">Punto de Entrega</p>
-      <p class="text-white font-bold text-sm tracking-wide">Búnker Central: Cl. 71B # 100-38, Álamos Norte</p>
-      <p class="text-slate-400 text-xs mt-1">Tu pedido estará listo en 15 minutos.</p>
+    <div id="pickup-info" class="hidden mt-2 p-4 bg-teal-400/10 border border-teal-400/30 rounded-2xl animate-in fade-in duration-300 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-teal-400 text-[9px] uppercase font-black tracking-[0.2em]">Punto de Retiro / Búnker</p>
+        <span class="text-[8px] text-teal-300/70 font-mono">2 Sedes Activas</span>
+      </div>
+      <div class="grid grid-cols-1 gap-2">
+        <label class="flex items-center gap-3 p-3 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-teal-400/40 transition-all has-[:checked]:border-teal-400/60 has-[:checked]:bg-teal-400/10">
+          <input type="radio" name="pickup-location" value="Búnker Álamos: Cl. 71B # 100-38" checked class="accent-teal-400" />
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <p class="text-white font-bold text-xs">Sede Álamos Norte</p>
+              <span class="text-[8px] font-mono text-teal-400 uppercase font-black">Central</span>
+            </div>
+            <p class="text-slate-400 text-[10px]">Cl. 71B # 100-38, Engativá</p>
+          </div>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-teal-400/40 transition-all has-[:checked]:border-teal-400/60 has-[:checked]:bg-teal-400/10">
+          <input type="radio" name="pickup-location" value="Búnker Bachué: Cl. 88 # 95G-15" class="accent-teal-400" />
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <p class="text-white font-bold text-xs">Sede Ciudad Bachué</p>
+              <span class="text-[8px] font-mono text-cyan-400 uppercase font-black">Nuevo</span>
+            </div>
+            <p class="text-slate-400 text-[10px]">Cl. 88 # 95G-15, Engativá</p>
+          </div>
+        </label>
+      </div>
+      <p class="text-slate-400 text-[10px] mt-1">Tu pedido estará listo para retirar en 15 minutos en el búnker seleccionado.</p>
     </div>
   </div>
 
@@ -243,9 +267,10 @@
       lastOrderItems = Object.values(cartItems.get());
       lastOrderTotal = cartTotal.get();
 
+      const selectedPickup = (document.querySelector('input[name="pickup-location"]:checked') as HTMLInputElement)?.value || "Búnker Álamos: Cl. 71B # 100-38";
       const deliveryMeta = {
         method: deliveryMethod,
-        address: deliveryMethod === "Domicilio" ? addressInput?.value.trim() : "Recoger en Búnker: Cl. 71B # 100-38, Álamos Norte",
+        address: deliveryMethod === "Domicilio" ? addressInput?.value.trim() : `Recoger en ${selectedPickup}`,
         payment_method: paymentMethod,
         customer_name: customerNameInput?.value.trim(),
         customer_phone: customerPhoneInput?.value.trim(),
@@ -353,7 +378,7 @@
 
       const itemsText = lastOrderItems.map(i => `${i.quantity}x ${i.name}`).join('%0A');
       const total = formatCOP(lastOrderTotal);
-      const address = deliveryMethod === "Domicilio" ? (addressInput?.value || "Sin dirección") : "Recoger en Búnker";
+      const address = deliveryMethod === "Domicilio" ? (addressInput?.value || "Sin dirección") : `Recoger en ${selectedPickup}`;
       const custName = customerNameInput?.value.trim() || "Cliente";
       const custPhone = customerPhoneInput?.value.trim() || "";
 

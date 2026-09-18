@@ -44,7 +44,7 @@ import {
           </span>
         </div>
         <span class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">
-          Álamos • Bogotá
+          Álamos • Bachué
         </span>
       </div>
 
@@ -113,16 +113,42 @@ import {
         <div class="w-10 h-1 rounded-full bg-white/20"></div>
       </div>
 
-      <!-- Header Búnker -->
+      <!-- Selector de Sedes / Búnkers -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Seleccionar Búnker</span>
+          <span class="text-[8px] font-mono text-teal-400 font-bold uppercase">2 Sedes</span>
+        </div>
+        <div class="flex items-center p-1 bg-white/5 border border-white/10 rounded-2xl gap-1">
+          <button
+            type="button"
+            id="tab-bunker-alamos"
+            class="bunker-tab active flex-1 py-1.5 px-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-white bg-teal-500/20 border border-teal-500/40 shadow-sm cursor-pointer"
+            data-bunker-id="alamos"
+          >
+            Álamos Norte
+          </button>
+          <button
+            type="button"
+            id="tab-bunker-bachue"
+            class="bunker-tab flex-1 py-1.5 px-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 hover:text-white border border-transparent cursor-pointer"
+            data-bunker-id="bachue"
+          >
+            Ciudad Bachué
+          </button>
+        </div>
+      </div>
+
+      <!-- Header Búnker Seleccionado -->
       <div class="flex justify-between items-start pb-3 border-b border-white/10">
         <div>
-          <span class="text-[9px] font-black uppercase tracking-[0.25em] text-teal-400">Búnker Central</span>
-          <h2 class="info-title font-black uppercase tracking-tight text-lg md:text-xl leading-tight text-white">
+          <span id="bunker-tag" class="text-[9px] font-black uppercase tracking-[0.25em] text-teal-400">Búnker Central</span>
+          <h2 id="bunker-name" class="info-title font-black uppercase tracking-tight text-lg md:text-xl leading-tight text-white">
             Álamos Norte
           </h2>
           <p class="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
             <MapPin size={11} class="text-teal-400 flex-shrink-0" />
-            <span>Cl. 71B # 100-38, Engativá, Bogotá</span>
+            <span id="bunker-address">Cl. 71B # 100-38, Engativá, Bogotá</span>
           </p>
         </div>
         <div class="status-badge-live flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-teal-400/30 bg-teal-400/10">
@@ -134,10 +160,11 @@ import {
       <!-- Botones "Cómo Llegar" al Negocio (Waze / Google Maps) -->
       <div class="space-y-1.5">
         <p class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">
-          Navegar hacia el Búnker
+          Navegar hacia el Búnker Activo
         </p>
         <div class="grid grid-cols-2 gap-2">
           <a
+            id="link-bunker-gmaps"
             href="https://www.google.com/maps/dir/?api=1&destination=4.7026601,-74.1174237"
             target="_blank"
             rel="noopener noreferrer"
@@ -147,6 +174,7 @@ import {
             <ExternalLink size={11} class="text-teal-400" />
           </a>
           <a
+            id="link-bunker-waze"
             href="https://waze.com/ul?ll=4.7026601,-74.1174237&navigate=yes"
             target="_blank"
             rel="noopener noreferrer"
@@ -338,8 +366,35 @@ import {
     /** @type {MutationObserver | null} */
     let themeObserver = null;
 
-    // Coordenadas fijas del Búnker Álamos Norte (Bogotá): Cl. 71B # 100-38
-    const BUNKER_COORDS = [4.7026601, -74.1174237];
+    // Sedes operativas de Diverpremier en Bogotá:
+    // Sede 1: Álamos Norte (Cl. 71B # 100-38)
+    // Sede 2: Ciudad Bachué (Cl. 88 # 95G-15)
+    const BUNKERS = [
+      {
+        id: "alamos",
+        tag: "Búnker Central",
+        name: "Álamos Norte",
+        label: "BÚNKER ÁLAMOS",
+        address: "Cl. 71B # 100-38, Engativá, Bogotá",
+        coords: [4.7026601, -74.1174237],
+        gmaps: "https://www.google.com/maps/dir/?api=1&destination=4.7026601,-74.1174237",
+        waze: "https://waze.com/ul?ll=4.7026601,-74.1174237&navigate=yes",
+        color: "#2dd4bf",
+      },
+      {
+        id: "bachue",
+        tag: "Nueva Sede",
+        name: "Ciudad Bachué",
+        label: "BÚNKER BACHUÉ",
+        address: "Cl. 88 # 95G-15, Engativá, Bogotá",
+        coords: [4.716100, -74.103800],
+        gmaps: "https://www.google.com/maps/dir/?api=1&destination=4.716100,-74.103800",
+        waze: "https://waze.com/ul?ll=4.716100,-74.103800&navigate=yes",
+        color: "#38bdf8",
+      },
+    ];
+
+    let activeBunker = BUNKERS[0];
     const FLASH_RADIUS_METERS = 2500; // 2.5 KM
     const EXTENDED_RADIUS_METERS = 6000; // 6.0 KM
 
@@ -368,17 +423,25 @@ import {
       }).addTo(mapInstance);
     }
 
-    function createBunkerMarkerHtml() {
+    function createBunkerMarkerHtml(bunker) {
+      const isAlamos = bunker.id === "alamos";
+      const glowColor = isAlamos ? "bg-teal-400/40" : "bg-cyan-400/40";
+      const ringColor = isAlamos ? "border-teal-400/40" : "border-cyan-400/40";
+      const ringColor2 = isAlamos ? "border-teal-400/60" : "border-cyan-400/60";
+      const dotColor = isAlamos ? "bg-teal-400 shadow-[0_0_20px_#2dd4bf]" : "bg-cyan-400 shadow-[0_0_20px_#38bdf8]";
+      const borderLabel = isAlamos ? "border-teal-500/30" : "border-cyan-500/30";
+      const textLabel = isAlamos ? "text-teal-400 drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]" : "text-cyan-400 drop-shadow-[0_0_5px_rgba(56,189,248,0.5)]";
+
       return `
-        <div class="relative flex items-center justify-center w-12 h-12">
-          <div class="absolute w-full h-full bg-teal-400/40 rounded-full blur-xl animate-pulse"></div>
-          <div class="absolute w-24 h-24 border border-teal-400/40 rounded-full pulse-ring" style="animation-duration:3s"></div>
-          <div class="absolute w-16 h-16 border border-teal-400/60 rounded-full pulse-ring" style="animation-duration:2s;animation-delay:0.5s"></div>
-          <div class="relative w-5 h-5 bg-teal-400 rounded-full shadow-[0_0_20px_#2dd4bf] border border-white flex justify-center items-center">
+        <div class="relative flex items-center justify-center w-12 h-12 cursor-pointer">
+          <div class="absolute w-full h-full ${glowColor} rounded-full blur-xl animate-pulse"></div>
+          <div class="absolute w-24 h-24 border ${ringColor} rounded-full pulse-ring" style="animation-duration:3s"></div>
+          <div class="absolute w-16 h-16 border ${ringColor2} rounded-full pulse-ring" style="animation-duration:2s;animation-delay:0.5s"></div>
+          <div class="relative w-5 h-5 ${dotColor} rounded-full border border-white flex justify-center items-center">
             <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
           </div>
-          <div class="marker-label absolute mt-16 whitespace-nowrap px-3 py-1.5 glass-neon rounded-xl border border-teal-500/30 bg-[#020617]/80 backdrop-blur-md">
-            <span class="text-teal-400 font-black text-[9px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]">BÚNKER ÁLAMOS</span>
+          <div class="marker-label absolute mt-16 whitespace-nowrap px-3 py-1.5 glass-neon rounded-xl border ${borderLabel} bg-[#020617]/80 backdrop-blur-md">
+            <span class="${textLabel} font-black text-[9px] uppercase tracking-widest">${bunker.label}</span>
           </div>
         </div>
       `;
@@ -432,9 +495,20 @@ import {
       if (!mapInstance) return;
 
       const userPos = L.latLng(lat, lng);
-      const bunkerPos = L.latLng(BUNKER_COORDS[0], BUNKER_COORDS[1]);
-      const distanceMeters = bunkerPos.distanceTo(userPos);
-      const distanceKm = (distanceMeters / 1000).toFixed(1);
+
+      // Encontrar el búnker más cercano a la ubicación del usuario
+      let nearestBunker = BUNKERS[0];
+      let minDistanceMeters = Infinity;
+
+      BUNKERS.forEach((b) => {
+        const d = L.latLng(b.coords[0], b.coords[1]).distanceTo(userPos);
+        if (d < minDistanceMeters) {
+          minDistanceMeters = d;
+          nearestBunker = b;
+        }
+      });
+
+      const distanceKm = (minDistanceMeters / 1000).toFixed(1);
 
       // 1. Actualizar o crear marcador de usuario
       const userIcon = L.divIcon({
@@ -459,11 +533,11 @@ import {
         userMarker.setIcon(userIcon);
       }
 
-      // 2. Línea táctica de conexión entre Búnker y Usuario
+      // 2. Línea táctica de conexión entre el Búnker más cercano y el Usuario
       if (connectionLine) {
-        connectionLine.setLatLngs([BUNKER_COORDS, [lat, lng]]);
+        connectionLine.setLatLngs([nearestBunker.coords, [lat, lng]]);
       } else {
-        connectionLine = L.polyline([BUNKER_COORDS, [lat, lng]], {
+        connectionLine = L.polyline([nearestBunker.coords, [lat, lng]], {
           color: "#ec4899",
           weight: 2,
           dashArray: "6, 8",
@@ -485,19 +559,19 @@ import {
       let estimatedMinutes = "15 - 25 MIN";
       let badgeText = "ZONA FLASH ⚡";
       let badgeClass = "text-teal-400 border-teal-400/40 bg-teal-400/10";
-      let noteText = "🚀 ¡Ubicación en zona de entrega ultra-rápida desde Central Álamos!";
+      let noteText = `🚀 ¡Ubicación en zona de entrega ultra-rápida desde ${nearestBunker.name}!`;
 
-      if (distanceMeters <= FLASH_RADIUS_METERS) {
+      if (minDistanceMeters <= FLASH_RADIUS_METERS) {
         estimatedMinutes = "15 - 25 MIN";
         badgeText = "ZONA FLASH ⚡";
         badgeClass = "text-teal-400 border-teal-400/40 bg-teal-400/10";
-        noteText = "🚀 ¡Ubicación en zona de entrega ultra-rápida desde Central Álamos!";
+        noteText = `🚀 ¡Ubicación en zona de entrega ultra-rápida desde ${nearestBunker.name}!`;
         if (boxEl) boxEl.className = "p-3 rounded-2xl border border-teal-400/30 bg-teal-400/5 transition-all duration-300";
-      } else if (distanceMeters <= EXTENDED_RADIUS_METERS) {
+      } else if (minDistanceMeters <= EXTENDED_RADIUS_METERS) {
         estimatedMinutes = "30 - 45 MIN";
         badgeText = "ZONA EXTENDIDA 🛵";
         badgeClass = "text-amber-400 border-amber-400/40 bg-amber-400/10";
-        noteText = "🛵 Cobertura extendida disponible (Engativá / Fontibón / Modelia).";
+        noteText = `🛵 Cobertura extendida disponible desde ${nearestBunker.name} (Engativá y alrededores).`;
         if (boxEl) boxEl.className = "p-3 rounded-2xl border border-amber-400/30 bg-amber-400/5 transition-all duration-300";
       } else {
         estimatedMinutes = "CONSULTAR";
@@ -514,13 +588,13 @@ import {
       }
       if (noteEl) noteEl.innerText = noteText;
 
-      // 4. Actualizar link de WhatsApp con las coordenadas exactas
+      // 4. Actualizar link de WhatsApp con las coordenadas exactas y sede más cercana
       if (waBtn) {
         const mapsLink = `https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
-        const message = `Hola Diverpremier, verifiqué mi ubicación en el mapa: Distancia: ${distanceKm} km. Mi punto exacto de entrega es: ${mapsLink}. ¿Tienen despacho disponible?`;
+        const message = `Hola Diverpremier, verifiqué mi ubicación en el mapa: Distancia: ${distanceKm} km desde ${nearestBunker.name}. Mi punto exacto de entrega es: ${mapsLink}. ¿Tienen despacho disponible?`;
         waBtn.setAttribute("href", `https://wa.me/573114940503?text=${encodeURIComponent(message)}`);
       }
-      if (waLabel) waLabel.innerText = "Pedir a esta ubicación";
+      if (waLabel) waLabel.innerText = `Pedir desde ${nearestBunker.name}`;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -590,13 +664,19 @@ import {
         container.innerHTML = "";
       }
 
-      // Crear mapa centrado en el Búnker
+      // Centro inicial entre Búnker Álamos y Búnker Bachué
+      const INITIAL_CENTER = [
+        (BUNKERS[0].coords[0] + BUNKERS[1].coords[0]) / 2,
+        (BUNKERS[0].coords[1] + BUNKERS[1].coords[1]) / 2,
+      ];
+
+      // Crear mapa centrado en la zona operativa
       mapInstance = L.map("tactical-map", {
         zoomControl: false,
         attributionControl: false,
         maxZoom: 19,
         minZoom: 11,
-      }).setView(BUNKER_COORDS, 15);
+      }).setView(INITIAL_CENTER, 14);
 
       currentTileLayer = L.tileLayer(getCurrentTileUrl(), {
         maxNativeZoom: 19,
@@ -604,34 +684,81 @@ import {
         attribution: "",
       }).addTo(mapInstance);
 
-      // Marcador del Búnker Central
-      const bunkerIcon = L.divIcon({
-        className: "neon-teal-marker",
-        html: createBunkerMarkerHtml(),
-        iconSize: [48, 48],
-        iconAnchor: [24, 24],
+      // Marcadores y Círculos de Cobertura para cada Búnker
+      BUNKERS.forEach((bunker) => {
+        const bunkerIcon = L.divIcon({
+          className: "neon-bunker-marker",
+          html: createBunkerMarkerHtml(bunker),
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+        });
+
+        L.marker(bunker.coords, { icon: bunkerIcon })
+          .addTo(mapInstance)
+          .on("click", () => selectBunker(bunker.id));
+
+        // Círculo de Zona Flash (2.5 km)
+        L.circle(bunker.coords, {
+          color: bunker.color,
+          fillColor: bunker.color,
+          fillOpacity: 0.06,
+          weight: 1.5,
+          dashArray: "5, 10",
+          radius: FLASH_RADIUS_METERS,
+        }).addTo(mapInstance);
+
+        // Círculo de Zona Extendida (6 km)
+        L.circle(bunker.coords, {
+          color: "#f59e0b",
+          fillColor: "#f59e0b",
+          fillOpacity: 0.02,
+          weight: 1,
+          dashArray: "4, 8",
+          radius: EXTENDED_RADIUS_METERS,
+        }).addTo(mapInstance);
       });
-      L.marker(BUNKER_COORDS, { icon: bunkerIcon }).addTo(mapInstance);
 
-      // Círculo de Zona Flash (2.5 km)
-      L.circle(BUNKER_COORDS, {
-        color: "#2dd4bf",
-        fillColor: "#2dd4bf",
-        fillOpacity: 0.06,
-        weight: 1.5,
-        dashArray: "5, 10",
-        radius: FLASH_RADIUS_METERS,
-      }).addTo(mapInstance);
+      // ── Conmutador de Sedes / Búnkers ──
+      function selectBunker(bunkerId) {
+        const b = BUNKERS.find((item) => item.id === bunkerId);
+        if (!b) return;
+        activeBunker = b;
 
-      // Círculo de Zona Extendida (6 km)
-      L.circle(BUNKER_COORDS, {
-        color: "#f59e0b",
-        fillColor: "#f59e0b",
-        fillOpacity: 0.02,
-        weight: 1,
-        dashArray: "4, 8",
-        radius: EXTENDED_RADIUS_METERS,
-      }).addTo(mapInstance);
+        // Actualizar diseño de pestañas
+        document.querySelectorAll(".bunker-tab").forEach((tab) => {
+          if (tab.getAttribute("data-bunker-id") === bunkerId) {
+            tab.className =
+              "bunker-tab active flex-1 py-1.5 px-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-white bg-teal-500/20 border border-teal-500/40 shadow-sm cursor-pointer";
+          } else {
+            tab.className =
+              "bunker-tab flex-1 py-1.5 px-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-slate-400 hover:text-white border border-transparent cursor-pointer";
+          }
+        });
+
+        // Actualizar datos del header informativo
+        const tagEl = document.getElementById("bunker-tag");
+        const nameEl = document.getElementById("bunker-name");
+        const addrEl = document.getElementById("bunker-address");
+        const gmapsLink = document.getElementById("link-bunker-gmaps") as HTMLAnchorElement;
+        const wazeLink = document.getElementById("link-bunker-waze") as HTMLAnchorElement;
+
+        if (tagEl) tagEl.innerText = b.tag;
+        if (nameEl) nameEl.innerText = b.name;
+        if (addrEl) addrEl.innerText = b.address;
+        if (gmapsLink) gmapsLink.href = b.gmaps;
+        if (wazeLink) wazeLink.href = b.waze;
+
+        if (mapInstance) {
+          mapInstance.flyTo(b.coords, 15, { duration: 1.0 });
+        }
+      }
+
+      document.querySelectorAll(".bunker-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-bunker-id");
+          if (id) selectBunker(id);
+        });
+      });
 
       // ── Evento Click en el mapa para posicionar el Pin ──
       mapInstance.on("click", function (e) {
@@ -676,10 +803,12 @@ import {
         });
       }
 
-      // ── Botón Reset / Centrar Búnker ──
+      // ── Botón Reset / Centrar Búnker Activo ──
       if (btnReset) {
         btnReset.addEventListener("click", function () {
-          mapInstance.flyTo(BUNKER_COORDS, 14.5, { duration: 1 });
+          if (mapInstance && activeBunker) {
+            mapInstance.flyTo(activeBunker.coords, 15, { duration: 1 });
+          }
         });
       }
 
