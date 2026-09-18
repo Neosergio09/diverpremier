@@ -17,6 +17,15 @@ import {
   isProse={false}
   containerClass="p-0 m-0 max-w-none h-screen w-full relative overflow-hidden bg-dark-bg"
 >
+  <Fragment slot="head">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin=""
+    />
+    <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  </Fragment>
+
   <!-- Leaflet Map Container -->
   <div id="tactical-map" class="absolute inset-0 z-0"></div>
 
@@ -239,19 +248,19 @@ import {
   </div>
 </MainLayout>
 
-<!-- Leaflet CSS & JS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  crossorigin=""
-/>
-<script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""
-></script>
-
 <style is:global>
   /* ═══════════════════════════════════════════
      LEAFLET CONTAINER – THEME-AWARE
      ═══════════════════════════════════════════ */
+  #tactical-map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    z-index: 0;
+  }
+
   .leaflet-container {
     background: var(--color-dark-bg) !important;
     transition: background-color 0.5s ease;
@@ -650,6 +659,12 @@ import {
       const container = document.getElementById("tactical-map");
       if (!container) return;
 
+      // Esperar a que la librería Leaflet (L) esté lista desde el CDN
+      if (typeof L === "undefined") {
+        setTimeout(initMap, 100);
+        return;
+      }
+
       if (mapInstance) {
         themeObserver?.disconnect();
         mapInstance.remove();
@@ -683,6 +698,13 @@ import {
         maxZoom: 19,
         attribution: "",
       }).addTo(mapInstance);
+
+      // Asegurar que Leaflet calcule dimensiones reales del viewport
+      setTimeout(function () {
+        if (mapInstance) {
+          mapInstance.invalidateSize();
+        }
+      }, 250);
 
       // Marcadores y Círculos de Cobertura para cada Búnker
       BUNKERS.forEach((bunker) => {
@@ -739,8 +761,8 @@ import {
         const tagEl = document.getElementById("bunker-tag");
         const nameEl = document.getElementById("bunker-name");
         const addrEl = document.getElementById("bunker-address");
-        const gmapsLink = document.getElementById("link-bunker-gmaps") as HTMLAnchorElement;
-        const wazeLink = document.getElementById("link-bunker-waze") as HTMLAnchorElement;
+        const gmapsLink = document.getElementById("link-bunker-gmaps");
+        const wazeLink = document.getElementById("link-bunker-waze");
 
         if (tagEl) tagEl.innerText = b.tag;
         if (nameEl) nameEl.innerText = b.name;
@@ -826,6 +848,10 @@ import {
       });
     }
 
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      initMap();
+    }
+    document.addEventListener("DOMContentLoaded", initMap);
     document.addEventListener("astro:page-load", initMap);
   })();
 </script>
